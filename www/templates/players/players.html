@@ -1,7 +1,7 @@
 <ion-view view-title="Players">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players" type="item-text-wrap" href="#/tab/players/{{player.id}}">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players" type="item-text-wrap" href="#/tab/players/{{player.id}}">
         <img ng-src="{{player.face}}">
         <h2>{{player.name}}</h2>
         <p>{{player.lastText}}</p>

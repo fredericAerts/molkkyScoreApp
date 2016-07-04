@@ -1,0 +1,16 @@
+<ion-view view-title="Players">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players" type="item-text-wrap" href="#/tab/players/{{player.id}}">
+        <img ng-src="{{player.face}}">
+        <h2>{{player.name}}</h2>
+        <p>{{player.lastText}}</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+
+        <ion-option-button class="button-assertive" ng-click="remove(player)">
+          Delete
+        </ion-option-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

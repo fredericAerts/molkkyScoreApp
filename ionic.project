@@ -2,8 +2,7 @@
   "name": "molkkyScoreIonic",
   "app_id": "",
   "gulpStartupTasks": [
-    "sass",
-    "watch"
+    "default"
   ],
   "watchPatterns": [
     "www/**/*",
