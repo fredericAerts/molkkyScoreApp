@@ -31,7 +31,7 @@ angular.module('molkkyscore', ['ionic']);
             }
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
-                StatusBar.styleDefault();
+                window.StatusBar.styleDefault();
             }
         });
     }
@@ -83,10 +83,10 @@ angular.module('molkkyscore', ['ionic']);
             .state('tab.home', {
                 url: '/home',
                 views: {
-                  'home': {
-                    templateUrl: TEMPLATES_ROOT + '/home/home.html',
-                    controller: 'HomeCtrl as home'
-                  }
+                    'home': {
+                        templateUrl: TEMPLATES_ROOT + '/home/home.html',
+                        controller: 'HomeCtrl as home'
+                    }
                 }
             })
 

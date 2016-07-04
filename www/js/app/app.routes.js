@@ -25,10 +25,10 @@
             .state('tab.home', {
                 url: '/home',
                 views: {
-                  'home': {
-                    templateUrl: TEMPLATES_ROOT + '/home/home.html',
-                    controller: 'HomeCtrl as home'
-                  }
+                    'home': {
+                        templateUrl: TEMPLATES_ROOT + '/home/home.html',
+                        controller: 'HomeCtrl as home'
+                    }
                 }
             })
 
