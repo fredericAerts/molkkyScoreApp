@@ -41,6 +41,8 @@ var paths = {
   }
 };
 
+/* Tasks
+   ========================================================================== */
 // clean
 gulp.task('clean', function() {
     return del([paths.clean.js], {force: true});
@@ -51,8 +53,6 @@ gulp.task('moveTemplates', function() {
     return gulp.src(paths.src.templates)
         .pipe(gulp.dest(paths.dest.templates));
 });
-
-
 
 // scripts
 gulp.task('scripts', function() {
@@ -89,6 +89,7 @@ gulp.task('sass', function(done) {
   gulp.src(paths.src.sass)
     .pipe(plugins.sass())
     .on('error', plugins.sass.logError)
+    .pipe(plugins.autoprefixer())
     .pipe(gulp.dest(paths.dest.sass))
     .pipe(plugins.cssnano())
     .pipe(plugins.rename({ extname: '.min.css' }))
@@ -96,12 +97,14 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+// watch
 gulp.task('watch', function() {
   gulp.watch(paths.watch.sass, ['sass']);
   gulp.watch(paths.watch.js, ['scripts', 'jshint', 'jscs']);
   gulp.watch(paths.watch.templates, ['moveTemplates']);
 });
 
+// part ionic of ionic template
 gulp.task('install', ['git-check'], function() {
   return bower.commands.install()
     .on('log', function(data) {
@@ -109,6 +112,7 @@ gulp.task('install', ['git-check'], function() {
     });
 });
 
+// part ionic of ionic template
 gulp.task('git-check', function(done) {
   if (!sh.which('git')) {
     console.log(
