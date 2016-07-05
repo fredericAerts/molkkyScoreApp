@@ -86,7 +86,11 @@
     "globals"       : {
         "angular": false,
         "cordova": false,
+        "sinon": false,
         "assert": false,
+        "expect": false,
+        "module": false,
+        "inject": false,
         "_": false
     }
 }
