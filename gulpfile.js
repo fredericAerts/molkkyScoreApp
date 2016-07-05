@@ -35,7 +35,7 @@ var paths = {
     templates: './www/templates'
   },
   watch: {
-    js: ['./www/js/**/*.js'],
+    js: ['./www/js/**/*.js', '!./www/js/script.js', '!./www/js/**/*.spec.js'],
     sass: ['./scss/**/*.scss'],
     templates: ['./www/js/app/**/*.html']
   }
@@ -104,6 +104,10 @@ gulp.task('watch', function() {
   gulp.watch(paths.watch.templates, ['moveTemplates']);
 });
 
+gulp.task('tests', function(cb) {
+  startTests(false);
+});
+
 // part ionic of ionic template
 gulp.task('install', ['git-check'], function() {
   return bower.commands.install()
@@ -128,5 +132,33 @@ gulp.task('git-check', function(done) {
 
 /* ============================================================ */
 gulp.task('default', ['clean'], function() {
-    gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'sass', 'watch');
+    gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'sass', 'tests', 'watch');
 });
+
+
+/////////////////////
+function startTests(singleRun, done) {
+    var child;
+    var excludeFiles = [];
+    var args = require('yargs').argv;
+    var fork = require('child_process').fork;
+    var karma = require('karma').server;
+    var serverSpecs = 'www/js/app/**/*.spec.js';
+
+    if (args.startServers) {
+        log('Starting servers');
+        var savedEnv = process.env;
+        savedEnv.NODE_ENV = 'dev';
+        savedEnv.PORT = 8888;
+        child = fork(config.nodeServer);
+    } else {
+        if (serverSpecs && serverSpecs.length) {
+            excludeFiles = serverSpecs;
+        }
+    }
+
+    karma.start({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: !!singleRun
+    });
+}
