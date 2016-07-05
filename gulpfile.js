@@ -3,8 +3,8 @@ var bower = require('bower');
 var del = require('del');
 var sh = require('shelljs');
 var plugins = require("gulp-load-plugins")({
-  pattern: ['gulp-*', 'gulp.*'],
-  replaceString: /\bgulp[\-.]/
+    pattern: ['gulp-*', 'gulp.*'],
+    replaceString: /\bgulp[\-.]/
 });
 
 var errorHandler = function(err) {
@@ -15,34 +15,34 @@ var errorHandler = function(err) {
 /* Config
    ========================================================================== */
 var paths = {
-  clean: {
-    js: './www/js/*.js'
-  },
-  src: {
-    js: [
-      './www/js/app/app.js',
-      './www/js/**/*.js',
-      '!./www/js/script.js',
-      '!./www/js/**/*.spec.js'
-    ],
-    customJs: './www/js/app/**/*.js',
-    sass: './scss/ionic.app.scss',
-    templates: './www/js/app/**/*.html'
-  },
-  dest: {
-    js: './www/js/',
-    sass: './www/css/',
-    templates: './www/templates'
-  },
-  watch: {
-    js: [
-      './www/js/**/*.js',
-      '!./www/js/script.js',
-      '!./www/js/**/*.spec.js'
-    ],
-    sass: ['./scss/**/*.scss'],
-    templates: ['./www/js/app/**/*.html']
-  }
+    clean: {
+        js: './www/js/*.js'
+    },
+    src: {
+        js: [
+            './www/js/app/app.js',
+            './www/js/**/*.js',
+            '!./www/js/script.js',
+            '!./www/js/**/*.spec.js'
+        ],
+        customJs: './www/js/app/**/*.js',
+        sass: './scss/ionic.app.scss',
+        templates: './www/js/app/**/*.html'
+    },
+    dest: {
+        js: './www/js/',
+        sass: './www/css/',
+        templates: './www/templates'
+    },
+    watch: {
+        js: [
+            './www/js/**/*.js',
+            '!./www/js/script.js',
+            '!./www/js/**/*.spec.js'
+        ],
+        sass: ['./scss/**/*.scss'],
+        templates: ['./www/js/app/**/*.html']
+    }
 };
 
 /* Tasks
@@ -103,36 +103,36 @@ gulp.task('sass', function(done) {
 
 // watch
 gulp.task('watch', function() {
-  gulp.watch(paths.watch.sass, ['sass']);
-  gulp.watch(paths.watch.js, ['scripts']);
-  gulp.watch(paths.src.customJs, ['jshint', 'jscs']);
-  gulp.watch(paths.watch.templates, ['moveTemplates']);
+    gulp.watch(paths.watch.sass, ['sass']);
+    gulp.watch(paths.watch.js, ['scripts']);
+    gulp.watch(paths.src.customJs, ['jshint', 'jscs']);
+    gulp.watch(paths.watch.templates, ['moveTemplates']);
 });
 
 gulp.task('tests', function(cb) {
-  startTests(false);
+    return startTests(false);
 });
 
 // part ionic of ionic template
 gulp.task('install', ['git-check'], function() {
-  return bower.commands.install()
-    .on('log', function(data) {
-      plugins.gutil.log('bower', plugins.gutil.colors.cyan(data.id), data.message);
-    });
+    return bower.commands.install()
+        .on('log', function(data) {
+            plugins.gutil.log('bower', plugins.gutil.colors.cyan(data.id), data.message);
+        });
 });
 
 // part ionic of ionic template
 gulp.task('git-check', function(done) {
-  if (!sh.which('git')) {
-    console.log(
-      '  ' + plugins.gutil.colors.red('Git is not installed.'),
-      '\n  Git, the version control system, is required to download Ionic.',
-      '\n  Download git here:', plugins.gutil.colors.cyan('http://git-scm.com/downloads') + '.',
-      '\n  Once git is installed, run \'' + plugins.gutil.colors.cyan('gulp install') + '\' again.'
-    );
-    process.exit(1);
-  }
-  done();
+    if (!sh.which('git')) {
+        console.log(
+            '  ' + plugins.gutil.colors.red('Git is not installed.'),
+            '\n  Git, the version control system, is required to download Ionic.',
+            '\n  Download git here:', plugins.gutil.colors.cyan('http://git-scm.com/downloads') + '.',
+            '\n  Once git is installed, run \'' + plugins.gutil.colors.cyan('gulp install') + '\' again.'
+        );
+        process.exit(1);
+    }
+    done();
 });
 
 /* ============================================================ */
@@ -140,8 +140,8 @@ gulp.task('default', ['clean'], function() {
     gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'tests', 'sass', 'watch');
 });
 
-
 /////////////////////
+
 function startTests(singleRun, done) {
     var child;
     var excludeFiles = [];

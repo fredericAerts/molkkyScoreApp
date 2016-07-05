@@ -137,6 +137,30 @@ angular.module('molkkyscore', ['ionic']);
 
     angular
         .module('molkkyscore')
+        .controller('HallOfFameCtrl', HallOfFameCtrl);
+
+    HallOfFameCtrl.$inject = [];
+
+    function HallOfFameCtrl() {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.test = 'test hall of fame';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
     HomeCtrl.$inject = ['$ionicTabsDelegate'];
@@ -156,30 +180,6 @@ angular.module('molkkyscore', ['ionic']);
 
         function hideBar() {
             $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HallOfFameCtrl', HallOfFameCtrl);
-
-    HallOfFameCtrl.$inject = [];
-
-    function HallOfFameCtrl() {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.test = 'test hall of fame';
-
-        activate();
-
-        ////////////////
-
-        function activate() {
         }
     }
 })();
