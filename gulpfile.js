@@ -26,7 +26,7 @@ var paths = {
             '!./www/js/**/*.spec.js'
         ],
         customJs: './www/js/app/**/*.js',
-        sass: './scss/ionic.app.scss',
+        sass: './scss/style.scss',
         templates: './www/js/app/**/*.html'
     },
     dest: {
@@ -40,7 +40,10 @@ var paths = {
             '!./www/js/script.js',
             '!./www/js/**/*.spec.js'
         ],
-        sass: ['./scss/**/*.scss'],
+        sass: [
+            './scss/*.scss',
+            './scss/**/*.scss',
+        ],
         templates: ['./www/js/app/**/*.html']
     }
 };
