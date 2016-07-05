@@ -11,7 +11,7 @@
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = "test hall of fame";
+        vm.test = 'test hall of fame';
 
         activate();
 

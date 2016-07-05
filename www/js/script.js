@@ -145,13 +145,41 @@ angular.module('molkkyscore', ['ionic']);
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = "test hall of fame";
+        vm.test = 'test hall of fame';
 
         activate();
 
         ////////////////
 
         function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$ionicTabsDelegate'];
+
+    function HomeCtrl($ionicTabsDelegate) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.hideBar = hideBar;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        function hideBar() {
+            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
         }
     }
 })();
@@ -269,42 +297,14 @@ angular.module('molkkyscore', ['ionic']);
         function get(playerId) {
             for (var i = 0; i < players.length; i++) {
                 if (players[i].id === parseInt(playerId)) {
-                  return players[i];
+                    return players[i];
                 }
-              }
-              return null;
+            }
+            return null;
         }
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$ionicTabsDelegate'];
-
-    function HomeCtrl($ionicTabsDelegate) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.hideBar = hideBar;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        function hideBar() {
-            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
         }
     }
 })();

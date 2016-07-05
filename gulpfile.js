@@ -25,7 +25,7 @@ var paths = {
       '!./www/js/script.js',
       '!./www/js/**/*.spec.js'
     ],
-    customJs: './www/js/app/*.js',
+    customJs: './www/js/app/**/*.js',
     sass: './scss/ionic.app.scss',
     templates: './www/js/app/**/*.html'
   },
@@ -60,8 +60,6 @@ gulp.task('moveTemplates', function() {
 
 // scripts
 gulp.task('scripts', function() {
-    var gutil = require('gulp-util');
-    gutil.log('Hello world!');
     return gulp.src(paths.src.js)
         .pipe(plugins.plumber({
             handleError: errorHandler
@@ -106,7 +104,8 @@ gulp.task('sass', function(done) {
 // watch
 gulp.task('watch', function() {
   gulp.watch(paths.watch.sass, ['sass']);
-  gulp.watch(paths.watch.js, ['scripts', 'jshint', 'jscs']);
+  gulp.watch(paths.watch.js, ['scripts']);
+  gulp.watch(paths.src.customJs, ['jshint', 'jscs']);
   gulp.watch(paths.watch.templates, ['moveTemplates']);
 });
 
@@ -138,7 +137,7 @@ gulp.task('git-check', function(done) {
 
 /* ============================================================ */
 gulp.task('default', ['clean'], function() {
-    gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'sass', 'tests', 'watch');
+    gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'tests', 'sass', 'watch');
 });
 
 

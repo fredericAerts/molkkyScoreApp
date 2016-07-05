@@ -58,10 +58,10 @@
         function get(playerId) {
             for (var i = 0; i < players.length; i++) {
                 if (players[i].id === parseInt(playerId)) {
-                  return players[i];
+                    return players[i];
                 }
-              }
-              return null;
+            }
+            return null;
         }
 
         function remove(player) {

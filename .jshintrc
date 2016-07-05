@@ -86,6 +86,7 @@
     "globals"       : {
         "angular": false,
         "cordova": false,
+        "assert": false,
         "_": false
     }
 }
