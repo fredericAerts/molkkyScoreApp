@@ -161,34 +161,6 @@ angular.module('molkkyscore', ['ionic']);
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$ionicTabsDelegate'];
-
-    function HomeCtrl($ionicTabsDelegate) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.hideBar = hideBar;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        function hideBar() {
-            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
@@ -305,6 +277,34 @@ angular.module('molkkyscore', ['ionic']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$ionicTabsDelegate'];
+
+    function HomeCtrl($ionicTabsDelegate) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.hideBar = hideBar;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        function hideBar() {
+            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
         }
     }
 })();

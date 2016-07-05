@@ -35,7 +35,11 @@ var paths = {
     templates: './www/templates'
   },
   watch: {
-    js: ['./www/js/**/*.js', '!./www/js/script.js', '!./www/js/**/*.spec.js'],
+    js: [
+      './www/js/**/*.js',
+      '!./www/js/script.js',
+      '!./www/js/**/*.spec.js'
+    ],
     sass: ['./scss/**/*.scss'],
     templates: ['./www/js/app/**/*.html']
   }
@@ -56,6 +60,8 @@ gulp.task('moveTemplates', function() {
 
 // scripts
 gulp.task('scripts', function() {
+    var gutil = require('gulp-util');
+    gutil.log('Hello world!');
     return gulp.src(paths.src.js)
         .pipe(plugins.plumber({
             handleError: errorHandler

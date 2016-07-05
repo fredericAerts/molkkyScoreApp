@@ -24,7 +24,7 @@
     "gulp-util": "^2.2.14",
     "karma": "^1.1.0",
     "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^1.0.1",
+    "karma-firefox-launcher": "^1.0.0",
     "karma-mocha": "^1.1.1",
     "mocha": "^2.5.3",
     "shelljs": "^0.3.0",
