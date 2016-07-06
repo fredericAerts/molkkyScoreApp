@@ -5,10 +5,10 @@
     "default"
   ],
   "watchPatterns": [
-    "www/css/style.css",
+    "www/css/*.css",
     "www/img/*",
-    "www/js/script.js",
-    "www/templates/*",
+    "www/js/*.js",
+    "www/js/**/*.html",
     "www/index.html"
   ]
 }

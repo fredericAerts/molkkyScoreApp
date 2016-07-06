@@ -15,36 +15,38 @@ var errorHandler = function(err) {
 /* Config
    ========================================================================== */
 var paths = {
-    clean: {
-        js: './www/js/*.js'
-    },
     src: {
         js: [
-            './www/js/app/app.js',
-            './www/js/**/*.js',
-            '!./www/js/script.js',
-            '!./www/js/**/*.spec.js'
+            './js/app/app.js',
+            './js/**/*.js',
+            '!./js/script.js',
+            '!./js/**/*.spec.js'
         ],
-        customJs: './www/js/app/**/*.js',
+        customJs: './js/app/**/*.js',
         sass: './scss/style.scss',
-        templates: './www/js/app/**/*.html'
+        templates: './js/app/**/*.html'
     },
     dest: {
         js: './www/js/',
         sass: './www/css/',
         templates: './www/templates'
     },
+    clean: {
+        js: './www/js/*.js',
+        css: './www/css/*.css',
+        templates: './www/templates/**/*.html'
+    },
     watch: {
         js: [
-            './www/js/**/*.js',
-            '!./www/js/script.js',
-            '!./www/js/**/*.spec.js'
+            './js/**/*.js',
+            '!./js/script.js',
+            '!./js/**/*.spec.js'
         ],
         sass: [
             './scss/*.scss',
             './scss/**/*.scss',
         ],
-        templates: ['./www/js/app/**/*.html']
+        templates: ['./js/app/**/*.html']
     }
 };
 
@@ -52,7 +54,7 @@ var paths = {
    ========================================================================== */
 // clean
 gulp.task('clean', function() {
-    return del([paths.clean.js], {force: true});
+    return del([paths.clean.js, paths.clean.css, paths.clean.templates], {force: true});
 });
 
 // move templates
@@ -68,8 +70,9 @@ gulp.task('scripts', function() {
             handleError: errorHandler
         }))
         .pipe(plugins.concat('script.js'))
-        // .pipe(plugins.rename({suffix: '.min'}))
-        // .pipe(plugins.uglify())
+        .pipe(gulp.dest(paths.dest.js))
+        .pipe(plugins.rename({suffix: '.min'}))
+        .pipe(plugins.uglify())
         .pipe(gulp.dest(paths.dest.js));
 });
 
@@ -98,7 +101,11 @@ gulp.task('sass', function(done) {
     .on('error', plugins.sass.logError)
     .pipe(plugins.autoprefixer())
     .pipe(gulp.dest(paths.dest.sass))
-    .pipe(plugins.cssnano())
+    .pipe(plugins.cssnano({
+        discardComments: {
+            removeAll: true
+        }
+    }))
     .pipe(plugins.rename({ extname: '.min.css' }))
     .pipe(gulp.dest(paths.dest.sass))
     .on('end', done);
@@ -151,7 +158,7 @@ function startTests(singleRun, done) {
     var args = require('yargs').argv;
     var fork = require('child_process').fork;
     var karma = require('karma').server;
-    var serverSpecs = 'www/js/app/**/*.spec.js';
+    var serverSpecs = __dirname + '/js/app/**/*.spec.js';
 
     if (args.startServers) {
         log('Starting servers');
