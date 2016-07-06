@@ -89,13 +89,30 @@ angular.module('molkkyscore', ['ionic']);
                     }
                 }
             })
-
-            .state('tab.hallOfFame', {
-                url: '/hall-of-fame',
+            .state('tab.settings', {
+                url: '/home/settings',
                 views: {
-                    'hall-of-fame': {
-                        templateUrl: TEMPLATES_ROOT + '/hall-of-fame/hall-of-fame.html',
-                        controller: 'HallOfFameCtrl as hallOfFame'
+                    'home': {
+                        templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
+                        controller: 'SettingsCtrl as settings'
+                    }
+                }
+            })
+            .state('tab.statistics', {
+                url: '/statistics',
+                views: {
+                    'statistics': {
+                        templateUrl: TEMPLATES_ROOT + '/statistics/statistics.html',
+                        controller: 'StatisticsCtrl as statistics'
+                    }
+                }
+            })
+            .state('tab.statistics-listing', {
+                url: '/statistics/listing',
+                views: {
+                    'statistics': {
+                        templateUrl: TEMPLATES_ROOT + '/statistics/statistics-listing.html',
+                        controller: 'StatisticsListingCtrl as listing'
                     }
                 }
             })
@@ -130,30 +147,6 @@ angular.module('molkkyscore', ['ionic']);
         .module('molkkyscore')
         .constant('TEMPLATES_ROOT', '/templates')
         .constant('IMAGES_ROOT', '/img');
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HallOfFameCtrl', HallOfFameCtrl);
-
-    HallOfFameCtrl.$inject = [];
-
-    function HallOfFameCtrl() {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.test = 'test hall of fame';
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-    }
 })();
 
 (function() {
@@ -305,6 +298,77 @@ angular.module('molkkyscore', ['ionic']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = [];
+
+    function SettingsCtrl() {
+        /* jshint validthis: true */
+        var vm = this;
+
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsListingCtrl', StatisticsListing);
+
+    StatisticsListing.$inject = [];
+
+    function StatisticsListing() {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.test = "test listing"
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsCtrl', StatisticsCtrl);
+
+    StatisticsCtrl.$inject = [];
+
+    function StatisticsCtrl() {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.test = 'test statistics';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
         }
     }
 })();

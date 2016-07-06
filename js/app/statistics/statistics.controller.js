@@ -3,15 +3,15 @@
 
     angular
         .module('molkkyscore')
-        .controller('HallOfFameCtrl', HallOfFameCtrl);
+        .controller('StatisticsCtrl', StatisticsCtrl);
 
-    HallOfFameCtrl.$inject = [];
+    StatisticsCtrl.$inject = [];
 
-    function HallOfFameCtrl() {
+    function StatisticsCtrl() {
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = 'test hall of fame';
+        vm.test = 'test statistics';
 
         activate();
 

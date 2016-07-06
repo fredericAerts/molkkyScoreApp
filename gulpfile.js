@@ -120,7 +120,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('tests', function(cb) {
-    return startTests(false);
+    // return startTests(true);
 });
 
 // part ionic of ionic template

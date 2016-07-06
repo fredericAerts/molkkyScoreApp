@@ -8,7 +8,7 @@
     "www/css/*.css",
     "www/img/*",
     "www/js/*.js",
-    "www/js/**/*.html",
+    "www/templates/**/*.html",
     "www/index.html"
   ]
 }

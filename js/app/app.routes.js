@@ -31,13 +31,30 @@
                     }
                 }
             })
-
-            .state('tab.hallOfFame', {
-                url: '/hall-of-fame',
+            .state('tab.settings', {
+                url: '/home/settings',
                 views: {
-                    'hall-of-fame': {
-                        templateUrl: TEMPLATES_ROOT + '/hall-of-fame/hall-of-fame.html',
-                        controller: 'HallOfFameCtrl as hallOfFame'
+                    'home': {
+                        templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
+                        controller: 'SettingsCtrl as settings'
+                    }
+                }
+            })
+            .state('tab.statistics', {
+                url: '/statistics',
+                views: {
+                    'statistics': {
+                        templateUrl: TEMPLATES_ROOT + '/statistics/statistics.html',
+                        controller: 'StatisticsCtrl as statistics'
+                    }
+                }
+            })
+            .state('tab.statistics-listing', {
+                url: '/statistics/listing',
+                views: {
+                    'statistics': {
+                        templateUrl: TEMPLATES_ROOT + '/statistics/statistics-listing.html',
+                        controller: 'StatisticsListingCtrl as listing'
                     }
                 }
             })
