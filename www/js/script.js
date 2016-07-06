@@ -315,7 +315,6 @@ angular.module('molkkyscore', ['ionic']);
         /* jshint validthis: true */
         var vm = this;
 
-
         activate();
 
         ////////////////
@@ -338,7 +337,7 @@ angular.module('molkkyscore', ['ionic']);
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = "test listing"
+        vm.test = 'test listing';
 
         activate();
 
