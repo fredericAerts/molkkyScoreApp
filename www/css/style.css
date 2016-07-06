@@ -9663,9 +9663,6 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
-.scroll-content.has-tabs-top {
-  bottom: 49px; }
-
 .scroll {
   height: 100%; }
 
