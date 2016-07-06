@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = [];
+    SettingsCtrl.$inject = ['$ionicTabsDelegate'];
 
-    function SettingsCtrl() {
+    function SettingsCtrl($ionicTabsDelegate) {
         /* jshint validthis: true */
         var vm = this;
 
