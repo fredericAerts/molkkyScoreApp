@@ -341,7 +341,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova']);
 
         function activateTab(index) {
             vm.activeTabIndex = index;
-
         }
     }
 })();
