@@ -2,7 +2,7 @@
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'molkkyscore' is the name of this angular module example (also set in a <body> attribute in index.html)
-angular.module('molkkyscore', ['ionic']);
+angular.module('molkkyscore', ['ionic', 'ngCordova']);
 
 (function() {
     angular
@@ -11,17 +11,18 @@ angular.module('molkkyscore', ['ionic']);
         .run(runBlock);
 
     configure.$inject = ['$provide'];
-    runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform'];
+    runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform', '$cordovaSQLite'];
 
     function configure($provide) {
         // extend default exceptionHandler
         $provide.decorator('$exceptionHandler', extendExceptionHandler);
     }
 
-    function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform) {
+    function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
         $ionicPlatform.ready(function() {
+            // console.log('test');
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -32,6 +33,23 @@ angular.module('molkkyscore', ['ionic']);
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
                 window.StatusBar.styleDefault();
+            }
+            testDb();
+
+            function testDb() {
+                console.log('tester');
+                var db = $cordovaSQLite.openDB({
+                    name: 'my.db', location: 'default'
+                });
+                $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS people' +
+                    ' (id integer primary key, firstname text, lastname text)');
+
+                var query = 'INSERT INTO people (firstname, lastname) VALUES (?,?)';
+                $cordovaSQLite.execute(db, query, ['firstname', 'firstname']).then(function(res) {
+                    console.log('INSERT ID -> ' + res.insertId);
+                }, function (err) {
+                    console.error(err.message);
+                });
             }
         });
     }
@@ -157,23 +175,17 @@ angular.module('molkkyscore', ['ionic']);
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$ionicTabsDelegate'];
+    HomeCtrl.$inject = [];
 
-    function HomeCtrl($ionicTabsDelegate) {
+    function HomeCtrl() {
         /* jshint validthis: true */
         var vm = this;
-
-        vm.hideBar = hideBar;
 
         activate();
 
         ////////////////
 
         function activate() {
-        }
-
-        function hideBar() {
-            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
         }
     }
 })();
@@ -327,7 +339,7 @@ angular.module('molkkyscore', ['ionic']);
         function activate() {
         }
 
-        function activateTab(index) {;
+        function activateTab(index) {
             vm.activeTabIndex = index;
 
         }

@@ -22,9 +22,8 @@
         function activate() {
         }
 
-        function activateTab(index) {;
+        function activateTab(index) {
             vm.activeTabIndex = index;
-
         }
     }
 })();

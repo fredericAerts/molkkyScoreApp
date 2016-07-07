@@ -5,23 +5,17 @@
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$ionicTabsDelegate'];
+    HomeCtrl.$inject = [];
 
-    function HomeCtrl($ionicTabsDelegate) {
+    function HomeCtrl() {
         /* jshint validthis: true */
         var vm = this;
-
-        vm.hideBar = hideBar;
 
         activate();
 
         ////////////////
 
         function activate() {
-        }
-
-        function hideBar() {
-            $ionicTabsDelegate.showBar(!$ionicTabsDelegate.showBar());
         }
     }
 })();
