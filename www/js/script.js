@@ -91,6 +91,7 @@ angular.module('molkkyscore', ['ionic']);
             })
             .state('tab.settings', {
                 url: '/home/settings',
+                templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
                 views: {
                     'home': {
                         templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
@@ -309,17 +310,26 @@ angular.module('molkkyscore', ['ionic']);
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$ionicTabsDelegate'];
+    SettingsCtrl.$inject = ['$ionicNavBarDelegate', '$ionicHistory', '$timeout'];
 
-    function SettingsCtrl($ionicTabsDelegate) {
+    function SettingsCtrl($ionicNavBarDelegate, $ionicHistory, $timeout) {
         /* jshint validthis: true */
         var vm = this;
+
+        vm.activateTab = activateTab;
+
+        vm.activeTabIndex = 0;
 
         activate();
 
         ////////////////
 
         function activate() {
+        }
+
+        function activateTab(index) {;
+            vm.activeTabIndex = index;
+
         }
     }
 })();

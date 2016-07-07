@@ -5,17 +5,26 @@
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$ionicTabsDelegate'];
+    SettingsCtrl.$inject = ['$ionicNavBarDelegate', '$ionicHistory', '$timeout'];
 
-    function SettingsCtrl($ionicTabsDelegate) {
+    function SettingsCtrl($ionicNavBarDelegate, $ionicHistory, $timeout) {
         /* jshint validthis: true */
         var vm = this;
+
+        vm.activateTab = activateTab;
+
+        vm.activeTabIndex = 0;
 
         activate();
 
         ////////////////
 
         function activate() {
+        }
+
+        function activateTab(index) {;
+            vm.activeTabIndex = index;
+
         }
     }
 })();

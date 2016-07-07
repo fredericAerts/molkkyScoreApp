@@ -1,7 +1,20 @@
 <ion-view view-title="Settings">
-  <ion-content class="padding">
-    <p>
-      Settings here
-    </p>
-  </ion-content>
+    <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+        <div class="tabs">
+            <span class="tab-item active" ng-click="settings.activateTab(0)" ng-class="{'active': settings.activeTabIndex === 0}">
+                Game
+            </span>
+            <span class="tab-item" ng-click="settings.activateTab(1)" ng-class="{'active': settings.activeTabIndex === 1}">
+                App
+            </span>
+        </div>
+    </div>
+    <ion-content class="padding has-tabs has-tabs-top">
+        <div ng-show="settings.activeTabIndex === 0">
+            Game Settings
+        </div>
+        <div ng-show="settings.activeTabIndex === 1">
+            App Settings
+        </div>
+    </ion-content>
 </ion-view>

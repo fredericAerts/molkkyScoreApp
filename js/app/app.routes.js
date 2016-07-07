@@ -33,6 +33,7 @@
             })
             .state('tab.settings', {
                 url: '/home/settings',
+                templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
                 views: {
                     'home': {
                         templateUrl: TEMPLATES_ROOT + '/settings/settings.html',
