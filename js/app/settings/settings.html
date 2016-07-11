@@ -1,20 +1,38 @@
-<ion-view view-title="Settings">
+<ion-view view-title="{{ 'HOME.SETTINGS.VIEW-TITLE' | translate }}">
     <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
         <div class="tabs">
             <span class="tab-item active" ng-click="settings.activateTab(0)" ng-class="{'active': settings.activeTabIndex === 0}">
-                Game
+                {{ 'HOME.SETTINGS.TABS.GAME.TITLE' | translate }}
             </span>
             <span class="tab-item" ng-click="settings.activateTab(1)" ng-class="{'active': settings.activeTabIndex === 1}">
-                App
+                {{ 'HOME.SETTINGS.TABS.APP.TITLE' | translate }}
             </span>
         </div>
     </div>
-    <ion-content class="padding has-tabs has-tabs-top">
+    <ion-content class="has-tabs has-tabs-top">
         <div ng-show="settings.activeTabIndex === 0">
-            Game Settings
+            <ion-toggle ng-model="settings.gameCustomSetting" ng-change="settings.toggleGameCustomSetting()">
+                <span ng-show="settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>
+                <span ng-show="!settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.OFF' | translate }}</span>
+            </ion-toggle>
+            <div class="list">
+                <div class="item item-divider">
+                    {{ 'HOME.SETTINGS.TABS.GAME.MAX-SCORE.TITLE' | translate }}
+                </div>
+                <ion-radio name="radio-maxscore" ng-model="settings.maxScore" ng-value="option.value" ng-change="settings.setMaxScore(option.value)" ng-repeat="option in settings.maxScoreOptions">
+                    {{ option.value }}
+                </ion-radio>
+            </div>
         </div>
         <div ng-show="settings.activeTabIndex === 1">
-            App Settings
+            <div class="list">
+                <div class="item item-divider">
+                    {{ 'HOME.SETTINGS.TABS.APP.LANGUAGE.TITLE' | translate }}
+                </div>
+                <ion-radio name="radio-language" ng-model="settings.activeLanguageKey" ng-value="language.key" ng-change="settings.setLanguageKey(language.key)" ng-repeat="language in settings.languageOtions">
+                    {{ language.value }}
+                </ion-radio>
+            </div>
         </div>
     </ion-content>
 </ion-view>

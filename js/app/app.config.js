@@ -14,8 +14,7 @@
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        });
-        $translateProvider.preferredLanguage('english');
+        }).preferredLanguage('english');
     }
 
     function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
@@ -37,7 +36,6 @@
             testDb();
 
             function testDb() {
-                console.log('tester');
                 var db = $cordovaSQLite.openDB({
                     name: 'my.db', location: 'default'
                 });

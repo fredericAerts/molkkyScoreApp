@@ -3533,8 +3533,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        });
-        $translateProvider.preferredLanguage('english');
+        }).preferredLanguage('english');
     }
 
     function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
@@ -3556,7 +3555,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             testDb();
 
             function testDb() {
-                console.log('tester');
                 var db = $cordovaSQLite.openDB({
                     name: 'my.db', location: 'default'
                 });
@@ -3719,6 +3717,139 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
+
+    function SettingsCtrl($ionicPopup, $translate, settingsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.activeTabIndex = 0;
+        vm.activateTab = activateTab;
+        vm.gameCustomSetting = settingsService.isGameCustomSetting();
+        vm.toggleGameCustomSetting = toggleGameCustomSetting;
+        vm.languageOtions = settingsService.getLanguageOtions();
+        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
+        vm.setLanguageKey = settingsService.setLanguageKey;
+        vm.maxScoreOptions = settingsService.getMaxScoreOptions();
+        vm.maxScore = vm.maxScoreOptions.filter(function(option) { return option.active; })[0].value;
+        vm.setMaxScore = settingsService.setMaxScore
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        function activateTab(index) {
+            vm.activeTabIndex = index;
+        }
+
+        function toggleGameCustomSetting() {
+            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
+            if (vm.gameCustomSetting) {
+                showAlert();
+            }
+        }
+
+        // An alert dialog
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate'];
+
+    function settingsService($translate) {
+        var languageOptions = [
+            {
+                value: 'English',
+                key: 'english'
+            },
+            {
+                value: 'Français',
+                key: 'french'
+            },
+            {
+                value: 'Finnish',
+                key: 'finnish'
+            }
+        ];
+        var gameCustomSetting = false;
+
+        var service = {
+            getActiveLanguageKey: getActiveLanguageKey,
+            setLanguageKey: setLanguageKey,
+            getLanguageOtions: getLanguageOtions,
+            isGameCustomSetting: isGameCustomSetting,
+            toggleGameCustomSetting: toggleGameCustomSetting,
+            getMaxScoreOptions: getMaxScoreOptions
+        };
+        return service;
+
+        ////////////////
+
+        function getActiveLanguageKey() {
+            return $translate.use();
+        }
+
+        function setLanguageKey(languageKey) {
+            $translate.use(languageKey); // TODO: write to database
+        }
+
+        function getLanguageOtions() {
+            return languageOptions;
+        }
+
+        function isGameCustomSetting() {
+            return gameCustomSetting; // TODO: get from database
+        }
+
+        function toggleGameCustomSetting() {
+            gameCustomSetting = !gameCustomSetting;
+            return gameCustomSetting;
+        }
+
+        function getMaxScoreOptions() {
+            return [
+                {
+                    value: 25,
+                    active: false
+                },
+                {
+                    value: 50,
+                    active: false
+                },
+                {
+                    value: 100,
+                    active: true
+                }
+            ];
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
@@ -3835,36 +3966,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
-
-    SettingsCtrl.$inject = ['$ionicNavBarDelegate', '$ionicHistory', '$timeout'];
-
-    function SettingsCtrl($ionicNavBarDelegate, $ionicHistory, $timeout) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.activateTab = activateTab;
-
-        vm.activeTabIndex = 0;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        function activateTab(index) {
-            vm.activeTabIndex = index;
         }
     }
 })();

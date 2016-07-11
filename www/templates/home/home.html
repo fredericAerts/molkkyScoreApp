@@ -1,21 +1,14 @@
-<ion-view view-title="Home">
+<ion-view view-title="{{ 'HOME.VIEW-TITLE' | translate }}">
   <ion-content class="padding">
     <div class="row row-center row--full-height">
       <div class="col col-100 center-align">
         <img src="http://lorempixel.com/300/250/">
         <button class="button button-block button-positive" ng-click="">
-          Start game
+          {{ 'HOME.START.BUTTON-TITLE' | translate }}
         </button>
         <a class="button button-block button-positive" href="#/tab/home/settings">
-          Settings
+          {{ 'HOME.SETTINGS.BUTTON-TITLE' | translate }}
         </a>
-        <button class="button button-block button-positive" ng-click="home.changeLanguage('english')">
-          English
-        </button>
-        <button class="button button-block button-positive" ng-click="home.changeLanguage('french')">
-          German
-        </button>
-        <p>{{ 'FOO' | translate }}</p>
       </div>
     </div>
   </ion-content>

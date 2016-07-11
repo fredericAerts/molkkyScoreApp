@@ -1,3 +1,31 @@
 {
-    "FOO": "Ceci est une paragraph"
+    "HOME": {
+        "VIEW-TITLE": "Masion",
+        "START": {
+            "VIEW-TITLE": "fais jeu",
+            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE"
+        },
+        "SETTINGS": {
+            "VIEW-TITLE": "Configuration",
+            "BUTTON-TITLE": "@:HOME.SETTINGS.VIEW-TITLE",
+            "TABS": {
+                "GAME": {
+                    "TITLE": "Jeu",
+                    "CUSTOM-TOGGLE": {
+                        "ON": "Disable custom settings",
+                        "OFF": "Enable custom settings",
+                        "POPUP": {
+                            "TITLE": "Attention"
+                        }
+                    }
+                },
+                "APP": {
+                    "TITLE": "Appli",
+                    "LANGUAGE": {
+                        "TITLE": "Langue"
+                    }
+                }
+            }
+        }
+    }
 }

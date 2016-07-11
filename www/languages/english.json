@@ -1,3 +1,35 @@
 {
-    "FOO": "This is a paragraph"
+    "HOME": {
+        "VIEW-TITLE": "Home",
+        "START": {
+            "VIEW-TITLE": "Start Game",
+            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE"
+        },
+        "SETTINGS": {
+            "VIEW-TITLE": "Settings",
+            "BUTTON-TITLE": "@:HOME.SETTINGS.VIEW-TITLE",
+            "TABS": {
+                "GAME": {
+                    "TITLE": "Game",
+                    "CUSTOM-TOGGLE": {
+                        "ON": "Disable custom game rules",
+                        "OFF": "Enable custom game rules",
+                        "POPUP": {
+                            "TITLE": "Warning",
+                            "TEXT": "Player statistics are not recorded when game rules are customized"
+                        }
+                    },
+                    "MAX-SCORE": {
+                        "TITLE": "Maximum Score"
+                    }
+                },
+                "APP": {
+                    "TITLE": "App",
+                    "LANGUAGE": {
+                        "TITLE": "Language"
+                    }
+                }
+            }
+        }
+    }
 }
