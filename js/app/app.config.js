@@ -4,12 +4,18 @@
         .config(configure)
         .run(runBlock);
 
-    configure.$inject = ['$provide'];
+    configure.$inject = ['$provide', '$translateProvider', 'LANGUAGES_ROOT'];
     runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform', '$cordovaSQLite'];
 
-    function configure($provide) {
+    function configure($provide, $translateProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
         $provide.decorator('$exceptionHandler', extendExceptionHandler);
+
+        $translateProvider.useStaticFilesLoader({
+            prefix: LANGUAGES_ROOT + '/',
+            suffix: '.json'
+        });
+        $translateProvider.preferredLanguage('english');
     }
 
     function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {

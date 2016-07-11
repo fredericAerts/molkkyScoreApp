@@ -17,6 +17,8 @@ var errorHandler = function(err) {
 var paths = {
     src: {
         js: [
+            './www/lib/angular-translate/angular-translate.js',
+            './www/lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
             './js/app/app.js',
             './js/**/*.js',
             '!./js/script.js',

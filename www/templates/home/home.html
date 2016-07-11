@@ -9,6 +9,13 @@
         <a class="button button-block button-positive" href="#/tab/home/settings">
           Settings
         </a>
+        <button class="button button-block button-positive" ng-click="home.changeLanguage('english')">
+          English
+        </button>
+        <button class="button button-block button-positive" ng-click="home.changeLanguage('french')">
+          German
+        </button>
+        <p>{{ 'FOO' | translate }}</p>
       </div>
     </div>
   </ion-content>

@@ -5,11 +5,15 @@
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = [];
+    HomeCtrl.$inject = ['$translate'];
 
-    function HomeCtrl() {
+    function HomeCtrl($translate) {
         /* jshint validthis: true */
         var vm = this;
+
+        vm.changeLanguage = function(key) {
+            $translate.use(key);
+        };
 
         activate();
 
