@@ -42,6 +42,22 @@
                     }
                 }
             }
+        },
+        "PLAYERS": {
+            "VIEW-TITLE": "Players",
+            "REMOVE-POPUP": {
+                "TITLE": "Remove player",
+                "TEXT": "<p>Are you sure you want to remove <strong>{{ playerName }}</strong> from players?</p><p>All statistics associated with a removed player will be lost as well..</p>"
+            },
+            "ADD-PLAYER-MODAL": {
+                "TITLE": "Add new player",
+                "INPUT-FIRST-NAME": "First name",
+                "INPUT-LAST-NAME": "Last name",
+                "INPUT-TAGLINE": "Your tagline",
+                "BUTTON-CANCEL": "Cancel",
+                "AVATAR-PLACEHOLDER": "Take a picture or upload an image from your photo library",
+                "BUTTON-ADD-PLAYER": "Add player"
+            }
         }
     }
 }

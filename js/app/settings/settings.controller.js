@@ -11,19 +11,21 @@
         /* jshint validthis: true */
         var vm = this;
 
+        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+
         vm.activeTabIndex = 0;
         vm.activateTab = activateTab;
 
         vm.gameCustomSetting = settingsService.isGameCustomSetting();
         vm.toggleGameCustomSetting = toggleGameCustomSetting;
         vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = vm.winningScoreOptions.filter(function(option) { return option.active; })[0].value;
+        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
         vm.setWinningScore = settingsService.setWinningScore;
         vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = vm.winningScoreExceededOptions.filter(function(option) { return option.active; })[0].value;
+        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
         vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
         vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = vm.threeMissesOptions.filter(function(option) { return option.active; })[0].value;
+        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
         vm.setThreeMisses = settingsService.setThreeMisses;
 
         vm.languageOtions = settingsService.getLanguageOtions();
@@ -57,6 +59,12 @@
 
             alertPopup.then(function(res) {
             });
+        }
+
+        function filterOutActiveItem(array) {
+            return array.filter(function(option) {
+                return option.active;
+            })[0].value;
         }
     }
 })();

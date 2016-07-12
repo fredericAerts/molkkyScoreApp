@@ -3691,32 +3691,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$translate'];
-
-    function HomeCtrl($translate) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.changeLanguage = function(key) {
-            $translate.use(key);
-        };
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
@@ -3743,25 +3717,59 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('PlayersCtrl', PlayersCtrl);
 
-    PlayersCtrl.$inject = ['playersService'];
+    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
 
-    function PlayersCtrl(playersService) {
+    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
         /* jshint validthis: true */
         var vm = this;
 
         vm.players = playersService.all();
-        vm.remove = remove;
         vm.removeVisible = false;
+        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
+        vm.addPlayerModal = {};
 
         activate();
 
         ////////////////
 
         function activate() {
+            initAddPlayerModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.modal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function showRemoveConfirmPopup(player) {
+            $ionicPopup.confirm({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.name})
+            })
+            .then(function(confirmed) {
+                if (confirmed) {
+                    remove(player);
+                }
+                vm.removeVisible = false;
+            });
         }
 
         function remove(player) {
             playersService.remove(player);
+        }
+
+        function initAddPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.addPlayerModal = modal;
+            });
         }
     }
 })();
@@ -3851,19 +3859,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /* jshint validthis: true */
         var vm = this;
 
+        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+
         vm.activeTabIndex = 0;
         vm.activateTab = activateTab;
 
         vm.gameCustomSetting = settingsService.isGameCustomSetting();
         vm.toggleGameCustomSetting = toggleGameCustomSetting;
         vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = vm.winningScoreOptions.filter(function(option) { return option.active; })[0].value;
+        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
         vm.setWinningScore = settingsService.setWinningScore;
         vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = vm.winningScoreExceededOptions.filter(function(option) { return option.active; })[0].value;
+        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
         vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
         vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = vm.threeMissesOptions.filter(function(option) { return option.active; })[0].value;
+        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
         vm.setThreeMisses = settingsService.setThreeMisses;
 
         vm.languageOtions = settingsService.getLanguageOtions();
@@ -3897,6 +3907,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             alertPopup.then(function(res) {
             });
+        }
+
+        function filterOutActiveItem(array) {
+            return array.filter(function(option) {
+                return option.active;
+            })[0].value;
         }
     }
 })();
@@ -4084,6 +4100,32 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var vm = this;
 
         vm.test = 'test statistics';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$translate'];
+
+    function HomeCtrl($translate) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.changeLanguage = function(key) {
+            $translate.use(key);
+        };
 
         activate();
 

@@ -1,0 +1,21 @@
+.add-avatar-block {
+    width: 150px;
+    margin: 30px auto 0;
+}
+
+.add-avatar-block__buttons {
+
+    & > .button:last-child {
+        float: right;
+    }
+}
+
+.add-avatar-block__placeholder {
+    height: 150px;
+    padding: 0;
+    border-radius: 50%;
+
+    text-align: center;
+
+    background: $stable;
+}

@@ -1,23 +1,18 @@
-<ion-view view-title="Players">
+<ion-view view-title="{{ 'HOME.PLAYERS.VIEW-TITLE' | translate }}">
   <ion-nav-buttons side="primary">
     <button class="button button-icon icon ion-ios-minus-outline" ng-click="players.removeVisible = !players.removeVisible"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="secondary">
-    <button class="button button-icon icon ion-person-add" ng-click=""></button>
+    <button class="button button-icon icon ion-ios-personadd-outline" ng-click="players.addPlayerModal.show()"></button>
   </ion-nav-buttons>
   <ion-content>
     <ion-list show-delete="players.removeVisible">
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players" type="item-text-wrap" href="#/tab/players/{{player.id}}">
+        <ion-delete-button class="ion-minus-circled" ng-click="players.showRemoveConfirmPopup(player)"></ion-delete-button>
         <img ng-src="{{player.face}}">
         <h2>{{player.name}}</h2>
         <p>{{player.lastText}}</p>
         <i class="icon ion-chevron-right icon-accessory"></i>
-
-        <!-- <ion-option-button class="button-assertive" ng-click="remove(player)">
-          Delete
-        </ion-option-button> -->
-        <ion-delete-button class="ion-minus-circled" ng-click="players.remove(player)">
-        </ion-delete-button>
       </ion-item>
     </ion-list>
   </ion-content>
