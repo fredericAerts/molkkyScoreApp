@@ -9663,6 +9663,13 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
+.item-left-edit {
+  -webkit-transform: translate3d(-18.5px, 0, 0);
+  transform: translate3d(-18.5px, 0, 0); }
+  .item-left-edit.visible.active {
+    -webkit-transform: translate3d(13px, 0, 0);
+    transform: translate3d(13px, 0, 0); }
+
 .scroll {
   height: 100%; }
 

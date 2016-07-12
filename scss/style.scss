@@ -2,7 +2,8 @@
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
-@import "ionic/ionic";
+@import "ionic/ionic",
+        "ionic/items";
 
 @import "general/layout",
         "general/helper-classes";

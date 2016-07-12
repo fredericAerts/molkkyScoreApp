@@ -388,6 +388,7 @@ $item-remove-transition-function:   ease-in !default;
 $item-remove-descendents-transition-function:  cubic-bezier(.25,.81,.24,1) !default;
 
 $item-left-edit-left:             8px !default;  // item's left side edit's "left" property
+$item-left-edit-left-extra:       13px !default;  // item's left side edit's "left" property
 
 $item-right-edit-open-width:      50px !default;
 $item-left-edit-open-width:       50px !default;

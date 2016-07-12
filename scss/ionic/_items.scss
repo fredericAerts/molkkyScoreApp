@@ -1,0 +1,12 @@
+// Item Left Edit Button
+// -------------------------------
+.item-left-edit {
+    @include translate3d( ($item-left-edit-left-extra - $item-left-edit-open-width) / 2, 0, 0);
+
+    &.visible {
+
+        &.active {
+            @include translate3d($item-left-edit-left-extra, 0, 0);
+        }
+    }
+}

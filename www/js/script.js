@@ -3751,6 +3751,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         vm.players = playersService.all();
         vm.remove = remove;
+        vm.removeVisible = false;
 
         activate();
 
@@ -3833,54 +3834,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('StatisticsListingCtrl', StatisticsListing);
-
-    StatisticsListing.$inject = [];
-
-    function StatisticsListing() {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.test = 'test listing';
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('StatisticsCtrl', StatisticsCtrl);
-
-    StatisticsCtrl.$inject = [];
-
-    function StatisticsCtrl() {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.test = 'test statistics';
-
-        activate();
-
-        ////////////////
-
-        function activate() {
         }
     }
 })();
@@ -4089,6 +4042,54 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return option;
             });
             console.log(threeMissesOptions);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsListingCtrl', StatisticsListing);
+
+    StatisticsListing.$inject = [];
+
+    function StatisticsListing() {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.test = 'test listing';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsCtrl', StatisticsCtrl);
+
+    StatisticsCtrl.$inject = [];
+
+    function StatisticsCtrl() {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.test = 'test statistics';
+
+        activate();
+
+        ////////////////
+
+        function activate() {
         }
     }
 })();

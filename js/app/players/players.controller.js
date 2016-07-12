@@ -13,6 +13,7 @@
 
         vm.players = playersService.all();
         vm.remove = remove;
+        vm.removeVisible = false;
 
         activate();
 
