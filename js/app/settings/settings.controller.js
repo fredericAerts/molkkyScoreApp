@@ -13,14 +13,22 @@
 
         vm.activeTabIndex = 0;
         vm.activateTab = activateTab;
+
         vm.gameCustomSetting = settingsService.isGameCustomSetting();
         vm.toggleGameCustomSetting = toggleGameCustomSetting;
+        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
+        vm.winningScore = vm.winningScoreOptions.filter(function(option) { return option.active; })[0].value;
+        vm.setWinningScore = settingsService.setWinningScore;
+        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
+        vm.winningScoreExceeded = vm.winningScoreExceededOptions.filter(function(option) { return option.active; })[0].value;
+        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
+        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
+        vm.threeMisses = vm.threeMissesOptions.filter(function(option) { return option.active; })[0].value;
+        vm.setThreeMisses = settingsService.setThreeMisses;
+
         vm.languageOtions = settingsService.getLanguageOtions();
         vm.activeLanguageKey = settingsService.getActiveLanguageKey();
         vm.setLanguageKey = settingsService.setLanguageKey;
-        vm.maxScoreOptions = settingsService.getMaxScoreOptions();
-        vm.maxScore = vm.maxScoreOptions.filter(function(option) { return option.active; })[0].value;
-        vm.setMaxScore = settingsService.setMaxScore
 
         activate();
 

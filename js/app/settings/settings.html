@@ -15,17 +15,36 @@
                 <span ng-show="settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>
                 <span ng-show="!settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.OFF' | translate }}</span>
             </ion-toggle>
-            <div class="list">
+            <!-- winning score question -->
+            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
                 <div class="item item-divider">
-                    {{ 'HOME.SETTINGS.TABS.GAME.MAX-SCORE.TITLE' | translate }}
+                    {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE.TITLE' | translate }}
                 </div>
-                <ion-radio name="radio-maxscore" ng-model="settings.maxScore" ng-value="option.value" ng-change="settings.setMaxScore(option.value)" ng-repeat="option in settings.maxScoreOptions">
+                <ion-radio ng-disabled="!settings.gameCustomSetting" name="radio-winning-score" ng-model="settings.winningScore" ng-value="option.value" ng-change="settings.setWinningScore(option.value)" ng-repeat="option in settings.winningScoreOptions">
                     {{ option.value }}
+                </ion-radio>
+            </div>
+            <!-- winning score exceeded question -->
+            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
+                <div class="item item-divider">
+                    {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.TITLE' | translate }}
+                </div>
+                <ion-radio ng-disabled="!settings.gameCustomSetting" ng-model="settings.winningScoreExceeded" ng-value="option.value" ng-change="settings.setWinningScoreExceeded(option.value)" ng-repeat="option in settings.winningScoreExceededOptions">
+                    {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' + ($index + 1) | translate }}
+                </ion-radio>
+            </div>
+            <!-- three misses question -->
+            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
+                <div class="item item-divider">
+                    {{ 'HOME.SETTINGS.TABS.GAME.THREE-MISSES.TITLE' | translate }}
+                </div>
+                <ion-radio ng-disabled="!settings.gameCustomSetting" name="radio-three-misses" ng-model="settings.threeMisses" ng-value="option.value" ng-change="settings.setThreeMisses(option.value)" ng-repeat="option in settings.threeMissesOptions">
+                    {{ 'HOME.SETTINGS.TABS.GAME.THREE-MISSES.OPTION-' + ($index + 1) | translate }}
                 </ion-radio>
             </div>
         </div>
         <div ng-show="settings.activeTabIndex === 1">
-            <div class="list">
+            <div class="list card">
                 <div class="item item-divider">
                     {{ 'HOME.SETTINGS.TABS.APP.LANGUAGE.TITLE' | translate }}
                 </div>

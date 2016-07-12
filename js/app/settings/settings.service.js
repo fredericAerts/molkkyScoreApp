@@ -24,14 +24,63 @@
         ];
         var gameCustomSetting = false;
 
+        var winningScoreOptions = [
+            {
+                value: 25,
+                active: false
+            },
+            {
+                value: 50,
+                active: true
+            },
+            {
+                value: 100,
+                active: false
+            }
+        ];
+
+        var winningScoreExceededOptions = [
+            {
+                value: 'to zero',
+                active: true
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'half of winning score',
+                active: false
+            }
+        ];
+
+        var threeMissesOptions = [
+            {
+                value: 'to zero',
+                active: false
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'disqualified',
+                active: true
+            }
+        ];
+
         var service = {
             getActiveLanguageKey: getActiveLanguageKey,
             setLanguageKey: setLanguageKey,
             getLanguageOtions: getLanguageOtions,
             isGameCustomSetting: isGameCustomSetting,
             toggleGameCustomSetting: toggleGameCustomSetting,
-            getMaxScoreOptions: getMaxScoreOptions,
-            setMaxScore: setMaxScore
+            getWinningScoreOptions: getWinningScoreOptions,
+            setWinningScore: setWinningScore,
+            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
+            setWinningScoreExceeded: setWinningScoreExceeded,
+            getThreeMissesOptions: getThreeMissesOptions,
+            setThreeMisses: setThreeMisses
         };
         return service;
 
@@ -58,25 +107,38 @@
             return gameCustomSetting;
         }
 
-        function getMaxScoreOptions() {
-            return [
-                {
-                    value: 25,
-                    active: false
-                },
-                {
-                    value: 50,
-                    active: false
-                },
-                {
-                    value: 100,
-                    active: true
-                }
-            ];
+        function getWinningScoreOptions() {
+            return winningScoreOptions;
         }
 
-        function setMaxScore(maxScore) {
-            // TODO: write to database
+        function setWinningScore(activeOption) { // TODO: write to database
+            winningScoreOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getWinningScoreExceededOptions() {
+            return winningScoreExceededOptions;
+        }
+
+        function setWinningScoreExceeded(activeOption) { // TODO: write to database
+            winningScoreExceededOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getThreeMissesOptions() {
+            return threeMissesOptions;
+        }
+
+        function setThreeMisses(activeOption) { // TODO: write to database
+            threeMissesOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+            console.log(threeMissesOptions);
         }
     }
 })();

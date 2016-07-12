@@ -19,8 +19,20 @@
                             "TEXT": "Player statistics are not recorded when game rules are customized"
                         }
                     },
-                    "MAX-SCORE": {
-                        "TITLE": "Maximum Score"
+                    "WINNING-SCORE": {
+                        "TITLE": "Winning score is ..."
+                    },
+                    "WINNING-SCORE-EXCEEDED": {
+                        "TITLE": "When player exceeds winning score ...",
+                        "OPTION-1": "score is set to zero",
+                        "OPTION-2": "score is halved",
+                        "OPTION-3": "score is set to half of winning score"
+                    },
+                    "THREE-MISSES": {
+                        "TITLE": "When throwing three misses in a row ...",
+                        "OPTION-1": "score is set to zero",
+                        "OPTION-2": "score is halved",
+                        "OPTION-3": "player is disqualified"
                     }
                 },
                 "APP": {

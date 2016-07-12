@@ -9669,5 +9669,8 @@ a.button {
 .row--full-height {
   height: 100%; }
 
+.disabled {
+  opacity: .5; }
+
 .center-align {
   text-align: center; }
