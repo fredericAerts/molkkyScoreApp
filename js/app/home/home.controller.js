@@ -18,6 +18,8 @@
         vm.addPlayerToParticipants = addPlayerToParticipants;
         vm.removePlayerFromParticipants = removePlayerFromParticipants;
         vm.reorderParticipant = reorderParticipant;
+        vm.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+        vm.addGuestParticipant = addGuestParticipant;
 
         activate();
 
@@ -51,12 +53,39 @@
         }
 
         function removePlayerFromParticipants(index) {
-            vm.potentialPlayers.push(vm.participants.splice(index, 1)[0]);
+            var removedPlayer = vm.participants.splice(index, 1)[0];
+
+            if (removedPlayer.guestColor) {
+                vm.guestColors.push(removedPlayer.guestColor);
+            }
+            else {
+                vm.potentialPlayers.push(removedPlayer);
+            }
         }
 
         function reorderParticipant(player, fromIndex, toIndex) {
             vm.participants.splice(fromIndex, 1);
             vm.participants.splice(toIndex, 0, player);
-        };
+        }
+
+        function addGuestParticipant() {
+            var guestColor = pickRandomGuestColor();
+
+            vm.participants.push({
+                name: 'Mr. ' + capitalizeFirstLetter(guestColor),
+                face: '',
+                guestColor: guestColor
+            });
+        }
+
+        function pickRandomGuestColor() {
+            var colorIndex = Math.floor(Math.random() * vm.guestColors.length);
+
+            return vm.guestColors.splice(colorIndex, 1)[0];
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
     }
 })();

@@ -1,0 +1,79 @@
+.item-avatar {
+
+    &--small {
+        min-height: 52px;
+        padding-left: 52px;
+
+        & .item-content {
+            min-height: 50px;
+            padding-left: 50px;
+            padding-right: 16px;
+
+            & > img:first-child {
+                top: 10px;
+                left: 10px;
+
+                max-width: 30px;
+                max-height: 30px;
+            }
+        }
+
+        & > img:first-child {
+            top: 10px;
+            left: 10px;
+
+            max-width: 30px;
+            max-height: 30px;
+        }
+
+        & h2 {
+            font-size: 14px;
+        }
+
+        & .item-avatar__face-placeholder {
+            top: 10px;
+            left: 10px;
+
+            width: 30px;
+            height: 30px;
+        }
+    }
+}
+
+.item-avatar__face-placeholder {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    background: #f5f5f5;
+
+    &.blonde {
+        background: #F2D300
+    }
+
+    &.orange {
+        background: #FF8704;
+    }
+
+    &.pink {
+        background: #FF5DE7;
+    }
+
+    &.white {
+        border: 1px solid #000;
+
+        background: #FFFFFF;
+    }
+
+    &.brown {
+        background: #682A01;
+    }
+
+    &.blue {
+        background: #01B7FF;
+    }
+}

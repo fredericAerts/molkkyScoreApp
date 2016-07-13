@@ -9677,7 +9677,7 @@ a.button {
   height: 100%; }
 
 .disabled {
-  opacity: .5; }
+  opacity: .4; }
 
 .center-align {
   text-align: center; }
@@ -9694,7 +9694,7 @@ a.button {
   padding: 0;
   border-radius: 50%;
   text-align: center;
-  background: #f8f8f8; }
+  background: #f5f5f5; }
 
 .item-avatar--small {
   min-height: 52px;
@@ -9715,3 +9715,30 @@ a.button {
     max-height: 30px; }
   .item-avatar--small h2 {
     font-size: 14px; }
+  .item-avatar--small .item-avatar__face-placeholder {
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px; }
+
+.item-avatar__face-placeholder {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f5f5f5; }
+  .item-avatar__face-placeholder.blonde {
+    background: #F2D300; }
+  .item-avatar__face-placeholder.orange {
+    background: #FF8704; }
+  .item-avatar__face-placeholder.pink {
+    background: #FF5DE7; }
+  .item-avatar__face-placeholder.white {
+    border: 1px solid #000;
+    background: #FFFFFF; }
+  .item-avatar__face-placeholder.brown {
+    background: #682A01; }
+  .item-avatar__face-placeholder.blue {
+    background: #01B7FF; }

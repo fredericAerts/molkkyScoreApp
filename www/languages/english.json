@@ -7,6 +7,8 @@
                 "TITLE": "Add players to game",
                 "BUTTON-CANCEL": "Cancel",
                 "BUTTON-START-GAME": "Start game",
+                "TOGGLE-REORDER": "Reorder participants",
+                "BUTTON-ADD-GUEST": "Add guest participant",
                 "DATABASE-LIST-HEADER": "Database",
                 "PARTICIPANTS-LIST-HEADER": "Participants"
             }

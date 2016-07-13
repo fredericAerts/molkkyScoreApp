@@ -5245,14 +5245,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
-    GameCtrl.$inject = ['$scope', 'playersService', '$translate'];
+    GameCtrl.$inject = [];
 
-    function GameCtrl($scope, playersService, $translate) {
+    function GameCtrl() {
         /* jshint validthis: true */
         var vm = this;
-
-        vm.potentialPlayers = playersService.all();
-
 
         activate();
 
@@ -5285,6 +5282,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.addPlayerToParticipants = addPlayerToParticipants;
         vm.removePlayerFromParticipants = removePlayerFromParticipants;
         vm.reorderParticipant = reorderParticipant;
+        vm.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+        vm.addGuestParticipant = addGuestParticipant;
 
         activate();
 
@@ -5318,13 +5317,40 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function removePlayerFromParticipants(index) {
-            vm.potentialPlayers.push(vm.participants.splice(index, 1)[0]);
+            var removedPlayer = vm.participants.splice(index, 1)[0];
+
+            if (removedPlayer.guestColor) {
+                vm.guestColors.push(removedPlayer.guestColor);
+            }
+            else {
+                vm.potentialPlayers.push(removedPlayer);
+            }
         }
 
         function reorderParticipant(player, fromIndex, toIndex) {
             vm.participants.splice(fromIndex, 1);
             vm.participants.splice(toIndex, 0, player);
-        };
+        }
+
+        function addGuestParticipant() {
+            var guestColor = pickRandomGuestColor();
+
+            vm.participants.push({
+                name: 'Mr. ' + capitalizeFirstLetter(guestColor),
+                face: '',
+                guestColor: guestColor
+            });
+        }
+
+        function pickRandomGuestColor() {
+            var colorIndex = Math.floor(Math.random() * vm.guestColors.length);
+
+            return vm.guestColors.splice(colorIndex, 1)[0];
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
     }
 })();
 
@@ -5429,34 +5455,34 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         // Some fake testing data
         var players = [
             {
-                id: 0,
                 name: 'Ben Sparrow',
                 lastText: 'You on your way?',
                 face: 'img/ben.png'
             },
             {
-                id: 1,
                 name: 'Max Lynx',
                 lastText: 'Hey, it\'s me',
                 face: 'img/max.png'
             },
             {
-                id: 2,
                 name: 'Adam Bradleyson',
                 lastText: 'I should buy a boat',
                 face: 'img/adam.jpg'
             },
             {
-                id: 3,
                 name: 'Perry Governor',
                 lastText: 'Look at my mukluks!',
                 face: 'img/perry.png'
             },
             {
-                id: 4,
                 name: 'Mike Harrington',
                 lastText: 'This is wicked good ice cream.',
                 face: 'img/mike.png'
+            },
+            {
+                name: 'Dummy player',
+                lastText: 'I have a grey avatar.',
+                face: ''
             }
         ];
 

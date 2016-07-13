@@ -5,14 +5,11 @@
         .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
-    GameCtrl.$inject = ['$scope', 'playersService', '$translate'];
+    GameCtrl.$inject = [];
 
-    function GameCtrl($scope, playersService, $translate) {
+    function GameCtrl() {
         /* jshint validthis: true */
         var vm = this;
-
-        vm.potentialPlayers = playersService.all();
-
 
         activate();
 
