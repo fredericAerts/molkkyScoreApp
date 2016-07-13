@@ -9695,3 +9695,23 @@ a.button {
   border-radius: 50%;
   text-align: center;
   background: #f8f8f8; }
+
+.item-avatar--small {
+  min-height: 52px;
+  padding-left: 52px; }
+  .item-avatar--small .item-content {
+    min-height: 50px;
+    padding-left: 50px;
+    padding-right: 16px; }
+    .item-avatar--small .item-content > img:first-child {
+      top: 10px;
+      left: 10px;
+      max-width: 30px;
+      max-height: 30px; }
+  .item-avatar--small > img:first-child {
+    top: 10px;
+    left: 10px;
+    max-width: 30px;
+    max-height: 30px; }
+  .item-avatar--small h2 {
+    font-size: 14px; }

@@ -19,6 +19,7 @@ var paths = {
         js: [
             './www/lib/angular-translate/angular-translate.js',
             './www/lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+            './www/lib/underscore/underscore.js',
             './js/app/app.js',
             './js/**/*.js',
             '!./js/script.js',

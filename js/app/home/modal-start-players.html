@@ -1,0 +1,37 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">{{ 'HOME.START.START-PLAYERS-MODAL.TITLE' | translate }}</h1>
+        <button class="button" ng-click="home.addPlayersToGameModal.hide()">{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-CANCEL' | translate }}</button>
+    </ion-header-bar>
+    <ion-content>
+        <div class="row">
+            <div class="col col-50">
+                <ion-list>
+                    <div class="item item-divider">
+                        {{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER' | translate }}
+                    </div>
+                    <ion-item class="item-avatar item-avatar--small" ng-click="home.addPlayerToParticipants($index)" ng-repeat="player in home.potentialPlayers">
+                        <img ng-src="{{player.face}}">
+                        <h2>{{player.name}}</h2>
+                    </ion-item>
+                </ion-list>
+            </div>
+            <div class="col col-50">
+                <ion-list show-reorder="home.showReorder">
+                    <div class="item item-divider">
+                        {{ 'HOME.START.START-PLAYERS-MODAL.PARTICIPANTS-LIST-HEADER' | translate }}
+                    </div>
+                    <ion-item class="item-avatar item-avatar--small" ng-click="home.removePlayerFromParticipants($index)" ng-repeat="player in home.participants">
+                        <img ng-src="{{player.face}}">
+                        <h2>{{player.name}}</h2>
+                        <ion-reorder-button class="ion-navicon" on-reorder="home.reorderParticipant(player, $fromIndex, $toIndex)"></ion-reorder-button>
+                    </ion-item>
+                </ion-list>
+                <button class="button" ng-click="home.showReorder = !home.showReorder">reorder</button>
+            </div>
+        </div>
+    </ion-content>
+    <div class="bar bar-footer">
+        <button class="button button-positive pull-right" ng-click="">{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-START-GAME' | translate }}</button>
+    </div>
+</ion-modal-view>

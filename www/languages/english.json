@@ -2,8 +2,14 @@
     "HOME": {
         "VIEW-TITLE": "Home",
         "START": {
-            "VIEW-TITLE": "Start Game",
-            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE"
+            "BUTTON-TITLE": "Start game",
+            "START-PLAYERS-MODAL": {
+                "TITLE": "Add players to game",
+                "BUTTON-CANCEL": "Cancel",
+                "BUTTON-START-GAME": "Start game",
+                "DATABASE-LIST-HEADER": "Database",
+                "PARTICIPANTS-LIST-HEADER": "Participants"
+            }
         },
         "SETTINGS": {
             "VIEW-TITLE": "Settings",
@@ -54,7 +60,7 @@
                 "INPUT-FIRST-NAME": "First name",
                 "INPUT-LAST-NAME": "Last name",
                 "INPUT-TAGLINE": "Your tagline",
-                "BUTTON-CANCEL": "Cancel",
+                "BUTTON-CANCEL": "@:HOME.START.START-PLAYERS-MODAL.BUTTON-CANCEL",
                 "AVATAR-PLACEHOLDER": "Take a picture or upload an image from your photo library",
                 "BUTTON-ADD-PLAYER": "Add player"
             }
