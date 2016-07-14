@@ -13,6 +13,7 @@
         var addPlayersToGameModalScope = $scope.$new(true);
 
         vm.addPlayersToGameModal = {};
+        vm.openAddPlayersToGameModal = openAddPlayersToGameModal;
 
         activate();
 
@@ -43,11 +44,14 @@
                 vm.addPlayersToGameModal = modal;
             });
 
-            // modal template should reference 'viewModel' as its scope
+            /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ================================================================== */
             addPlayersToGameModalScope.viewModel = {
                 showReorder: false,
-                guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
-                playersInDatabase: playersService.all().slice(), // modal input
+                guestColors: [],
+                playersInDatabase: [], // modal input
                 participants: [], // modal output
                 addPlayerToParticipants: addPlayerToParticipants,
                 addGuestParticipant: addGuestParticipant,
@@ -56,10 +60,19 @@
                 cancelAddPlayersToGame: cancelAddPlayersToGame,
                 startGame: startGame
             };
+        }
 
-            addPlayersToGameModalScope.$on('modal.hidden', function() {
-                resetAddPlayersToGameModalData();
-            });
+        function openAddPlayersToGameModal() {
+            initializeAddPlayersToGameModalData();
+
+            vm.addPlayersToGameModal.show();
+        }
+
+        function initializeAddPlayersToGameModalData() {
+            addPlayersToGameModalScope.viewModel.showReorder = false;
+            addPlayersToGameModalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+            addPlayersToGameModalScope.viewModel.playersInDatabase = playersService.all().slice();
+            addPlayersToGameModalScope.viewModel.participants = [];
         }
 
         function addPlayerToParticipants(newParticipant) {
@@ -118,21 +131,6 @@
 
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        function resetAddPlayersToGameModalData() { // reset playersInDatabase & participants
-            addPlayersToGameModalScope.viewModel.showReorder = false;
-
-            // empty participants array
-            for (var i = addPlayersToGameModalScope.viewModel.participants.length - 1; i >= 0; --i) { // backwards loop
-                var playerPoppedFromParticipants =  addPlayersToGameModalScope.viewModel.participants.pop();
-                if (playerPoppedFromParticipants.guestColor) {
-                    addPlayersToGameModalScope.viewModel.guestColors.push(playerPoppedFromParticipants.guestColor);
-                }
-                else {
-                    addPlayersToGameModalScope.viewModel.playersInDatabase.push(playerPoppedFromParticipants);
-                }
-            }
         }
     }
 })();

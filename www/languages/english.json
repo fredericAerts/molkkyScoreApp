@@ -13,6 +13,9 @@
                 "PARTICIPANTS-LIST-HEADER": "Participants"
             }
         },
+        "GAME": {
+            "VIEW-TITLE": "Game"
+        },
         "SETTINGS": {
             "VIEW-TITLE": "Settings",
             "BUTTON-TITLE": "@:HOME.SETTINGS.VIEW-TITLE",

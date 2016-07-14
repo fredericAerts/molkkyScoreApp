@@ -16,7 +16,8 @@
             .state('game', {
                 url: '/game',
                 templateUrl: TEMPLATES_ROOT + '/game/game.html',
-                controller: 'GameCtrl as game'
+                controller: 'GameCtrl as game',
+                cache: false
             })
 
             // setup an abstract state for the tabs directive

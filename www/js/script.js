@@ -5158,7 +5158,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             .state('game', {
                 url: '/game',
                 templateUrl: TEMPLATES_ROOT + '/game/game.html',
-                controller: 'GameCtrl as game'
+                controller: 'GameCtrl as game',
+                cache: false
             })
 
             // setup an abstract state for the tabs directive
@@ -5244,61 +5245,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('GameCtrl', GameCtrl);
-
-    GameCtrl.$inject = ['gameService'];
-
-    function GameCtrl(gameService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.participants = gameService.getParticipants();
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('gameService', gameService);
-
-    gameService.$inject = [];
-
-    function gameService() {
-        var participants = [];
-
-        var service = {
-            setParticipants: setParticipants,
-            getParticipants: getParticipants
-        };
-        return service;
-
-        ////////////////
-
-        function setParticipants(newParticipants) {
-            participants = newParticipants;
-        }
-
-        function getParticipants() {
-            return participants;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
     HomeCtrl.$inject = ['$scope', '$state', 'playersService', 'gameService', 'TEMPLATES_ROOT','$ionicModal'];
@@ -5309,6 +5255,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var addPlayersToGameModalScope = $scope.$new(true);
 
         vm.addPlayersToGameModal = {};
+        vm.openAddPlayersToGameModal = openAddPlayersToGameModal;
 
         activate();
 
@@ -5339,11 +5286,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 vm.addPlayersToGameModal = modal;
             });
 
-            // modal template should reference 'viewModel' as its scope
+            /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ================================================================== */
             addPlayersToGameModalScope.viewModel = {
                 showReorder: false,
-                guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
-                playersInDatabase: playersService.all().slice(), // modal input
+                guestColors: [],
+                playersInDatabase: [], // modal input
                 participants: [], // modal output
                 addPlayerToParticipants: addPlayerToParticipants,
                 addGuestParticipant: addGuestParticipant,
@@ -5352,10 +5302,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 cancelAddPlayersToGame: cancelAddPlayersToGame,
                 startGame: startGame
             };
+        }
 
-            addPlayersToGameModalScope.$on('modal.hidden', function() {
-                resetAddPlayersToGameModalData();
-            });
+        function openAddPlayersToGameModal() {
+            initializeAddPlayersToGameModalData();
+
+            vm.addPlayersToGameModal.show();
+        }
+
+        function initializeAddPlayersToGameModalData() {
+            addPlayersToGameModalScope.viewModel.showReorder = false;
+            addPlayersToGameModalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+            addPlayersToGameModalScope.viewModel.playersInDatabase = playersService.all().slice();
+            addPlayersToGameModalScope.viewModel.participants = [];
         }
 
         function addPlayerToParticipants(newParticipant) {
@@ -5415,20 +5374,59 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
+    }
+})();
 
-        function resetAddPlayersToGameModalData() { // reset playersInDatabase & participants
-            addPlayersToGameModalScope.viewModel.showReorder = false;
+(function() {
+    'use strict';
 
-            // empty participants array
-            for (var i = addPlayersToGameModalScope.viewModel.participants.length - 1; i >= 0; --i) { // backwards loop
-                var playerPoppedFromParticipants =  addPlayersToGameModalScope.viewModel.participants.pop();
-                if (playerPoppedFromParticipants.guestColor) {
-                    addPlayersToGameModalScope.viewModel.guestColors.push(playerPoppedFromParticipants.guestColor);
-                }
-                else {
-                    addPlayersToGameModalScope.viewModel.playersInDatabase.push(playerPoppedFromParticipants);
-                }
-            }
+    angular
+        .module('molkkyscore')
+        .controller('GameCtrl', GameCtrl);
+
+    GameCtrl.$inject = ['gameService'];
+
+    function GameCtrl(gameService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.participants = gameService.getParticipants();
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('gameService', gameService);
+
+    gameService.$inject = [];
+
+    function gameService() {
+        var participants = [];
+
+        var service = {
+            setParticipants: setParticipants,
+            getParticipants: getParticipants
+        };
+        return service;
+
+        ////////////////
+
+        function setParticipants(newParticipants) {
+            participants = newParticipants;
+        }
+
+        function getParticipants() {
+            return participants;
         }
     }
 })();
