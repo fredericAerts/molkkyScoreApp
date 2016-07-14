@@ -5,11 +5,13 @@
         .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
-    GameCtrl.$inject = [];
+    GameCtrl.$inject = ['gameService'];
 
-    function GameCtrl() {
+    function GameCtrl(gameService) {
         /* jshint validthis: true */
         var vm = this;
+
+        vm.participants = gameService.getParticipants();
 
         activate();
 

@@ -5157,7 +5157,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             // state which is separate from tabs
             .state('game', {
                 url: '/game',
-                templateUrl: TEMPLATES_ROOT + '/game/game.html'
+                templateUrl: TEMPLATES_ROOT + '/game/game.html',
+                controller: 'GameCtrl as game'
             })
 
             // setup an abstract state for the tabs directive
@@ -5245,11 +5246,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
-    GameCtrl.$inject = [];
+    GameCtrl.$inject = ['gameService'];
 
-    function GameCtrl() {
+    function GameCtrl(gameService) {
         /* jshint validthis: true */
         var vm = this;
+
+        vm.participants = gameService.getParticipants();
 
         activate();
 
@@ -5261,6 +5264,35 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     }
 })();
 
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('gameService', gameService);
+
+    gameService.$inject = [];
+
+    function gameService() {
+        var participants = [];
+
+        var service = {
+            setParticipants: setParticipants,
+            getParticipants: getParticipants
+        };
+        return service;
+
+        ////////////////
+
+        function setParticipants(newParticipants) {
+            participants = newParticipants;
+        }
+
+        function getParticipants() {
+            return participants;
+        }
+    }
+})();
 
 (function() {
     'use strict';
@@ -5269,14 +5301,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT','$ionicModal'];
+    HomeCtrl.$inject = ['$scope', '$state', 'playersService', 'gameService', 'TEMPLATES_ROOT','$ionicModal'];
 
-    function HomeCtrl($scope, playersService, TEMPLATES_ROOT, $ionicModal) {
+    function HomeCtrl($scope, $state, playersService, gameService, TEMPLATES_ROOT, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
 
         vm.addPlayersToGameModal = {};
-        vm.potentialPlayers = playersService.all();
+        vm.cancelAddPlayersToGame = cancelAddPlayersToGame;
+        vm.playersInDatabase = playersService.all();
         vm.participants = [];
         vm.showReorder = false;
         vm.addPlayerToParticipants = addPlayerToParticipants;
@@ -5284,6 +5317,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.reorderParticipant = reorderParticipant;
         vm.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
         vm.addGuestParticipant = addGuestParticipant;
+        vm.startGame = startGame;
 
         activate();
 
@@ -5312,8 +5346,27 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
-        function addPlayerToParticipants(index) {
-            vm.participants.push(vm.potentialPlayers.splice(index, 1)[0]);
+        function cancelAddPlayersToGame() {
+            vm.showReorder = false;
+
+            // empty participants array
+            for (var i = vm.participants.length - 1; i >= 0; --i) { // backwards loop
+                if (vm.participants[i].guestColor) {
+                    vm.guestColors.push(vm.participants.pop().guestColor);
+                }
+                else {
+                    vm.playersInDatabase.push(vm.participants.pop());
+                }
+            }
+
+            vm.addPlayersToGameModal.hide();
+        }
+
+        function addPlayerToParticipants(newParticipant) {
+            var playerIndex = _.findIndex(vm.playersInDatabase, function(player) {
+                return player.name === newParticipant.name;
+            });
+            vm.participants.push(vm.playersInDatabase.splice(playerIndex, 1)[0]);
         }
 
         function removePlayerFromParticipants(index) {
@@ -5323,7 +5376,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 vm.guestColors.push(removedPlayer.guestColor);
             }
             else {
-                vm.potentialPlayers.push(removedPlayer);
+                vm.playersInDatabase.push(removedPlayer);
             }
         }
 
@@ -5342,6 +5395,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function startGame() {
+            gameService.setParticipants(vm.participants);
+
+            $state.go('game');
+
+            vm.addPlayersToGameModal.hide();
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
         function pickRandomGuestColor() {
             var colorIndex = Math.floor(Math.random() * vm.guestColors.length);
 
@@ -5350,166 +5413,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('PlayerDetailCtrl', PlayerDetailCtrl);
-
-    PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
-
-    function PlayerDetailCtrl($stateParams, playersService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.player = playersService.get($stateParams.playerId);
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('PlayersCtrl', PlayersCtrl);
-
-    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
-
-    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.players = playersService.all();
-        vm.removeVisible = false;
-        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
-        vm.addPlayerModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayerModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            $scope.modal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function showRemoveConfirmPopup(player) {
-            $ionicPopup.confirm({
-                title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.name})
-            })
-            .then(function(confirmed) {
-                if (confirmed) {
-                    remove(player);
-                }
-                vm.removeVisible = false;
-            });
-        }
-
-        function remove(player) {
-            playersService.remove(player);
-        }
-
-        function initAddPlayerModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
-                scope: $scope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                vm.addPlayerModal = modal;
-            });
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('playersService', playersService);
-
-    playersService.$inject = [];
-
-    function playersService() {
-        // Some fake testing data
-        var players = [
-            {
-                name: 'Ben Sparrow',
-                lastText: 'You on your way?',
-                face: 'img/ben.png'
-            },
-            {
-                name: 'Max Lynx',
-                lastText: 'Hey, it\'s me',
-                face: 'img/max.png'
-            },
-            {
-                name: 'Adam Bradleyson',
-                lastText: 'I should buy a boat',
-                face: 'img/adam.jpg'
-            },
-            {
-                name: 'Perry Governor',
-                lastText: 'Look at my mukluks!',
-                face: 'img/perry.png'
-            },
-            {
-                name: 'Mike Harrington',
-                lastText: 'This is wicked good ice cream.',
-                face: 'img/mike.png'
-            },
-            {
-                name: 'Dummy player',
-                lastText: 'I have a grey avatar.',
-                face: ''
-            }
-        ];
-
-        var service = {
-            all: all,
-            get: get,
-            remove: remove
-        };
-        return service;
-
-        ////////////////
-
-        function all() {
-            return players;
-        }
-
-        function get(playerId) {
-            for (var i = 0; i < players.length; i++) {
-                if (players[i].id === parseInt(playerId)) {
-                    return players[i];
-                }
-            }
-            return null;
-        }
-
-        function remove(player) {
-            players.splice(players.indexOf(player), 1);
         }
     }
 })();
@@ -5726,6 +5629,166 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return option;
             });
             console.log(threeMissesOptions);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('PlayerDetailCtrl', PlayerDetailCtrl);
+
+    PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
+
+    function PlayerDetailCtrl($stateParams, playersService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.player = playersService.get($stateParams.playerId);
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('PlayersCtrl', PlayersCtrl);
+
+    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
+
+    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.players = playersService.all();
+        vm.removeVisible = false;
+        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
+        vm.addPlayerModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayerModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            $scope.modal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function showRemoveConfirmPopup(player) {
+            $ionicPopup.confirm({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.name})
+            })
+            .then(function(confirmed) {
+                if (confirmed) {
+                    remove(player);
+                }
+                vm.removeVisible = false;
+            });
+        }
+
+        function remove(player) {
+            playersService.remove(player);
+        }
+
+        function initAddPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.addPlayerModal = modal;
+            });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('playersService', playersService);
+
+    playersService.$inject = [];
+
+    function playersService() {
+        // Some fake testing data
+        var players = [
+            {
+                name: 'Ben Sparrow',
+                lastText: 'You on your way?',
+                face: 'img/ben.png'
+            },
+            {
+                name: 'Max Lynx',
+                lastText: 'Hey, it\'s me',
+                face: 'img/max.png'
+            },
+            {
+                name: 'Adam Bradleyson',
+                lastText: 'I should buy a boat',
+                face: 'img/adam.jpg'
+            },
+            {
+                name: 'Perry Governor',
+                lastText: 'Look at my mukluks!',
+                face: 'img/perry.png'
+            },
+            {
+                name: 'Mike Harrington',
+                lastText: 'This is wicked good ice cream.',
+                face: 'img/mike.png'
+            },
+            {
+                name: 'Dummy player',
+                lastText: 'I have a grey avatar.',
+                face: ''
+            }
+        ];
+
+        var service = {
+            all: all,
+            get: get,
+            remove: remove
+        };
+        return service;
+
+        ////////////////
+
+        function all() {
+            return players;
+        }
+
+        function get(playerId) {
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].id === parseInt(playerId)) {
+                    return players[i];
+                }
+            }
+            return null;
+        }
+
+        function remove(player) {
+            players.splice(players.indexOf(player), 1);
         }
     }
 })();

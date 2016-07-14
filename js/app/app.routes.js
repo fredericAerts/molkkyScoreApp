@@ -15,7 +15,8 @@
             // state which is separate from tabs
             .state('game', {
                 url: '/game',
-                templateUrl: TEMPLATES_ROOT + '/game/game.html'
+                templateUrl: TEMPLATES_ROOT + '/game/game.html',
+                controller: 'GameCtrl as game'
             })
 
             // setup an abstract state for the tabs directive

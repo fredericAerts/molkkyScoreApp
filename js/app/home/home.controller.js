@@ -5,14 +5,15 @@
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT','$ionicModal'];
+    HomeCtrl.$inject = ['$scope', '$state', 'playersService', 'gameService', 'TEMPLATES_ROOT','$ionicModal'];
 
-    function HomeCtrl($scope, playersService, TEMPLATES_ROOT, $ionicModal) {
+    function HomeCtrl($scope, $state, playersService, gameService, TEMPLATES_ROOT, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
 
         vm.addPlayersToGameModal = {};
-        vm.potentialPlayers = playersService.all();
+        vm.cancelAddPlayersToGame = cancelAddPlayersToGame;
+        vm.playersInDatabase = playersService.all();
         vm.participants = [];
         vm.showReorder = false;
         vm.addPlayerToParticipants = addPlayerToParticipants;
@@ -20,6 +21,7 @@
         vm.reorderParticipant = reorderParticipant;
         vm.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
         vm.addGuestParticipant = addGuestParticipant;
+        vm.startGame = startGame;
 
         activate();
 
@@ -48,8 +50,27 @@
             });
         }
 
-        function addPlayerToParticipants(index) {
-            vm.participants.push(vm.potentialPlayers.splice(index, 1)[0]);
+        function cancelAddPlayersToGame() {
+            vm.showReorder = false;
+
+            // empty participants array
+            for (var i = vm.participants.length - 1; i >= 0; --i) { // backwards loop
+                if (vm.participants[i].guestColor) {
+                    vm.guestColors.push(vm.participants.pop().guestColor);
+                }
+                else {
+                    vm.playersInDatabase.push(vm.participants.pop());
+                }
+            }
+
+            vm.addPlayersToGameModal.hide();
+        }
+
+        function addPlayerToParticipants(newParticipant) {
+            var playerIndex = _.findIndex(vm.playersInDatabase, function(player) {
+                return player.name === newParticipant.name;
+            });
+            vm.participants.push(vm.playersInDatabase.splice(playerIndex, 1)[0]);
         }
 
         function removePlayerFromParticipants(index) {
@@ -59,7 +80,7 @@
                 vm.guestColors.push(removedPlayer.guestColor);
             }
             else {
-                vm.potentialPlayers.push(removedPlayer);
+                vm.playersInDatabase.push(removedPlayer);
             }
         }
 
@@ -78,6 +99,16 @@
             });
         }
 
+        function startGame() {
+            gameService.setParticipants(vm.participants);
+
+            $state.go('game');
+
+            vm.addPlayersToGameModal.hide();
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
         function pickRandomGuestColor() {
             var colorIndex = Math.floor(Math.random() * vm.guestColors.length);
 
