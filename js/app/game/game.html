@@ -1,7 +1,7 @@
 <ion-view view-title="{{ 'HOME.GAME.VIEW-TITLE' | translate }}">
   <ion-content>
     <div ng-repeat="player in game.participants">
-        {{player.name}}
+        {{player.firstName}} {{player.lastName}}
     </div>
     <a ui-sref="tab.home">go home</a>
   </ion-content>

@@ -77,7 +77,7 @@
 
         function addPlayerToParticipants(newParticipant) {
             var playerIndex = _.findIndex(addPlayersToGameModalScope.viewModel.playersInDatabase, function(player) {
-                return player.name === newParticipant.name;
+                return player.id === newParticipant.id;
             });
             var playerFromDatabase = addPlayersToGameModalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
             addPlayersToGameModalScope.viewModel.participants.push(playerFromDatabase);
@@ -103,8 +103,8 @@
             var guestColor = pickRandomGuestColor();
 
             addPlayersToGameModalScope.viewModel.participants.push({
-                name: 'Mr. ' + capitalizeFirstLetter(guestColor),
-                face: '',
+                firstName: 'Mr.',
+                lastName: capitalizeFirstLetter(guestColor),
                 guestColor: guestColor
             });
         }

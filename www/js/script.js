@@ -5245,6 +5245,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('GameCtrl', GameCtrl);
+
+    GameCtrl.$inject = ['gameService'];
+
+    function GameCtrl(gameService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.participants = gameService.getParticipants();
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('gameService', gameService);
+
+    gameService.$inject = [];
+
+    function gameService() {
+        var participants = [];
+
+        var service = {
+            setParticipants: setParticipants,
+            getParticipants: getParticipants
+        };
+        return service;
+
+        ////////////////
+
+        function setParticipants(newParticipants) {
+            participants = newParticipants;
+        }
+
+        function getParticipants() {
+            return participants;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
     HomeCtrl.$inject = ['$scope', '$state', 'playersService', 'gameService', 'TEMPLATES_ROOT','$ionicModal'];
@@ -5319,7 +5373,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function addPlayerToParticipants(newParticipant) {
             var playerIndex = _.findIndex(addPlayersToGameModalScope.viewModel.playersInDatabase, function(player) {
-                return player.name === newParticipant.name;
+                return player.id === newParticipant.id;
             });
             var playerFromDatabase = addPlayersToGameModalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
             addPlayersToGameModalScope.viewModel.participants.push(playerFromDatabase);
@@ -5345,8 +5399,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var guestColor = pickRandomGuestColor();
 
             addPlayersToGameModalScope.viewModel.participants.push({
-                name: 'Mr. ' + capitalizeFirstLetter(guestColor),
-                face: '',
+                firstName: 'Mr.',
+                lastName: capitalizeFirstLetter(guestColor),
                 guestColor: guestColor
             });
         }
@@ -5382,75 +5436,61 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('GameCtrl', GameCtrl);
-
-    GameCtrl.$inject = ['gameService'];
-
-    function GameCtrl(gameService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.participants = gameService.getParticipants();
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('gameService', gameService);
-
-    gameService.$inject = [];
-
-    function gameService() {
-        var participants = [];
-
-        var service = {
-            setParticipants: setParticipants,
-            getParticipants: getParticipants
-        };
-        return service;
-
-        ////////////////
-
-        function setParticipants(newParticipants) {
-            participants = newParticipants;
-        }
-
-        function getParticipants() {
-            return participants;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    PlayerDetailCtrl.$inject = ['$stateParams', 'playersService'];
+    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
 
-    function PlayerDetailCtrl($stateParams, playersService) {
+    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
+        var editPlayerModalScope = $scope.$new(true);
 
         vm.player = playersService.get($stateParams.playerId);
+        vm.editPlayerModal = {};
+        vm.showPlayerModal = showPlayerModal;
 
         activate();
 
         ////////////////
 
         function activate() {
+            initEditPlayerModal();
+        }
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initEditPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-edit-player.html', {
+                scope: editPlayerModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.editPlayerModal = modal;
+            });
+
+            /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ================================================================== */
+            editPlayerModalScope.viewModel = {
+                player: {},
+                cancelPlayer: cancelPlayer,
+                confirmPlayer: confirmPlayer
+
+            };
+        }
+
+        function showPlayerModal(player) {
+            editPlayerModalScope.viewModel.player = player;
+            vm.editPlayerModal.show();
+        }
+
+        function cancelPlayer() {
+            vm.editPlayerModal.hide();
+        }
+
+        function confirmPlayer() {
+            vm.editPlayerModal.hide();
         }
     }
 })();
@@ -5467,11 +5507,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
         /* jshint validthis: true */
         var vm = this;
+        var addPlayerModalScope = $scope.$new(true);
 
         vm.players = playersService.all();
         vm.removeVisible = false;
         vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
         vm.addPlayerModal = {};
+        vm.showPlayerModal = showPlayerModal;
 
         activate();
 
@@ -5485,15 +5527,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ======================================================================================== */
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
-            $scope.modal.remove();
+            vm.addPlayerModal.remove();
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
+        function initAddPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
+                scope: addPlayerModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.addPlayerModal = modal;
+            });
+
+            /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ================================================================== */
+            addPlayerModalScope.viewModel = {
+                player: {},
+                cancelPlayer: cancelPlayer,
+                confirmPlayer: confirmPlayer
+
+            };
+        }
+
+        function showPlayerModal() {
+            initializeAddPlayerModalData();
+
+            vm.addPlayerModal.show();
+        }
+
+        function initializeAddPlayerModalData() {
+            addPlayerModalScope.viewModel.player.id = vm.players.length; // TODO: make unique
+            addPlayerModalScope.viewModel.player.firstName = '';
+            addPlayerModalScope.viewModel.player.lastName = '';
+            addPlayerModalScope.viewModel.player.tagline = '';
+            addPlayerModalScope.viewModel.player.face = '';
+        }
+
+        function cancelPlayer() {
+            vm.addPlayerModal.hide();
+        }
+
+        function confirmPlayer() {
+            vm.players.push(addPlayerModalScope.viewModel.player);
+
+            vm.addPlayerModal.hide();
+        }
+
         function showRemoveConfirmPopup(player) {
             $ionicPopup.confirm({
                 title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.name})
+                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.firstName + ' ' + player.lastName})
             })
             .then(function(confirmed) {
                 if (confirmed) {
@@ -5505,16 +5592,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             playersService.remove(player);
-        }
-
-        function initAddPlayerModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
-                scope: $scope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                vm.addPlayerModal = modal;
-            });
         }
     }
 })();
@@ -5532,33 +5609,45 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         // Some fake testing data
         var players = [
             {
-                name: 'Ben Sparrow',
-                lastText: 'You on your way?',
+                id: 0,
+                firstName: 'Ben',
+                lastName: 'Sparrow',
+                tagline: 'You on your way?',
                 face: 'img/ben.png'
             },
             {
-                name: 'Max Lynx',
-                lastText: 'Hey, it\'s me',
+                id: 1,
+                firstName: 'Max',
+                lastName: 'Lynx',
+                tagline: 'Hey, it\'s me',
                 face: 'img/max.png'
             },
             {
-                name: 'Adam Bradleyson',
-                lastText: 'I should buy a boat',
+                id: 2,
+                firstName: 'Adam',
+                lastName: 'Bradleyson',
+                tagline: 'I should buy a boat',
                 face: 'img/adam.jpg'
             },
             {
-                name: 'Perry Governor',
-                lastText: 'Look at my mukluks!',
+                id: 3,
+                firstName: 'Perry',
+                lastName: 'Governor',
+                tagline: 'Look at my mukluks!',
                 face: 'img/perry.png'
             },
             {
-                name: 'Mike Harrington',
-                lastText: 'This is wicked good ice cream.',
+                id: 4,
+                firstName: 'Mike',
+                lastName: 'Harrington',
+                tagline: 'This is wicked good ice cream.',
                 face: 'img/mike.png'
             },
             {
-                name: 'Dummy player',
-                lastText: 'I have a grey avatar.',
+                id: 5,
+                firstName: 'Dummy',
+                lastName: 'player',
+                tagline: 'I have a grey avatar.',
                 face: ''
             }
         ];

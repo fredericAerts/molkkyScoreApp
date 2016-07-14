@@ -11,33 +11,45 @@
         // Some fake testing data
         var players = [
             {
-                name: 'Ben Sparrow',
-                lastText: 'You on your way?',
+                id: 0,
+                firstName: 'Ben',
+                lastName: 'Sparrow',
+                tagline: 'You on your way?',
                 face: 'img/ben.png'
             },
             {
-                name: 'Max Lynx',
-                lastText: 'Hey, it\'s me',
+                id: 1,
+                firstName: 'Max',
+                lastName: 'Lynx',
+                tagline: 'Hey, it\'s me',
                 face: 'img/max.png'
             },
             {
-                name: 'Adam Bradleyson',
-                lastText: 'I should buy a boat',
+                id: 2,
+                firstName: 'Adam',
+                lastName: 'Bradleyson',
+                tagline: 'I should buy a boat',
                 face: 'img/adam.jpg'
             },
             {
-                name: 'Perry Governor',
-                lastText: 'Look at my mukluks!',
+                id: 3,
+                firstName: 'Perry',
+                lastName: 'Governor',
+                tagline: 'Look at my mukluks!',
                 face: 'img/perry.png'
             },
             {
-                name: 'Mike Harrington',
-                lastText: 'This is wicked good ice cream.',
+                id: 4,
+                firstName: 'Mike',
+                lastName: 'Harrington',
+                tagline: 'This is wicked good ice cream.',
                 face: 'img/mike.png'
             },
             {
-                name: 'Dummy player',
-                lastText: 'I have a grey avatar.',
+                id: 5,
+                firstName: 'Dummy',
+                lastName: 'player',
+                tagline: 'I have a grey avatar.',
                 face: ''
             }
         ];

@@ -3,7 +3,7 @@
     <button class="button button-icon icon ion-ios-minus-outline" ng-click="players.removeVisible = !players.removeVisible"></button>
   </ion-nav-buttons>
   <ion-nav-buttons side="secondary">
-    <button class="button button-icon icon ion-ios-personadd-outline" ng-click="players.addPlayerModal.show()"></button>
+    <button class="button button-icon icon ion-ios-personadd-outline" ng-click="players.showPlayerModal()"></button>
   </ion-nav-buttons>
   <ion-content>
     <ion-list show-delete="players.removeVisible">
@@ -11,8 +11,8 @@
         <ion-delete-button class="ion-minus-circled" ng-click="players.showRemoveConfirmPopup(player)"></ion-delete-button>
         <img ng-if="player.face" ng-src="{{player.face}}">
         <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
-        <h2>{{player.name}}</h2>
-        <p>{{player.lastText}}</p>
+        <h2>{{player.firstName}} {{player.lastName}}</h2>
+        <p>{{player.tagline}}</p>
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>
     </ion-list>

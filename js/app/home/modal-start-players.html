@@ -18,10 +18,10 @@
                     <div class="item item-divider">
                         {{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER' | translate }}
                     </div>
-                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'name'">
+                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'firstName'">
                         <img ng-if="player.face" ng-src="{{player.face}}">
                         <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
-                        <h2>{{player.name}}</h2>
+                        <h2>{{player.firstName}} {{player.lastName}}</h2>
                     </ion-item>
                 </ion-list>
             </div>
@@ -34,7 +34,7 @@
                     <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.removePlayerFromParticipants($index)" ng-repeat="player in viewModel.participants">
                         <img ng-if="player.face" ng-src="{{player.face}}">
                         <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
-                        <h2>{{player.name}}</h2>
+                        <h2>{{player.firstName}} {{player.lastName}}</h2>
                         <ion-reorder-button class="ion-navicon" on-reorder="viewModel.reorderParticipant(player, $fromIndex, $toIndex)"></ion-reorder-button>
                     </ion-item>
                 </ion-list>
