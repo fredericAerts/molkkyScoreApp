@@ -54,6 +54,22 @@
                 }
             }
         },
+        "STATISTICS": {
+            "METRICS": {
+                "HALLOFFAME": {
+                    "VIEW-TITLE": "Hall Of Fame",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.HALLOFFAME.VIEW-TITLE"
+                },
+                "EFFECTIVENESS": {
+                    "VIEW-TITLE": "Most effective",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.EFFECTIVENESS.VIEW-TITLE"
+                },
+                "ACCURACY": {
+                    "VIEW-TITLE": "Most accurate",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
+                }
+            }
+        },
         "PLAYERS": {
             "VIEW-TITLE": "Players",
             "REMOVE-POPUP": {

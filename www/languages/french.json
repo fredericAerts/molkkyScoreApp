@@ -26,6 +26,22 @@
                     }
                 }
             }
+        },
+        "STATISTICS": {
+            "METRICS": {
+                "HALLOFFAME": {
+                    "VIEW-TITLE": "Hall de les fameuse",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.HALLOFFAME.VIEW-TITLE"
+                },
+                "EFFECTIVENESS": {
+                    "VIEW-TITLE": "Les plus effective",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.EFFECTIVENESS.VIEW-TITLE"
+                },
+                "ACCURACY": {
+                    "VIEW-TITLE": "Les plus accurate",
+                    "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
+                }
+            }
         }
     }
 }

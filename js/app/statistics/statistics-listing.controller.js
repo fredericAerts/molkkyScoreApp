@@ -5,13 +5,13 @@
         .module('molkkyscore')
         .controller('StatisticsListingCtrl', StatisticsListing);
 
-    StatisticsListing.$inject = [];
+    StatisticsListing.$inject = ['$stateParams', 'statisticsService'];
 
-    function StatisticsListing() {
+    function StatisticsListing($stateParams, statisticsService) {
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = 'test listing';
+        vm.metric = statisticsService.getMetric($stateParams.metricId);
 
         activate();
 

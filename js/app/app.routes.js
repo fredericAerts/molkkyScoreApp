@@ -56,7 +56,7 @@
                 }
             })
             .state('tab.statistics-listing', {
-                url: '/statistics/listing',
+                url: '/statistics/:metricId',
                 views: {
                     'statistics': {
                         templateUrl: TEMPLATES_ROOT + '/statistics/statistics-listing.html',

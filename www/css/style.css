@@ -9723,7 +9723,7 @@ a.button {
 
 .add-avatar-block {
   width: 150px;
-  margin: 30px auto 0; }
+  margin: 30px auto 10px; }
   .add-avatar-block > img {
     height: 150px;
     padding: 0;
@@ -9738,6 +9738,16 @@ a.button {
   border-radius: 50%;
   text-align: center;
   background: #f5f5f5; }
+
+.statistics-title-listing .item:first-child {
+  font-weight: bold; }
+
+.item-input--text {
+  padding-right: 24px;
+  border-color: transparent; }
+  .item-input--text input {
+    padding-right: 0;
+    border-bottom: 1px solid #ddd; }
 
 .item-avatar--small {
   min-height: 52px;

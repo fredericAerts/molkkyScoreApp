@@ -1,0 +1,9 @@
+.statistics-title-listing {
+
+    & .item {
+
+        &:first-child {
+            font-weight: bold;
+        }
+    }
+}

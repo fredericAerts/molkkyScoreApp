@@ -1,0 +1,12 @@
+.item-input {
+
+    &--text {
+        padding-right: 24px;
+        border-color: transparent;
+
+        & input {
+            padding-right: 0;
+            border-bottom: 1px solid #ddd;
+        }
+    }
+}

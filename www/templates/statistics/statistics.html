@@ -1,42 +1,14 @@
 <ion-view view-title="Statistics">
+    <ion-nav-buttons side="secondary">
+        <button class="button button-icon ion-ios-information-outline" ng-click="playerDetail.showPlayerModal(playerDetail.player)"></button>
+    </ion-nav-buttons>
     <ion-content>
-        <div class="list">
-            <div class="item item-divider">
-                Individual mode
-            </div>
-            <a class="item item-icon-left item-icon-right" href="#/tab/statistics/listing">
+        <ion-list class="statistics-title-listing">
+            <ion-item class="item-icon-left item-icon-right" ng-repeat="metric in statistics.metrics" href="#/tab/statistics/{{metric.id}}">
                 <i class="icon ion-ios-information-outline"></i>
-                    Hall of Fame
+                {{ metric.listingTitle }}
                 <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-            <a class="item item-icon-left item-icon-right" href="#">
-                <i class="icon ion-ios-information-outline"></i>
-                    Most effective
-                <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-            <a class="item item-icon-left item-icon-right" href="#">
-                <i class="icon ion-ios-information-outline"></i>
-                    Most accurate
-                <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-            <div class="item item-divider">
-                Team mode
-            </div>
-            <a class="item item-icon-left item-icon-right" href="#">
-                <i class="icon ion-ios-information-outline"></i>
-                    Hall of Fame
-                <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-            <a class="item item-icon-left item-icon-right" href="#">
-                <i class="icon ion-ios-information-outline"></i>
-                    Most effective
-                <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-            <a class="item item-icon-left item-icon-right" href="#">
-                <i class="icon ion-ios-information-outline"></i>
-                    Most accurate
-                <i class="icon ion-chevron-right icon-accessory"></i>
-            </a>
-        </div>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

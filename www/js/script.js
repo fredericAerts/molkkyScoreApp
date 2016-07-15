@@ -5198,7 +5198,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 }
             })
             .state('tab.statistics-listing', {
-                url: '/statistics/listing',
+                url: '/statistics/:metricId',
                 views: {
                     'statistics': {
                         templateUrl: TEMPLATES_ROOT + '/statistics/statistics-listing.html',
@@ -5903,13 +5903,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('StatisticsListingCtrl', StatisticsListing);
 
-    StatisticsListing.$inject = [];
+    StatisticsListing.$inject = ['$stateParams', 'statisticsService'];
 
-    function StatisticsListing() {
+    function StatisticsListing($stateParams, statisticsService) {
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = 'test listing';
+        vm.metric = statisticsService.getMetric($stateParams.metricId);
 
         activate();
 
@@ -5927,19 +5927,77 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('StatisticsCtrl', StatisticsCtrl);
 
-    StatisticsCtrl.$inject = [];
+    StatisticsCtrl.$inject = ['$rootScope', 'statisticsService', '$translate'];
 
-    function StatisticsCtrl() {
+    function StatisticsCtrl($rootScope, statisticsService, $translate) {
         /* jshint validthis: true */
         var vm = this;
 
-        vm.test = 'test statistics';
+        vm.metrics = statisticsService.getMetrics();
 
         activate();
 
         ////////////////
 
         function activate() {
+            translateMetricListingTitles();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            translateMetricListingTitles();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function translateMetricListingTitles() {
+            vm.metrics.forEach(function(metric) {
+                metric.listingTitle = $translate.instant('HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE');
+            });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('statisticsService', statisticsService);
+
+    statisticsService.$inject = [];
+
+    function statisticsService() {
+        var metrics = [
+            {
+                id: 0,
+                propertyName: 'hallOfFame'
+            },
+            {
+                id: 1,
+                propertyName: 'effectiveness'
+            },
+            {
+                id: 2,
+                propertyName: 'accuracy'
+            }
+        ];
+
+        var service = {
+            getMetrics: getMetrics,
+            getMetric: getMetric
+        };
+        return service;
+
+        ////////////////
+
+        function getMetrics() {
+            return metrics;
+        }
+
+        function getMetric(metricId) {
+            return _.findWhere(metrics, {id: metricId});
         }
     }
 })();
