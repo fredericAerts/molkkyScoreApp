@@ -11,7 +11,7 @@
         /* jshint validthis: true */
         var vm = this;
 
-        vm.metric = statisticsService.getMetric($stateParams.metricId);
+        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
 
         activate();
 

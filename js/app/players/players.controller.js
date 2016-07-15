@@ -42,18 +42,18 @@
             })
             .then(function(modal) {
                 vm.addPlayerModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            addPlayerModalScope.viewModel = {
-                player: {},
-                cancelPlayer: cancelPlayer,
-                confirmPlayer: confirmPlayer
+                addPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
 
-            };
+                };
+            });
         }
 
         function showPlayerModal() {
@@ -81,9 +81,12 @@
         }
 
         function showRemoveConfirmPopup(player) {
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
+            var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
+
             $ionicPopup.confirm({
                 title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.firstName + ' ' + player.lastName})
+                template: $translate.instant(templateTranslationId, templateTranslationVariable)
             })
             .then(function(confirmed) {
                 if (confirmed) {

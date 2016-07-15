@@ -33,18 +33,18 @@
             })
             .then(function(modal) {
                 vm.editPlayerModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            editPlayerModalScope.viewModel = {
-                player: {},
-                cancelPlayer: cancelPlayer,
-                confirmPlayer: confirmPlayer
+                editPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
 
-            };
+                };
+            });
         }
 
         function showPlayerModal(player) {

@@ -5338,24 +5338,24 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             })
             .then(function(modal) {
                 vm.addPlayersToGameModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            addPlayersToGameModalScope.viewModel = {
-                showReorder: false,
-                guestColors: [],
-                playersInDatabase: [], // modal input
-                participants: [], // modal output
-                addPlayerToParticipants: addPlayerToParticipants,
-                addGuestParticipant: addGuestParticipant,
-                removePlayerFromParticipants: removePlayerFromParticipants,
-                reorderParticipant: reorderParticipant,
-                cancelAddPlayersToGame: cancelAddPlayersToGame,
-                startGame: startGame
-            };
+                addPlayersToGameModalScope.viewModel = {
+                    showReorder: false,
+                    guestColors: [],
+                    playersInDatabase: [], // modal input
+                    participants: [], // modal output
+                    addPlayerToParticipants: addPlayerToParticipants,
+                    addGuestParticipant: addGuestParticipant,
+                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    reorderParticipant: reorderParticipant,
+                    cancelAddPlayersToGame: cancelAddPlayersToGame,
+                    startGame: startGame
+                };
+            });
         }
 
         function openAddPlayersToGameModal() {
@@ -5466,18 +5466,18 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             })
             .then(function(modal) {
                 vm.editPlayerModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            editPlayerModalScope.viewModel = {
-                player: {},
-                cancelPlayer: cancelPlayer,
-                confirmPlayer: confirmPlayer
+                editPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
 
-            };
+                };
+            });
         }
 
         function showPlayerModal(player) {
@@ -5539,18 +5539,18 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             })
             .then(function(modal) {
                 vm.addPlayerModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            addPlayerModalScope.viewModel = {
-                player: {},
-                cancelPlayer: cancelPlayer,
-                confirmPlayer: confirmPlayer
+                addPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
 
-            };
+                };
+            });
         }
 
         function showPlayerModal() {
@@ -5578,9 +5578,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function showRemoveConfirmPopup(player) {
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
+            var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
+
             $ionicPopup.confirm({
                 title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TEXT', {playerName: player.firstName + ' ' + player.lastName})
+                template: $translate.instant(templateTranslationId, templateTranslationVariable)
             })
             .then(function(confirmed) {
                 if (confirmed) {
@@ -5909,7 +5912,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /* jshint validthis: true */
         var vm = this;
 
-        vm.metric = statisticsService.getMetric($stateParams.metricId);
+        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
 
         activate();
 
@@ -5927,34 +5930,85 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('StatisticsCtrl', StatisticsCtrl);
 
-    StatisticsCtrl.$inject = ['$rootScope', 'statisticsService', '$translate'];
+    StatisticsCtrl.$inject = ['$rootScope',
+                                '$scope',
+                                'statisticsService',
+                                'TEMPLATES_ROOT',
+                                '$ionicPopover',
+                                '$ionicModal'];
 
-    function StatisticsCtrl($rootScope, statisticsService, $translate) {
+    function StatisticsCtrl($rootScope, $scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
+        var statisticsInfoModalScope = $scope.$new(true);
+        var statsItemsInfoPopoverScope = $scope.$new(true);
 
         vm.metrics = statisticsService.getMetrics();
+        vm.statisticsInfoModal = {};
+        vm.statsItemsInfoPopover = {};
+        vm.showItemInfo = showItemInfo;
 
         activate();
 
         ////////////////
 
         function activate() {
-            translateMetricListingTitles();
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
+            initAddPlayerModal();
+            initStatsItemsInfoPopover();
         }
 
         /*  LISTENERS
             ======================================================================================== */
         $rootScope.$on('$translateChangeSuccess', function () {
-            translateMetricListingTitles();
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
+
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
-        function translateMetricListingTitles() {
-            vm.metrics.forEach(function(metric) {
-                metric.listingTitle = $translate.instant('HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE');
+        function initAddPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
+                scope: statisticsInfoModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.statisticsInfoModal = modal;
+
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                ================================================================== */
+                statisticsInfoModalScope.viewModel = {
+                    modal: vm.statisticsInfoModal
+                };
             });
+        }
+
+        function initStatsItemsInfoPopover() {
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
+                scope: statsItemsInfoPopoverScope
+            }).then(function(popover) {
+                vm.statsItemsInfoPopover = popover;
+            });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time popover is shown
+                ================================================================== */
+            statsItemsInfoPopoverScope.viewModel = {
+                metric: {}
+            };
+        }
+
+        function showItemInfo($event, metric) {
+            statsItemsInfoPopoverScope.viewModel.metric = metric;
+
+            vm.statsItemsInfoPopover.show($event);
+
+            $event.stopPropagation();
+            $event.preventDefault();
         }
     }
 })();
@@ -5966,27 +6020,37 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = [];
+    statisticsService.$inject = ['$translate', 'TEMPLATES_ROOT'];
 
-    function statisticsService() {
-        var metrics = [
-            {
+    function statisticsService($translate, TEMPLATES_ROOT) {
+        var metrics = [{ // 'listingTitle' & 'listingViewTitle' properties are attached later on
                 id: 0,
-                propertyName: 'hallOfFame'
+                propertyName: 'hallOfFame',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-hall-of-fame.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // added via translations
             },
             {
                 id: 1,
-                propertyName: 'effectiveness'
+                propertyName: 'effectiveness',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-effectiveness.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // added via translations
             },
             {
                 id: 2,
-                propertyName: 'accuracy'
+                propertyName: 'accuracy',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-accuracy.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // init via translations
             }
         ];
 
         var service = {
             getMetrics: getMetrics,
-            getMetric: getMetric
+            getMetric: getMetric,
+            translateMetricsListingTitles: translateMetricsListingTitles,
+            translateMetricsListingViewTitles: translateMetricsListingViewTitles
         };
         return service;
 
@@ -5998,6 +6062,20 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function getMetric(metricId) {
             return _.findWhere(metrics, {id: metricId});
+        }
+
+        function translateMetricsListingTitles() {
+            metrics.forEach(function(metric) {
+                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE';
+                metric.listingTitle = $translate.instant(translationId);
+            });
+        }
+
+        function translateMetricsListingViewTitles() {
+            metrics.forEach(function(metric) {
+                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.VIEW-TITLE';
+                metric.listingViewTitle = $translate.instant(translationId);
+            });
         }
     }
 })();

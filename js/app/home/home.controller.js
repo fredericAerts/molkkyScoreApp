@@ -42,24 +42,24 @@
             })
             .then(function(modal) {
                 vm.addPlayersToGameModal = modal;
-            });
 
-            /*  ==================================================================
+                /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-            addPlayersToGameModalScope.viewModel = {
-                showReorder: false,
-                guestColors: [],
-                playersInDatabase: [], // modal input
-                participants: [], // modal output
-                addPlayerToParticipants: addPlayerToParticipants,
-                addGuestParticipant: addGuestParticipant,
-                removePlayerFromParticipants: removePlayerFromParticipants,
-                reorderParticipant: reorderParticipant,
-                cancelAddPlayersToGame: cancelAddPlayersToGame,
-                startGame: startGame
-            };
+                addPlayersToGameModalScope.viewModel = {
+                    showReorder: false,
+                    guestColors: [],
+                    playersInDatabase: [], // modal input
+                    participants: [], // modal output
+                    addPlayerToParticipants: addPlayerToParticipants,
+                    addGuestParticipant: addGuestParticipant,
+                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    reorderParticipant: reorderParticipant,
+                    cancelAddPlayersToGame: cancelAddPlayersToGame,
+                    startGame: startGame
+                };
+            });
         }
 
         function openAddPlayersToGameModal() {

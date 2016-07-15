@@ -5,34 +5,85 @@
         .module('molkkyscore')
         .controller('StatisticsCtrl', StatisticsCtrl);
 
-    StatisticsCtrl.$inject = ['$rootScope', 'statisticsService', '$translate'];
+    StatisticsCtrl.$inject = ['$rootScope',
+                                '$scope',
+                                'statisticsService',
+                                'TEMPLATES_ROOT',
+                                '$ionicPopover',
+                                '$ionicModal'];
 
-    function StatisticsCtrl($rootScope, statisticsService, $translate) {
+    function StatisticsCtrl($rootScope, $scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
+        var statisticsInfoModalScope = $scope.$new(true);
+        var statsItemsInfoPopoverScope = $scope.$new(true);
 
         vm.metrics = statisticsService.getMetrics();
+        vm.statisticsInfoModal = {};
+        vm.statsItemsInfoPopover = {};
+        vm.showItemInfo = showItemInfo;
 
         activate();
 
         ////////////////
 
         function activate() {
-            translateMetricListingTitles();
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
+            initAddPlayerModal();
+            initStatsItemsInfoPopover();
         }
 
         /*  LISTENERS
             ======================================================================================== */
         $rootScope.$on('$translateChangeSuccess', function () {
-            translateMetricListingTitles();
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
+
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
-        function translateMetricListingTitles() {
-            vm.metrics.forEach(function(metric) {
-                metric.listingTitle = $translate.instant('HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE');
+        function initAddPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
+                scope: statisticsInfoModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.statisticsInfoModal = modal;
+
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                ================================================================== */
+                statisticsInfoModalScope.viewModel = {
+                    modal: vm.statisticsInfoModal
+                };
             });
+        }
+
+        function initStatsItemsInfoPopover() {
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
+                scope: statsItemsInfoPopoverScope
+            }).then(function(popover) {
+                vm.statsItemsInfoPopover = popover;
+            });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time popover is shown
+                ================================================================== */
+            statsItemsInfoPopoverScope.viewModel = {
+                metric: {}
+            };
+        }
+
+        function showItemInfo($event, metric) {
+            statsItemsInfoPopoverScope.viewModel.metric = metric;
+
+            vm.statsItemsInfoPopover.show($event);
+
+            $event.stopPropagation();
+            $event.preventDefault();
         }
     }
 })();

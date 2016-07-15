@@ -58,16 +58,20 @@
             "METRICS": {
                 "HALLOFFAME": {
                     "VIEW-TITLE": "Hall Of Fame",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.HALLOFFAME.VIEW-TITLE"
+                    "TITLE": "Hall Of Fame"
                 },
                 "EFFECTIVENESS": {
-                    "VIEW-TITLE": "Most effective",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.EFFECTIVENESS.VIEW-TITLE"
+                    "VIEW-TITLE": "Effectiveness",
+                    "TITLE": "Most effective"
                 },
                 "ACCURACY": {
-                    "VIEW-TITLE": "Most accurate",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
+                    "VIEW-TITLE": "Accuracy",
+                    "TITLE": "Most accurate"
                 }
+            },
+            "INFO-MODAL": {
+                "TITLE": "Statistics Info",
+                "BUTTON-CLOSE": "Close"
             }
         },
         "PLAYERS": {
