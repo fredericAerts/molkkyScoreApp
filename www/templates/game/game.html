@@ -2,40 +2,111 @@
   <ion-content>
     <div class="game-board">
         <div class="row">
-            <div class="col col-75">
-                player scores
+            <div class="col col-66">
+                <div class="game-board-cell game-board-cell--scoreboard">
+                    <div class="row">
+                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowOne">
+                            <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face}">
+                                <span>0</span>
+                                <img ng-if="player.face" ng-src="{{player.face}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="game.scoreboard.rowTwo.length" class="row">
+                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowTwo">
+                            <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face}">
+                                <span>109</span>
+                                <img ng-if="player.face" ng-src="{{player.face}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col col-25">
-                <button class="button button-icon icon ion-ios-gear-outline"></button>
+            <div class="col col-33">
+                <div class="game-board-cell game-board-cell--settings">
+                    <button class="button button-icon icon ion-ios-gear-outline"></button>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col col-75">
-                Active player
+            <div class="col col-66">
+                <div class="game-board-cell">
+                    Active player
+                </div>
             </div>
-            <div class="col col-25">
-                0
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    0
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    1
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    2
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    3
+                </div>
+            </div>
         </div>
         <div class="row">
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    4
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    5
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    6
+                </div>
+            </div>
         </div>
         <div class="row">
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    7
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    8
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    9
+                </div>
+            </div>
         </div>
         <div class="row">
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
-            <div class="col col-33">1</div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    10
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    11
+                </div>
+            </div>
+            <div class="col col-33">
+                <div class="game-board-cell">
+                    12
+                </div>
+            </div>
         </div>
     </div>
   </ion-content>

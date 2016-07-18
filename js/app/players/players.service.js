@@ -51,6 +51,19 @@
                 lastName: 'player',
                 tagline: 'I have a grey avatar.',
                 face: ''
+            },
+            {
+                id: 6,
+                firstName: 'Mr.',
+                lastName: 'Pink',
+                guestColor: 'pink'
+            },
+            {
+                id: 7,
+                firstName: 'Dummy2',
+                lastName: 'player2',
+                tagline: 'I have a grey avatar2.',
+                face: ''
             }
         ];
 

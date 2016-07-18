@@ -49,31 +49,31 @@
     height: 40px;
     border-radius: 50%;
 
-    background: #f5f5f5;
+    background: $avatar-placeholder;
 
     &.blonde {
-        background: #F2D300
+        background: $guest-blonde;
     }
 
     &.orange {
-        background: #FF8704;
+        background: $guest-orange;
     }
 
     &.pink {
-        background: #FF5DE7;
+        background: $guest-pink;
     }
 
     &.white {
         border: 1px solid #000;
 
-        background: #FFFFFF;
+        background: $guest-white;
     }
 
     &.brown {
-        background: #682A01;
+        background: $guest-brown;
     }
 
     &.blue {
-        background: #01B7FF;
+        background: $guest-blue;
     }
 }
