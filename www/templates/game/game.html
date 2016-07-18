@@ -1,8 +1,42 @@
 <ion-view view-title="{{ 'HOME.GAME.VIEW-TITLE' | translate }}">
   <ion-content>
-    <div ng-repeat="player in game.participants">
-        {{player.firstName}} {{player.lastName}}
+    <div class="game-board">
+        <div class="row">
+            <div class="col col-75">
+                player scores
+            </div>
+            <div class="col col-25">
+                <button class="button button-icon icon ion-ios-gear-outline"></button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-75">
+                Active player
+            </div>
+            <div class="col col-25">
+                0
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+        </div>
+        <div class="row">
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+        </div>
+        <div class="row">
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+        </div>
+        <div class="row">
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+            <div class="col col-33">1</div>
+        </div>
     </div>
-    <a ui-sref="tab.home">go home</a>
   </ion-content>
 </ion-view>
