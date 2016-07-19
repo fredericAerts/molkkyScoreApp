@@ -52,6 +52,26 @@
 
                     background: $avatar-placeholder;
 
+                    &.active {
+
+                        &:after { // assetive border
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            z-index: 3;
+
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            border: 4px solid $assertive;
+                            border-radius: 4px;
+
+                            background: transparent;
+
+                            content: "";
+                        }
+                    }
+
                     &.has-avatar {
 
                         &:before { // overlay
@@ -127,6 +147,33 @@
 
         & .button {
             color: $light;
+        }
+    }
+
+    &--player {
+        text-align: left;
+
+        &.active {
+            background: $assertive;
+
+            & * {
+                color: $light;
+            }
+        }
+
+        & .item {
+            border: none;
+
+            background: transparent;
+        }
+    }
+
+    &--score {
+
+        &.active {
+            color: $light;
+
+            background: $positive;
         }
     }
 }

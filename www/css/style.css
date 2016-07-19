@@ -9800,6 +9800,18 @@ a.button {
           border: none;
           color: #fff;
           background: #bdbdbd; }
+          .game-board-cell--scoreboard .row .col .game-board-cell.active:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 3;
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 4px solid #ef473a;
+            border-radius: 4px;
+            background: transparent;
+            content: ""; }
           .game-board-cell--scoreboard .row .col .game-board-cell.has-avatar:before {
             position: absolute;
             top: 0;
@@ -9841,6 +9853,18 @@ a.button {
     background: #444; }
     .game-board-cell--settings .button {
       color: #fff; }
+  .game-board-cell--player {
+    text-align: left; }
+    .game-board-cell--player.active {
+      background: #ef473a; }
+      .game-board-cell--player.active * {
+        color: #fff; }
+    .game-board-cell--player .item {
+      border: none;
+      background: transparent; }
+  .game-board-cell--score.active {
+    color: #fff;
+    background: #387ef5; }
 
 .item-input--text {
   padding-right: 24px;

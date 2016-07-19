@@ -70,6 +70,7 @@
         ];
 
         var service = {
+            getSettings: getSettings,
             getActiveLanguageKey: getActiveLanguageKey,
             setLanguageKey: setLanguageKey,
             getLanguageOtions: getLanguageOtions,
@@ -85,6 +86,14 @@
         return service;
 
         ////////////////
+
+        function getSettings() {
+            return {
+                winningScore: 25,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'to zero'
+            };
+        }
 
         function getActiveLanguageKey() {
             return $translate.use();
