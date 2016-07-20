@@ -1,0 +1,17 @@
+.action-sheet {
+
+}
+
+.action-sheet-option {
+
+    &.button {
+        color: $dark;
+    }
+}
+
+.action-sheet-cancel {
+
+    & > .button {
+        @extend .button-positive;
+    }
+}

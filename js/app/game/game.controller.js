@@ -5,9 +5,21 @@
         .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
-    GameCtrl.$inject = ['gameService', 'playersService', 'settingsService'];
+    GameCtrl.$inject = ['$scope',
+                            'gameService',
+                            'playersService',
+                            'settingsService',
+                            'TEMPLATES_ROOT',
+                            '$ionicModal',
+                            '$ionicActionSheet'];
 
-    function GameCtrl(gameService, playersService, settingsService) {
+    function GameCtrl($scope,
+                        gameService,
+                        playersService,
+                        settingsService,
+                        TEMPLATES_ROOT,
+                        $ionicModal,
+                        $ionicActionSheet) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -18,6 +30,8 @@
         vm.activePlayer = vm.participants[0];
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
+        vm.scoreDetailsModal = {};
+        vm.showActionSheet = showActionSheet;
 
         var settings = settingsService.getSettings();
 
@@ -28,6 +42,7 @@
         function activate() {
             initScoreboard();
             initParticipants();
+            initScoreDetailsModal();
         }
 
         function initScoreboard() {
@@ -43,6 +58,7 @@
         function initParticipants() {
             vm.participants.forEach(function(participant) {
                 participant.score = 0;
+                participant.scoreHistory = [];
                 participant.missesInARow = 0;
                 participant.finishedGame = false;
                 participant.disqualified = false;
@@ -50,7 +66,37 @@
             });
         }
 
-        function activateScore(score) {
+        function initScoreDetailsModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.scoreDetailsModal = modal;
+            });
+        }
+
+        function showActionSheet() {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    {text: 'Restart game'},
+                    {text: 'New game'},
+                    {text: 'Undo last'},
+                    {text: 'Exit game'},
+                ],
+                titleText: 'Options',
+                cancelText: 'Continue',
+                cancel: function() {
+                    // add cancel code..
+                },
+                buttonClicked: function(index) {
+                    return true;
+                }
+            });
+        }
+
+        function activateScore(score) { // user touched a number
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
         }
 
@@ -59,6 +105,7 @@
                 return;
             }
 
+            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
             processScore();
 
             if (!isGameEnded()) {

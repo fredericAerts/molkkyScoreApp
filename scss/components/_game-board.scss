@@ -162,9 +162,15 @@
         }
 
         & .item {
+            padding-right: 35px;
             border: none;
 
             background: transparent;
+
+            & p {
+                direction: rtl;
+                width: 100%;
+            }
         }
     }
 

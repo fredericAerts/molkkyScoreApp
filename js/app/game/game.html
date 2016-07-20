@@ -3,7 +3,7 @@
     <div class="game-board">
         <div class="row">
             <div class="col col-66">
-                <div class="game-board-cell game-board-cell--scoreboard">
+                <div class="game-board-cell game-board-cell--scoreboard" ng-click="game.scoreDetailsModal.show()">
                     <div class="row">
                         <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowOne">
                             <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face, 'active': player === game.activePlayer}">
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="col col-33">
-                <div class="game-board-cell game-board-cell--settings">
+                <div class="game-board-cell game-board-cell--settings" ng-click="game.showActionSheet()">
                     <button class="button button-icon icon ion-ios-gear-outline"></button>
                 </div>
             </div>
@@ -31,11 +31,17 @@
         <div class="row">
             <div class="col col-66">
                 <div class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore > -1}" ng-click="game.processThrow();">
-                    <ion-item class="item-avatar" type="item-text-wrap" ng-class="{'item-icon-right': game.activatedScore > -1}">
+                    <ion-item class="item-avatar item-icon-right" type="item-text-wrap">
                         <img ng-if="game.activePlayer.face"  ng-src="{{game.activePlayer.face}}">
                         <div ng-if="!game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
                         <h2>{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>
-                        <p>score history</p>
+                        <p>
+                            <i ng-if="game.activatedScore > -1">{{game.activatedScore}}</i>
+                            <span ng-repeat="throw in game.activePlayer.scoreHistory track by $index">
+                                <i ng-if="$index > 0"> &#124; </i>
+                                {{throw}}
+                            </span>
+                        </p>
                         <i ng-show="game.activatedScore > -1" class="icon ion-chevron-right icon-accessory"></i>
                       </ion-item>
                 </div>

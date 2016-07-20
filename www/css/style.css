@@ -8570,29 +8570,29 @@ progress {
         background-color: #b2b2b2;
         box-shadow: none;
         color: #fff; }
-  .button.button-positive {
+  .button.button-positive, .action-sheet-cancel > .button {
     border-color: transparent;
     background-color: #387ef5;
     color: #fff; }
-    .button.button-positive:hover {
+    .button.button-positive:hover, .action-sheet-cancel > .button:hover {
       color: #fff;
       text-decoration: none; }
-    .button.button-positive.active, .button.button-positive.activated {
+    .button.button-positive.active, .action-sheet-cancel > .button.active, .button.button-positive.activated, .action-sheet-cancel > .button.activated {
       border-color: #a2a2a2;
       background-color: #0c60ee; }
-    .button.button-positive.button-clear {
+    .button.button-positive.button-clear, .action-sheet-cancel > .button.button-clear {
       border-color: transparent;
       background: none;
       box-shadow: none;
       color: #387ef5; }
-    .button.button-positive.button-icon {
+    .button.button-positive.button-icon, .action-sheet-cancel > .button.button-icon {
       border-color: transparent;
       background: none; }
-    .button.button-positive.button-outline {
+    .button.button-positive.button-outline, .action-sheet-cancel > .button.button-outline {
       border-color: #387ef5;
       background: transparent;
       color: #387ef5; }
-      .button.button-positive.button-outline.active, .button.button-positive.button-outline.activated {
+      .button.button-positive.button-outline.active, .action-sheet-cancel > .button.button-outline.active, .button.button-positive.button-outline.activated, .action-sheet-cancel > .button.button-outline.activated {
         background-color: #387ef5;
         box-shadow: none;
         color: #fff; }
@@ -9741,6 +9741,12 @@ a.button {
   text-align: center;
   background: #bdbdbd; }
 
+.bar-footer .button-outline {
+  margin-right: 5px; }
+
+.action-sheet-option.button {
+  color: #444; }
+
 .statistics-title-listing .item:first-child {
   font-weight: bold; }
 
@@ -9860,8 +9866,12 @@ a.button {
       .game-board-cell--player.active * {
         color: #fff; }
     .game-board-cell--player .item {
+      padding-right: 35px;
       border: none;
       background: transparent; }
+      .game-board-cell--player .item p {
+        direction: rtl;
+        width: 100%; }
   .game-board-cell--score.active {
     color: #fff;
     background: #387ef5; }
