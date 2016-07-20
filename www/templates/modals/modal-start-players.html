@@ -1,0 +1,47 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">{{ 'HOME.START.START-PLAYERS-MODAL.TITLE' | translate }}</h1>
+        <button class="button" ng-click="viewModel.cancelAddPlayersToGame()">{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-CANCEL' | translate }}</button>
+    </ion-header-bar>
+    <ion-content>
+        <div class="padding">
+            <ion-toggle ng-model="viewModel.showReorder" ng-disabled="viewModel.participants.length < 2" ng-class="{'disabled': viewModel.participants.length < 2}">
+                <span>{{ 'HOME.START.START-PLAYERS-MODAL.TOGGLE-REORDER' | translate }}</span>
+            </ion-toggle>
+            <button class="button button-block button-calm" ng-disabled="!viewModel.guestColors.length" ng-click="viewModel.addGuestParticipant()">
+                <span>{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-ADD-GUEST' | translate }}</span>
+            </button>
+        </div>
+        <div class="row row-top">
+            <div class="col col-50">
+                <ion-list>
+                    <div class="item item-divider">
+                        {{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER' | translate }}
+                    </div>
+                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'firstName'">
+                        <img ng-if="player.face" ng-src="{{player.face}}">
+                        <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
+                        <h2>{{player.firstName}} {{player.lastName}}</h2>
+                    </ion-item>
+                </ion-list>
+            </div>
+            <div class="col col-50">
+                <ion-list show-reorder="viewModel.showReorder">
+                    <div class="item item-divider">
+                        {{ 'HOME.START.START-PLAYERS-MODAL.PARTICIPANTS-LIST-HEADER' | translate }}
+                        <span ng-show="viewModel.participants.length">({{viewModel.participants.length}})</span>
+                    </div>
+                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.removePlayerFromParticipants($index)" ng-repeat="player in viewModel.participants">
+                        <img ng-if="player.face" ng-src="{{player.face}}">
+                        <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
+                        <h2>{{player.firstName}} {{player.lastName}}</h2>
+                        <ion-reorder-button class="ion-navicon" on-reorder="viewModel.reorderParticipant(player, $fromIndex, $toIndex)"></ion-reorder-button>
+                    </ion-item>
+                </ion-list>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar>
+        <button class="button button-positive pull-right" ng-disabled="viewModel.participants.length < 2" ng-click="viewModel.startGame()">{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-START-GAME' | translate }}</button>
+    </ion-footer-bar>
+</ion-modal-view>

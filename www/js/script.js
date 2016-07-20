@@ -5251,6 +5251,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             'gameService',
                             'playersService',
                             'settingsService',
+                            'modalsService',
                             'TEMPLATES_ROOT',
                             '$ionicModal',
                             '$ionicActionSheet'];
@@ -5259,11 +5260,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         gameService,
                         playersService,
                         settingsService,
+                        modalsService,
                         TEMPLATES_ROOT,
                         $ionicModal,
                         $ionicActionSheet) {
         /* jshint validthis: true */
         var vm = this;
+        var addPlayersToGameModal = {};
 
         // vm.participants = gameService.getParticipants();
         vm.participants = playersService.all();
@@ -5274,6 +5277,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.processThrow = processThrow;
         vm.scoreDetailsModal = {};
         vm.showActionSheet = showActionSheet;
+        vm.scoreDetailsModal = {};
 
         var settings = settingsService.getSettings();
 
@@ -5285,6 +5289,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initScoreboard();
             initParticipants();
             initScoreDetailsModal();
+            initAddPlayersToGameModal();
         }
 
         function initScoreboard() {
@@ -5319,6 +5324,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function initAddPlayersToGameModal() {
+            modalsService.getAddPlayersToGameModal($scope)
+            .then(function(modal) {
+                addPlayersToGameModal = modal;
+            });
+        }
+
         function showActionSheet() {
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
@@ -5334,6 +5346,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     // add cancel code..
                 },
                 buttonClicked: function(index) {
+                    switch (index) {
+                        case 1: addPlayersToGameModal.show();
+                    }
                     return true;
                 }
             });
@@ -5634,231 +5649,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
-
-    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
-
-    function SettingsCtrl($ionicPopup, $translate, settingsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
-
-        vm.activeTabIndex = 0;
-        vm.activateTab = activateTab;
-
-        vm.gameCustomSetting = settingsService.isGameCustomSetting();
-        vm.toggleGameCustomSetting = toggleGameCustomSetting;
-        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
-        vm.setWinningScore = settingsService.setWinningScore;
-        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
-        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
-        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
-        vm.setThreeMisses = settingsService.setThreeMisses;
-
-        vm.languageOtions = settingsService.getLanguageOtions();
-        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
-        vm.setLanguageKey = settingsService.setLanguageKey;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        function activateTab(index) {
-            vm.activeTabIndex = index;
-        }
-
-        function toggleGameCustomSetting() {
-            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
-            if (vm.gameCustomSetting) {
-                showAlert();
-            }
-        }
-
-        // An alert dialog
-        function showAlert() {
-            var alertPopup = $ionicPopup.alert({
-                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
-            });
-
-            alertPopup.then(function(res) {
-            });
-        }
-
-        function filterOutActiveItem(array) {
-            return array.filter(function(option) {
-                return option.active;
-            })[0].value;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('settingsService', settingsService);
-
-    settingsService.$inject = ['$translate'];
-
-    function settingsService($translate) {
-        var languageOptions = [
-            {
-                value: 'English',
-                key: 'english'
-            },
-            {
-                value: 'Français',
-                key: 'french'
-            },
-            {
-                value: 'Finnish',
-                key: 'finnish'
-            }
-        ];
-        var gameCustomSetting = false;
-
-        var winningScoreOptions = [
-            {
-                value: 25,
-                active: false
-            },
-            {
-                value: 50,
-                active: true
-            },
-            {
-                value: 100,
-                active: false
-            }
-        ];
-
-        var winningScoreExceededOptions = [
-            {
-                value: 'to zero',
-                active: true
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'half of winning score',
-                active: false
-            }
-        ];
-
-        var threeMissesOptions = [
-            {
-                value: 'to zero',
-                active: false
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'disqualified',
-                active: true
-            }
-        ];
-
-        var service = {
-            getSettings: getSettings,
-            getActiveLanguageKey: getActiveLanguageKey,
-            setLanguageKey: setLanguageKey,
-            getLanguageOtions: getLanguageOtions,
-            isGameCustomSetting: isGameCustomSetting,
-            toggleGameCustomSetting: toggleGameCustomSetting,
-            getWinningScoreOptions: getWinningScoreOptions,
-            setWinningScore: setWinningScore,
-            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
-            setWinningScoreExceeded: setWinningScoreExceeded,
-            getThreeMissesOptions: getThreeMissesOptions,
-            setThreeMisses: setThreeMisses
-        };
-        return service;
-
-        ////////////////
-
-        function getSettings() {
-            return {
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
-            };
-        }
-
-        function getActiveLanguageKey() {
-            return $translate.use();
-        }
-
-        function setLanguageKey(languageKey) {
-            $translate.use(languageKey); // TODO: write to database
-        }
-
-        function getLanguageOtions() {
-            return languageOptions;
-        }
-
-        function isGameCustomSetting() {
-            return gameCustomSetting; // TODO: get from database
-        }
-
-        function toggleGameCustomSetting() {
-            gameCustomSetting = !gameCustomSetting;
-            return gameCustomSetting;
-        }
-
-        function getWinningScoreOptions() {
-            return winningScoreOptions;
-        }
-
-        function setWinningScore(activeOption) { // TODO: write to database
-            winningScoreOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getWinningScoreExceededOptions() {
-            return winningScoreExceededOptions;
-        }
-
-        function setWinningScoreExceeded(activeOption) { // TODO: write to database
-            winningScoreExceededOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getThreeMissesOptions() {
-            return threeMissesOptions;
-        }
-
-        function setThreeMisses(activeOption) { // TODO: write to database
-            threeMissesOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-            console.log(threeMissesOptions);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
@@ -6115,6 +5905,345 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('modalsService', modalsService);
+
+    modalsService.$inject = ['$state', 'TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
+
+    function modalsService($state, TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
+
+        var service = {
+            getAddPlayersToGameModal: getAddPlayersToGameModal
+        };
+        return service;
+
+        ////////////////
+
+        function getAddPlayersToGameModal($scope) {
+            /*  ==================================================================
+            This modal gets a shallow copy of players from playersService as input,
+            and outputs a shallow copy of participants to gameService
+            ====================================================================== */
+            var addPlayersToGameModal = {};
+            var modalScope = $scope.$new(true);
+
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
+                scope: modalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ====================================================================== */
+                modalScope.viewModel = {
+                    showReorder: false,
+                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
+                    playersInDatabase: playersService.all().slice(), // modal input
+                    participants: [], // modal output
+                    addPlayerToParticipants: addPlayerToParticipants,
+                    addGuestParticipant: addGuestParticipant,
+                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    reorderParticipant: reorderParticipant,
+                    cancelAddPlayersToGame: cancelAddPlayersToGame,
+                    startGame: startGame
+                };
+
+                addPlayersToGameModal = modal;
+
+                return addPlayersToGameModal;
+            });
+
+            function addPlayerToParticipants(newParticipant) {
+                var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
+                    return player.id === newParticipant.id;
+                });
+                var playerFromDatabase = modalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
+                modalScope.viewModel.participants.push(playerFromDatabase);
+            }
+
+            function addGuestParticipant() {
+                var guestColor = pickRandomGuestColor();
+
+                modalScope.viewModel.participants.push({
+                    firstName: 'Mr.',
+                    lastName: capitalizeFirstLetter(guestColor),
+                    guestColor: guestColor
+                });
+            }
+
+            function removePlayerFromParticipants(index) {
+                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
+
+                if (removedPlayer.guestColor) {
+                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
+                }
+                else {
+                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
+                }
+            }
+
+            function reorderParticipant(player, fromIndex, toIndex) {
+                modalScope.viewModel.participants.splice(fromIndex, 1);
+                modalScope.viewModel.participants.splice(toIndex, 0, player);
+            }
+
+            function cancelAddPlayersToGame() {
+                addPlayersToGameModal.hide();
+            }
+
+            function startGame() {
+                gameService.setParticipants(modalScope.viewModel.participants.slice());
+
+                $state.go('game');
+
+                addPlayersToGameModal.hide();
+            }
+
+            /*  Helper functions
+            ======================================================================================== */
+            function pickRandomGuestColor() {
+                var colorIndex = Math.floor(Math.random() * modalScope.viewModel.guestColors.length);
+
+                return modalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
+            }
+
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
+
+    function SettingsCtrl($ionicPopup, $translate, settingsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+
+        vm.activeTabIndex = 0;
+        vm.activateTab = activateTab;
+
+        vm.gameCustomSetting = settingsService.isGameCustomSetting();
+        vm.toggleGameCustomSetting = toggleGameCustomSetting;
+        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
+        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
+        vm.setWinningScore = settingsService.setWinningScore;
+        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
+        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
+        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
+        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
+        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
+        vm.setThreeMisses = settingsService.setThreeMisses;
+
+        vm.languageOtions = settingsService.getLanguageOtions();
+        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
+        vm.setLanguageKey = settingsService.setLanguageKey;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        function activateTab(index) {
+            vm.activeTabIndex = index;
+        }
+
+        function toggleGameCustomSetting() {
+            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
+            if (vm.gameCustomSetting) {
+                showAlert();
+            }
+        }
+
+        // An alert dialog
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function filterOutActiveItem(array) {
+            return array.filter(function(option) {
+                return option.active;
+            })[0].value;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate'];
+
+    function settingsService($translate) {
+        var languageOptions = [
+            {
+                value: 'English',
+                key: 'english'
+            },
+            {
+                value: 'Français',
+                key: 'french'
+            },
+            {
+                value: 'Finnish',
+                key: 'finnish'
+            }
+        ];
+        var gameCustomSetting = false;
+
+        var winningScoreOptions = [
+            {
+                value: 25,
+                active: false
+            },
+            {
+                value: 50,
+                active: true
+            },
+            {
+                value: 100,
+                active: false
+            }
+        ];
+
+        var winningScoreExceededOptions = [
+            {
+                value: 'to zero',
+                active: true
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'half of winning score',
+                active: false
+            }
+        ];
+
+        var threeMissesOptions = [
+            {
+                value: 'to zero',
+                active: false
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'disqualified',
+                active: true
+            }
+        ];
+
+        var service = {
+            getSettings: getSettings,
+            getActiveLanguageKey: getActiveLanguageKey,
+            setLanguageKey: setLanguageKey,
+            getLanguageOtions: getLanguageOtions,
+            isGameCustomSetting: isGameCustomSetting,
+            toggleGameCustomSetting: toggleGameCustomSetting,
+            getWinningScoreOptions: getWinningScoreOptions,
+            setWinningScore: setWinningScore,
+            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
+            setWinningScoreExceeded: setWinningScoreExceeded,
+            getThreeMissesOptions: getThreeMissesOptions,
+            setThreeMisses: setThreeMisses
+        };
+        return service;
+
+        ////////////////
+
+        function getSettings() {
+            return {
+                winningScore: 25,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'disqualified'
+            };
+        }
+
+        function getActiveLanguageKey() {
+            return $translate.use();
+        }
+
+        function setLanguageKey(languageKey) {
+            $translate.use(languageKey); // TODO: write to database
+        }
+
+        function getLanguageOtions() {
+            return languageOptions;
+        }
+
+        function isGameCustomSetting() {
+            return gameCustomSetting; // TODO: get from database
+        }
+
+        function toggleGameCustomSetting() {
+            gameCustomSetting = !gameCustomSetting;
+            return gameCustomSetting;
+        }
+
+        function getWinningScoreOptions() {
+            return winningScoreOptions;
+        }
+
+        function setWinningScore(activeOption) { // TODO: write to database
+            winningScoreOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getWinningScoreExceededOptions() {
+            return winningScoreExceededOptions;
+        }
+
+        function setWinningScoreExceeded(activeOption) { // TODO: write to database
+            winningScoreExceededOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getThreeMissesOptions() {
+            return threeMissesOptions;
+        }
+
+        function setThreeMisses(activeOption) { // TODO: write to database
+            threeMissesOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+            console.log(threeMissesOptions);
         }
     }
 })();

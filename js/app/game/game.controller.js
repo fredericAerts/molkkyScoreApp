@@ -9,6 +9,7 @@
                             'gameService',
                             'playersService',
                             'settingsService',
+                            'modalsService',
                             'TEMPLATES_ROOT',
                             '$ionicModal',
                             '$ionicActionSheet'];
@@ -17,11 +18,13 @@
                         gameService,
                         playersService,
                         settingsService,
+                        modalsService,
                         TEMPLATES_ROOT,
                         $ionicModal,
                         $ionicActionSheet) {
         /* jshint validthis: true */
         var vm = this;
+        var addPlayersToGameModal = {};
 
         // vm.participants = gameService.getParticipants();
         vm.participants = playersService.all();
@@ -32,6 +35,7 @@
         vm.processThrow = processThrow;
         vm.scoreDetailsModal = {};
         vm.showActionSheet = showActionSheet;
+        vm.scoreDetailsModal = {};
 
         var settings = settingsService.getSettings();
 
@@ -43,6 +47,7 @@
             initScoreboard();
             initParticipants();
             initScoreDetailsModal();
+            initAddPlayersToGameModal();
         }
 
         function initScoreboard() {
@@ -77,6 +82,13 @@
             });
         }
 
+        function initAddPlayersToGameModal() {
+            modalsService.getAddPlayersToGameModal($scope)
+            .then(function(modal) {
+                addPlayersToGameModal = modal;
+            });
+        }
+
         function showActionSheet() {
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
@@ -92,6 +104,9 @@
                     // add cancel code..
                 },
                 buttonClicked: function(index) {
+                    switch (index) {
+                        case 1: addPlayersToGameModal.show();
+                    }
                     return true;
                 }
             });
