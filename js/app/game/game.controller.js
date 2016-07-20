@@ -63,6 +63,7 @@
                 participant.finishedGame = false;
                 participant.disqualified = false;
                 participant.endPosition = -1;
+                participant.activedAvatarStatus = '';
             });
         }
 
@@ -98,6 +99,13 @@
 
         function activateScore(score) { // user touched a number
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
+
+            if (vm.activatedScore > -1) {
+                vm.activePlayer.activedAvatarStatus = getActivedAvatarStatus();
+            }
+            else {
+                vm.activePlayer.activedAvatarStatus = ''; // reset
+            }
         }
 
         function processThrow() {
@@ -105,7 +113,7 @@
                 return;
             }
 
-            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
+            vm.activePlayer.activedAvatarStatus = ''; // reset
             processScore();
 
             if (!isGameEnded()) {
@@ -119,12 +127,14 @@
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
+            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
             vm.activePlayer.score += vm.activatedScore;
             vm.activePlayer.missesInARow = vm.activatedScore ? 0 : vm.activePlayer.missesInARow + 1;
             vm.activatedScore = -1; // reset
 
             if (vm.activePlayer.missesInARow > 2) {
                 processThreeMisses();
+                vm.activePlayer.missesInARow = 0; // reset
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 processWinningScoreExceeded();
@@ -177,6 +187,23 @@
             });
 
             return numberOfPlayersThatFinishedGame;
+        }
+
+        function getActivedAvatarStatus() {
+            var status = '';
+            var potentialScore = vm.activePlayer.score + vm.activatedScore;
+
+            if (vm.activatedScore === 0 && vm.activePlayer.missesInARow === 2) {
+                status = settings.threeMisses === 'disqualified' ? 'error' : 'warning';
+            }
+            else if (potentialScore > settings.winningScore) {
+                status = 'warning';
+            }
+            else if (potentialScore === settings.winningScore) {
+                status = 'success';
+            }
+
+            return status;
         }
 
         function isGameEnded() {

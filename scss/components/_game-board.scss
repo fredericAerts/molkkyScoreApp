@@ -54,7 +54,7 @@
 
                     &.active {
 
-                        &:after { // assetive border
+                        &:after { // assertive border
                             position: absolute;
                             top: 0;
                             left: 0;
@@ -69,6 +69,51 @@
                             background: transparent;
 
                             content: "";
+                        }
+                    }
+
+                    &.winner,
+                    &.finished,
+                    &.disqualified {
+
+                        &:after { // overlay on avatar
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            z-index: 2;
+
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+
+                            color: $light;
+                            font-size: 34px;
+                            vertical-align: middle;
+
+                            background: rgba(#000, .5);
+
+                            content: "";
+                        }
+                    }
+
+                    &.winner {
+
+                        &:after {
+                            background: rgba($balanced, .8);
+                        }
+                    }
+
+                    &.finished {
+
+                        &:after {
+                            background: rgba($balanced, .8);
+                        }
+                    }
+
+                    &.disqualified {
+
+                        &:after {
+                            background: rgba($assertive, .8);
                         }
                     }
 
@@ -121,9 +166,15 @@
                         }
                     }
 
-                    & span {
+                    & span,
+                    & .icon {
                         position: relative;
                         z-index: 3;
+                    }
+
+                    & .icon {
+                        font-size: 30px;
+                        line-height: 34px;
                     }
 
                     & img {
@@ -154,7 +205,7 @@
         text-align: left;
 
         &.active {
-            background: $assertive;
+            background: $positive;
 
             & * {
                 color: $light;
@@ -170,6 +221,11 @@
             & p {
                 direction: rtl;
                 width: 100%;
+
+                & .miss {
+                    color: $light;
+                    background: $assertive;
+                }
             }
         }
     }

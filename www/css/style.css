@@ -17,7 +17,7 @@
   font-weight: normal;
   font-style: normal; }
 
-.ion, .ionicons,
+.ion, .ionicons, .item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after,
 .ion-alert:before,
 .ion-alert-circled:before,
 .ion-android-add:before,
@@ -9818,6 +9818,25 @@ a.button {
             border-radius: 4px;
             background: transparent;
             content: ""; }
+          .game-board-cell--scoreboard .row .col .game-board-cell.winner:after, .game-board-cell--scoreboard .row .col .game-board-cell.finished:after, .game-board-cell--scoreboard .row .col .game-board-cell.disqualified:after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: #fff;
+            font-size: 34px;
+            vertical-align: middle;
+            background: rgba(0, 0, 0, 0.5);
+            content: ""; }
+          .game-board-cell--scoreboard .row .col .game-board-cell.winner:after {
+            background: rgba(51, 205, 95, 0.8); }
+          .game-board-cell--scoreboard .row .col .game-board-cell.finished:after {
+            background: rgba(51, 205, 95, 0.8); }
+          .game-board-cell--scoreboard .row .col .game-board-cell.disqualified:after {
+            background: rgba(239, 71, 58, 0.8); }
           .game-board-cell--scoreboard .row .col .game-board-cell.has-avatar:before {
             position: absolute;
             top: 0;
@@ -9843,9 +9862,13 @@ a.button {
             background: #682A01; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.blue {
             background: #01B7FF; }
-          .game-board-cell--scoreboard .row .col .game-board-cell span {
+          .game-board-cell--scoreboard .row .col .game-board-cell span,
+          .game-board-cell--scoreboard .row .col .game-board-cell .icon {
             position: relative;
             z-index: 3; }
+          .game-board-cell--scoreboard .row .col .game-board-cell .icon {
+            font-size: 30px;
+            line-height: 34px; }
           .game-board-cell--scoreboard .row .col .game-board-cell img {
             position: absolute;
             left: 0;
@@ -9862,7 +9885,7 @@ a.button {
   .game-board-cell--player {
     text-align: left; }
     .game-board-cell--player.active {
-      background: #ef473a; }
+      background: #387ef5; }
       .game-board-cell--player.active * {
         color: #fff; }
     .game-board-cell--player .item {
@@ -9872,6 +9895,9 @@ a.button {
       .game-board-cell--player .item p {
         direction: rtl;
         width: 100%; }
+        .game-board-cell--player .item p .miss {
+          color: #fff;
+          background: #ef473a; }
   .game-board-cell--score.active {
     color: #fff;
     background: #387ef5; }
@@ -9907,6 +9933,37 @@ a.button {
     left: 10px;
     width: 30px;
     height: 30px; }
+
+.item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 9;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  padding: 3px 0;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 34px;
+  line-height: 34px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  content: ""; }
+
+.item-avatar.warning:after {
+  font-size: 30px;
+  line-height: 30px;
+  background: rgba(255, 201, 0, 0.8);
+  content: "\f3bc"; }
+
+.item-avatar.error:after {
+  background: rgba(239, 71, 58, 0.8);
+  content: "\f2d7"; }
+
+.item-avatar.success:after {
+  background: rgba(51, 205, 95, 0.8);
+  content: "\f122"; }
 
 .item-avatar__face-placeholder {
   position: absolute;

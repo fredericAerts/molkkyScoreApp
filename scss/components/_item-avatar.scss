@@ -38,6 +38,65 @@
             height: 30px;
         }
     }
+
+    &.warning,
+    &.error,
+    &.success {
+
+        &:after { // overlay on avatar
+            @extend .ionicons;
+
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 9;
+
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            padding: 3px 0;
+            border-radius: 50%;
+
+            color: $light;
+            font-size: 34px;
+            line-height: 34px;
+            text-align: center;
+
+            background: rgba(#000, .5);
+
+            content: "";
+        }
+    }
+
+    &.warning {
+
+        &:after {
+            font-size: 30px;
+            line-height: 30px;
+
+            background: rgba($energized, .8);
+
+            content: "\f3bc";
+        }
+    }
+
+    &.error {
+
+        &:after {
+            background: rgba($assertive, .8);
+
+            content: "\f2d7";
+        }
+    }
+
+    &.success {
+
+        &:after {
+            background: rgba($balanced, .8);
+
+            content: "\f122";
+        }
+    }
 }
 
 .item-avatar__face-placeholder {

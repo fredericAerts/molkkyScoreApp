@@ -5305,6 +5305,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 participant.finishedGame = false;
                 participant.disqualified = false;
                 participant.endPosition = -1;
+                participant.activedAvatarStatus = '';
             });
         }
 
@@ -5340,6 +5341,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function activateScore(score) { // user touched a number
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
+
+            if (vm.activatedScore > -1) {
+                vm.activePlayer.activedAvatarStatus = getActivedAvatarStatus();
+            }
+            else {
+                vm.activePlayer.activedAvatarStatus = ''; // reset
+            }
         }
 
         function processThrow() {
@@ -5347,7 +5355,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return;
             }
 
-            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
+            vm.activePlayer.activedAvatarStatus = ''; // reset
             processScore();
 
             if (!isGameEnded()) {
@@ -5361,12 +5369,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
+            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
             vm.activePlayer.score += vm.activatedScore;
             vm.activePlayer.missesInARow = vm.activatedScore ? 0 : vm.activePlayer.missesInARow + 1;
             vm.activatedScore = -1; // reset
 
             if (vm.activePlayer.missesInARow > 2) {
                 processThreeMisses();
+                vm.activePlayer.missesInARow = 0; // reset
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 processWinningScoreExceeded();
@@ -5419,6 +5429,23 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
 
             return numberOfPlayersThatFinishedGame;
+        }
+
+        function getActivedAvatarStatus() {
+            var status = '';
+            var potentialScore = vm.activePlayer.score + vm.activatedScore;
+
+            if (vm.activatedScore === 0 && vm.activePlayer.missesInARow === 2) {
+                status = settings.threeMisses === 'disqualified' ? 'error' : 'warning';
+            }
+            else if (potentialScore > settings.winningScore) {
+                status = 'warning';
+            }
+            else if (potentialScore === settings.winningScore) {
+                status = 'success';
+            }
+
+            return status;
         }
 
         function isGameEnded() {
@@ -5598,6 +5625,231 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
+
+    function SettingsCtrl($ionicPopup, $translate, settingsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+
+        vm.activeTabIndex = 0;
+        vm.activateTab = activateTab;
+
+        vm.gameCustomSetting = settingsService.isGameCustomSetting();
+        vm.toggleGameCustomSetting = toggleGameCustomSetting;
+        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
+        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
+        vm.setWinningScore = settingsService.setWinningScore;
+        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
+        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
+        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
+        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
+        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
+        vm.setThreeMisses = settingsService.setThreeMisses;
+
+        vm.languageOtions = settingsService.getLanguageOtions();
+        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
+        vm.setLanguageKey = settingsService.setLanguageKey;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        function activateTab(index) {
+            vm.activeTabIndex = index;
+        }
+
+        function toggleGameCustomSetting() {
+            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
+            if (vm.gameCustomSetting) {
+                showAlert();
+            }
+        }
+
+        // An alert dialog
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function filterOutActiveItem(array) {
+            return array.filter(function(option) {
+                return option.active;
+            })[0].value;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate'];
+
+    function settingsService($translate) {
+        var languageOptions = [
+            {
+                value: 'English',
+                key: 'english'
+            },
+            {
+                value: 'Français',
+                key: 'french'
+            },
+            {
+                value: 'Finnish',
+                key: 'finnish'
+            }
+        ];
+        var gameCustomSetting = false;
+
+        var winningScoreOptions = [
+            {
+                value: 25,
+                active: false
+            },
+            {
+                value: 50,
+                active: true
+            },
+            {
+                value: 100,
+                active: false
+            }
+        ];
+
+        var winningScoreExceededOptions = [
+            {
+                value: 'to zero',
+                active: true
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'half of winning score',
+                active: false
+            }
+        ];
+
+        var threeMissesOptions = [
+            {
+                value: 'to zero',
+                active: false
+            },
+            {
+                value: 'halved',
+                active: false
+            },
+            {
+                value: 'disqualified',
+                active: true
+            }
+        ];
+
+        var service = {
+            getSettings: getSettings,
+            getActiveLanguageKey: getActiveLanguageKey,
+            setLanguageKey: setLanguageKey,
+            getLanguageOtions: getLanguageOtions,
+            isGameCustomSetting: isGameCustomSetting,
+            toggleGameCustomSetting: toggleGameCustomSetting,
+            getWinningScoreOptions: getWinningScoreOptions,
+            setWinningScore: setWinningScore,
+            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
+            setWinningScoreExceeded: setWinningScoreExceeded,
+            getThreeMissesOptions: getThreeMissesOptions,
+            setThreeMisses: setThreeMisses
+        };
+        return service;
+
+        ////////////////
+
+        function getSettings() {
+            return {
+                winningScore: 25,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'disqualified'
+            };
+        }
+
+        function getActiveLanguageKey() {
+            return $translate.use();
+        }
+
+        function setLanguageKey(languageKey) {
+            $translate.use(languageKey); // TODO: write to database
+        }
+
+        function getLanguageOtions() {
+            return languageOptions;
+        }
+
+        function isGameCustomSetting() {
+            return gameCustomSetting; // TODO: get from database
+        }
+
+        function toggleGameCustomSetting() {
+            gameCustomSetting = !gameCustomSetting;
+            return gameCustomSetting;
+        }
+
+        function getWinningScoreOptions() {
+            return winningScoreOptions;
+        }
+
+        function setWinningScore(activeOption) { // TODO: write to database
+            winningScoreOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getWinningScoreExceededOptions() {
+            return winningScoreExceededOptions;
+        }
+
+        function setWinningScoreExceeded(activeOption) { // TODO: write to database
+            winningScoreExceededOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+        }
+
+        function getThreeMissesOptions() {
+            return threeMissesOptions;
+        }
+
+        function setThreeMisses(activeOption) { // TODO: write to database
+            threeMissesOptions.map(function(option) {
+                option.active = option.value === activeOption;
+                return option;
+            });
+            console.log(threeMissesOptions);
         }
     }
 })();
@@ -5863,231 +6115,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
-
-    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
-
-    function SettingsCtrl($ionicPopup, $translate, settingsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
-
-        vm.activeTabIndex = 0;
-        vm.activateTab = activateTab;
-
-        vm.gameCustomSetting = settingsService.isGameCustomSetting();
-        vm.toggleGameCustomSetting = toggleGameCustomSetting;
-        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
-        vm.setWinningScore = settingsService.setWinningScore;
-        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
-        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
-        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
-        vm.setThreeMisses = settingsService.setThreeMisses;
-
-        vm.languageOtions = settingsService.getLanguageOtions();
-        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
-        vm.setLanguageKey = settingsService.setLanguageKey;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        function activateTab(index) {
-            vm.activeTabIndex = index;
-        }
-
-        function toggleGameCustomSetting() {
-            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
-            if (vm.gameCustomSetting) {
-                showAlert();
-            }
-        }
-
-        // An alert dialog
-        function showAlert() {
-            var alertPopup = $ionicPopup.alert({
-                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
-            });
-
-            alertPopup.then(function(res) {
-            });
-        }
-
-        function filterOutActiveItem(array) {
-            return array.filter(function(option) {
-                return option.active;
-            })[0].value;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('settingsService', settingsService);
-
-    settingsService.$inject = ['$translate'];
-
-    function settingsService($translate) {
-        var languageOptions = [
-            {
-                value: 'English',
-                key: 'english'
-            },
-            {
-                value: 'Français',
-                key: 'french'
-            },
-            {
-                value: 'Finnish',
-                key: 'finnish'
-            }
-        ];
-        var gameCustomSetting = false;
-
-        var winningScoreOptions = [
-            {
-                value: 25,
-                active: false
-            },
-            {
-                value: 50,
-                active: true
-            },
-            {
-                value: 100,
-                active: false
-            }
-        ];
-
-        var winningScoreExceededOptions = [
-            {
-                value: 'to zero',
-                active: true
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'half of winning score',
-                active: false
-            }
-        ];
-
-        var threeMissesOptions = [
-            {
-                value: 'to zero',
-                active: false
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'disqualified',
-                active: true
-            }
-        ];
-
-        var service = {
-            getSettings: getSettings,
-            getActiveLanguageKey: getActiveLanguageKey,
-            setLanguageKey: setLanguageKey,
-            getLanguageOtions: getLanguageOtions,
-            isGameCustomSetting: isGameCustomSetting,
-            toggleGameCustomSetting: toggleGameCustomSetting,
-            getWinningScoreOptions: getWinningScoreOptions,
-            setWinningScore: setWinningScore,
-            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
-            setWinningScoreExceeded: setWinningScoreExceeded,
-            getThreeMissesOptions: getThreeMissesOptions,
-            setThreeMisses: setThreeMisses
-        };
-        return service;
-
-        ////////////////
-
-        function getSettings() {
-            return {
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'to zero'
-            };
-        }
-
-        function getActiveLanguageKey() {
-            return $translate.use();
-        }
-
-        function setLanguageKey(languageKey) {
-            $translate.use(languageKey); // TODO: write to database
-        }
-
-        function getLanguageOtions() {
-            return languageOptions;
-        }
-
-        function isGameCustomSetting() {
-            return gameCustomSetting; // TODO: get from database
-        }
-
-        function toggleGameCustomSetting() {
-            gameCustomSetting = !gameCustomSetting;
-            return gameCustomSetting;
-        }
-
-        function getWinningScoreOptions() {
-            return winningScoreOptions;
-        }
-
-        function setWinningScore(activeOption) { // TODO: write to database
-            winningScoreOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getWinningScoreExceededOptions() {
-            return winningScoreExceededOptions;
-        }
-
-        function setWinningScoreExceeded(activeOption) { // TODO: write to database
-            winningScoreExceededOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getThreeMissesOptions() {
-            return threeMissesOptions;
-        }
-
-        function setThreeMisses(activeOption) { // TODO: write to database
-            threeMissesOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-            console.log(threeMissesOptions);
         }
     }
 })();

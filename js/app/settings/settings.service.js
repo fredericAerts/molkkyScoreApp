@@ -91,7 +91,7 @@
             return {
                 winningScore: 25,
                 winningScoreExceeded: 'halved',
-                threeMisses: 'to zero'
+                threeMisses: 'disqualified'
             };
         }
 
