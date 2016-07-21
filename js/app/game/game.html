@@ -38,6 +38,9 @@
                         <div ng-if="!game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
                         <h2>{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>
                         <p>
+                            <span class="placeholder" ng-if="game.activatedScore === -1 && !game.activePlayer.scoreHistory.length">
+                                {{ 'HOME.GAME.ACTIVE-PLAYER-CELL.SCORE-HISTORY-PLACEHOLDER' | translate }}
+                            </span>
                             <span ng-if="game.activatedScore > -1">
                                 <i ng-class="{'miss': !game.activatedScore}">&nbsp;{{game.activatedScore}}&nbsp;</i>
                                 <i ng-if="game.activePlayer.scoreHistory.length">&#124;</i>

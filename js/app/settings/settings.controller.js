@@ -14,7 +14,6 @@
         // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
 
         vm.activeTabIndex = 0;
-        vm.activateTab = activateTab;
 
         vm.gameCustomSetting = settingsService.isGameCustomSetting();
         vm.toggleGameCustomSetting = toggleGameCustomSetting;
@@ -37,10 +36,6 @@
         ////////////////
 
         function activate() {
-        }
-
-        function activateTab(index) {
-            vm.activeTabIndex = index;
         }
 
         function toggleGameCustomSetting() {

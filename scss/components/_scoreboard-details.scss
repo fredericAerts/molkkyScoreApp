@@ -1,0 +1,72 @@
+.scoreboard-details {
+    width: 100%;
+    border-collapse: collapse;
+
+    text-align: center;
+
+    & th {
+        border-right: 1px solid $avatar-placeholder;
+        border-left: 1px solid $avatar-placeholder;
+
+        font-size: 0;
+
+        & img,
+        & .scoreboard-details__face-placeholder {
+            width: 100%;
+            margin: auto;
+
+            font-size: inherit;
+
+            background: $avatar-placeholder;
+        }
+
+        & img {
+
+        }
+
+        & .scoreboard-details__face-placeholder {
+
+            &:before {
+                display: block;
+                padding-top: 100%;
+
+                content: "";
+            }
+
+            &.blonde {
+                color: $dark;
+                background: $guest-blonde;
+            }
+
+            &.orange {
+                background: $guest-orange;
+            }
+
+            &.pink {
+                background: $guest-pink;
+            }
+
+            &.white {
+                border: 1px solid #000;
+
+                color: $dark;
+                background: $guest-white;
+            }
+
+            &.brown {
+                background: $guest-brown;
+            }
+
+            &.blue {
+                background: $guest-blue;
+            }
+        }
+    }
+
+    & td {
+        border-right: 1px solid $avatar-placeholder;
+        border-left: 1px solid $avatar-placeholder;
+
+        vertical-align: middle;
+    }
+}

@@ -41,7 +41,8 @@
 
     &.warning,
     &.error,
-    &.success {
+    &.success,
+    &.winner {
 
         &:after { // overlay on avatar
             @extend .ionicons;
@@ -83,9 +84,14 @@
     &.error {
 
         &:after {
+            padding-top: 6px;
+
+            font-size: 30px;
+            line-height: 30px;
+
             background: rgba($assertive, .8);
 
-            content: "\f2d7";
+            content: "\f12a";
         }
     }
 
@@ -96,6 +102,26 @@
 
             content: "\f122";
         }
+    }
+
+    &.winner {
+
+        &:after {
+            padding-top: 6px;
+
+            font-size: 30px;
+            line-height: 30px;
+
+            background: rgba($balanced, .8);
+
+            content: "\f356";
+        }
+    }
+
+    & .note {
+        right: 16px;
+
+        font-size: 20px;
     }
 }
 

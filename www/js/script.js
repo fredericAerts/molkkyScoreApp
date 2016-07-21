@@ -5272,8 +5272,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.activatedScore = -1;
         vm.activePlayer = {};
         vm.scoreDetailsModal = {};
+        vm.scoreDetailsModalActiveTabIndex = 0;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
+        vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
         vm.showActionSheet = showActionSheet;
 
         activate();
@@ -5311,11 +5313,69 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initParticipants() {
-            vm.participants = gameService.getParticipants();
+            // vm.participants = gameService.getParticipants();
+            vm.participants = [
+                {
+                    id: 0,
+                    firstName: 'Ben',
+                    lastName: 'Sparrow',
+                    tagline: 'You on your way?',
+                    face: 'img/ben.png'
+                },
+                {
+                    id: 1,
+                    firstName: 'Max',
+                    lastName: 'Lynx',
+                    tagline: 'Hey, it\'s me',
+                    face: 'img/max.png'
+                },
+                {
+                    id: 2,
+                    firstName: 'Adam',
+                    lastName: 'Bradleyson',
+                    tagline: 'I should buy a boat',
+                    face: 'img/adam.jpg'
+                },
+                {
+                    id: 3,
+                    firstName: 'Perry',
+                    lastName: 'Governor',
+                    tagline: 'Look at my mukluks!',
+                    face: 'img/perry.png'
+                },
+                {
+                    id: 4,
+                    firstName: 'Mike',
+                    lastName: 'Harrington',
+                    tagline: 'This is wicked good ice cream.',
+                    face: 'img/mike.png'
+                },
+                {
+                    id: 5,
+                    firstName: 'Dummy',
+                    lastName: 'player',
+                    tagline: 'I have a grey avatar.',
+                    face: ''
+                },
+                {
+                    id: 6,
+                    firstName: 'Mr.',
+                    lastName: 'Pink',
+                    guestColor: 'pink'
+                },
+                {
+                    id: 7,
+                    firstName: 'Dummy2',
+                    lastName: 'player2',
+                    tagline: 'I have a grey avatar2.',
+                    face: ''
+                }
+            ];
 
             vm.participants.forEach(function(participant) {
                 participant.score = 0;
                 participant.scoreHistory = [];
+                participant.accumulatedScoreHistory = [];
                 participant.missesInARow = 0;
                 participant.finishedGame = false;
                 participant.disqualified = false;
@@ -5404,6 +5464,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
         }
 
+        function getScoreboardDetailsRowIterator() {
+            return new Array(vm.participants[0].accumulatedScoreHistory.length);
+        }
+
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
@@ -5422,6 +5486,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             else if (vm.activePlayer.score === settings.winningScore) {
                 processPlayerFinishedGame();
             }
+
+            vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
         }
 
         function processThreeMisses() {
@@ -5586,6 +5652,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
 
     function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
+        /*  Service for creating modals that are used in more than one controller
+            ====================================================================== */
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal
@@ -5652,6 +5720,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 modalScope.viewModel.participants.push({
                     firstName: 'Mr.',
                     lastName: capitalizeFirstLetter(guestColor),
+                    tagline: 'I\'m a guest player',
                     guestColor: guestColor
                 });
             }
@@ -5987,7 +6056,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
 
         vm.activeTabIndex = 0;
-        vm.activateTab = activateTab;
 
         vm.gameCustomSetting = settingsService.isGameCustomSetting();
         vm.toggleGameCustomSetting = toggleGameCustomSetting;
@@ -6010,10 +6078,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         ////////////////
 
         function activate() {
-        }
-
-        function activateTab(index) {
-            vm.activeTabIndex = index;
         }
 
         function toggleGameCustomSetting() {

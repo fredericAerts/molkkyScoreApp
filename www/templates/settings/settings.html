@@ -1,15 +1,15 @@
 <ion-view view-title="{{ 'HOME.SETTINGS.VIEW-TITLE' | translate }}">
     <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
         <div class="tabs">
-            <span class="tab-item active" ng-click="settings.activateTab(0)" ng-class="{'active': settings.activeTabIndex === 0}">
+            <span class="tab-item active" ng-click="settings.activeTabIndex = 0" ng-class="{'active': settings.activeTabIndex === 0}">
                 {{ 'HOME.SETTINGS.TABS.GAME.TITLE' | translate }}
             </span>
-            <span class="tab-item" ng-click="settings.activateTab(1)" ng-class="{'active': settings.activeTabIndex === 1}">
+            <span class="tab-item" ng-click="settings.activeTabIndex = 1" ng-class="{'active': settings.activeTabIndex === 1}">
                 {{ 'HOME.SETTINGS.TABS.APP.TITLE' | translate }}
             </span>
         </div>
     </div>
-    <ion-content class="has-tabs has-tabs-top">
+    <ion-content class="has-tabs-top">
         <div ng-show="settings.activeTabIndex === 0">
             <ion-toggle ng-model="settings.gameCustomSetting" ng-change="settings.toggleGameCustomSetting()">
                 <span ng-show="settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>

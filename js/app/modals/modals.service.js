@@ -8,6 +8,8 @@
     modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
 
     function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
+        /*  Service for creating modals that are used in more than one controller
+            ====================================================================== */
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal
@@ -74,6 +76,7 @@
                 modalScope.viewModel.participants.push({
                     firstName: 'Mr.',
                     lastName: capitalizeFirstLetter(guestColor),
+                    tagline: 'I\'m a guest player',
                     guestColor: guestColor
                 });
             }

@@ -14,7 +14,21 @@
             }
         },
         "GAME": {
-            "VIEW-TITLE": "Game"
+            "VIEW-TITLE": "Game",
+            "ACTIVE-PLAYER-CELL": {
+                "SCORE-HISTORY-PLACEHOLDER": "Score history..."
+            },
+            "SCORE-DETAILS-MODAL": {
+                "TITLE": "Scoreboard",
+                "TABS": {
+                    "SCORE-LIST": {
+                        "TITLE": "Score List"
+                    },
+                    "DETAILS": {
+                        "TITLE": "Score Details"
+                    }
+                }
+            }
         },
         "SETTINGS": {
             "VIEW-TITLE": "Settings",

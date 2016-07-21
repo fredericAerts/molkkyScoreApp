@@ -30,8 +30,10 @@
         vm.activatedScore = -1;
         vm.activePlayer = {};
         vm.scoreDetailsModal = {};
+        vm.scoreDetailsModalActiveTabIndex = 0;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
+        vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
         vm.showActionSheet = showActionSheet;
 
         activate();
@@ -69,11 +71,69 @@
         }
 
         function initParticipants() {
-            vm.participants = gameService.getParticipants();
+            // vm.participants = gameService.getParticipants();
+            vm.participants = [
+                {
+                    id: 0,
+                    firstName: 'Ben',
+                    lastName: 'Sparrow',
+                    tagline: 'You on your way?',
+                    face: 'img/ben.png'
+                },
+                {
+                    id: 1,
+                    firstName: 'Max',
+                    lastName: 'Lynx',
+                    tagline: 'Hey, it\'s me',
+                    face: 'img/max.png'
+                },
+                {
+                    id: 2,
+                    firstName: 'Adam',
+                    lastName: 'Bradleyson',
+                    tagline: 'I should buy a boat',
+                    face: 'img/adam.jpg'
+                },
+                {
+                    id: 3,
+                    firstName: 'Perry',
+                    lastName: 'Governor',
+                    tagline: 'Look at my mukluks!',
+                    face: 'img/perry.png'
+                },
+                {
+                    id: 4,
+                    firstName: 'Mike',
+                    lastName: 'Harrington',
+                    tagline: 'This is wicked good ice cream.',
+                    face: 'img/mike.png'
+                },
+                {
+                    id: 5,
+                    firstName: 'Dummy',
+                    lastName: 'player',
+                    tagline: 'I have a grey avatar.',
+                    face: ''
+                },
+                {
+                    id: 6,
+                    firstName: 'Mr.',
+                    lastName: 'Pink',
+                    guestColor: 'pink'
+                },
+                {
+                    id: 7,
+                    firstName: 'Dummy2',
+                    lastName: 'player2',
+                    tagline: 'I have a grey avatar2.',
+                    face: ''
+                }
+            ];
 
             vm.participants.forEach(function(participant) {
                 participant.score = 0;
                 participant.scoreHistory = [];
+                participant.accumulatedScoreHistory = [];
                 participant.missesInARow = 0;
                 participant.finishedGame = false;
                 participant.disqualified = false;
@@ -162,6 +222,10 @@
             }
         }
 
+        function getScoreboardDetailsRowIterator() {
+            return new Array(vm.participants[0].accumulatedScoreHistory.length);
+        }
+
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
@@ -180,6 +244,8 @@
             else if (vm.activePlayer.score === settings.winningScore) {
                 processPlayerFinishedGame();
             }
+
+            vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
         }
 
         function processThreeMisses() {

@@ -17,7 +17,7 @@
   font-weight: normal;
   font-style: normal; }
 
-.ion, .ionicons, .item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after,
+.ion, .ionicons, .item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after, .item-avatar.winner:after,
 .ion-alert:before,
 .ion-alert-circled:before,
 .ion-android-add:before,
@@ -9895,12 +9895,54 @@ a.button {
       .game-board-cell--player .item p {
         direction: rtl;
         width: 100%; }
+        .game-board-cell--player .item p .placeholder {
+          display: block;
+          color: #bdbdbd;
+          direction: ltr; }
         .game-board-cell--player .item p .miss {
           color: #fff;
           background: #ef473a; }
   .game-board-cell--score.active {
     color: #fff;
     background: #387ef5; }
+
+.scoreboard-details {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center; }
+  .scoreboard-details th {
+    border-right: 1px solid #bdbdbd;
+    border-left: 1px solid #bdbdbd;
+    font-size: 0; }
+    .scoreboard-details th img,
+    .scoreboard-details th .scoreboard-details__face-placeholder {
+      width: 100%;
+      margin: auto;
+      font-size: inherit;
+      background: #bdbdbd; }
+    .scoreboard-details th .scoreboard-details__face-placeholder:before {
+      display: block;
+      padding-top: 100%;
+      content: ""; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.blonde {
+      color: #444;
+      background: #F2D300; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.orange {
+      background: #FF8704; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.pink {
+      background: #FF5DE7; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.white {
+      border: 1px solid #000;
+      color: #444;
+      background: #FFFFFF; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.brown {
+      background: #682A01; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.blue {
+      background: #01B7FF; }
+  .scoreboard-details td {
+    border-right: 1px solid #bdbdbd;
+    border-left: 1px solid #bdbdbd;
+    vertical-align: middle; }
 
 .item-input--text {
   padding-right: 24px;
@@ -9934,7 +9976,7 @@ a.button {
     width: 30px;
     height: 30px; }
 
-.item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after {
+.item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after, .item-avatar.winner:after {
   position: absolute;
   top: 16px;
   left: 16px;
@@ -9958,12 +10000,26 @@ a.button {
   content: "\f3bc"; }
 
 .item-avatar.error:after {
+  padding-top: 6px;
+  font-size: 30px;
+  line-height: 30px;
   background: rgba(239, 71, 58, 0.8);
-  content: "\f2d7"; }
+  content: "\f12a"; }
 
 .item-avatar.success:after {
   background: rgba(51, 205, 95, 0.8);
   content: "\f122"; }
+
+.item-avatar.winner:after {
+  padding-top: 6px;
+  font-size: 30px;
+  line-height: 30px;
+  background: rgba(51, 205, 95, 0.8);
+  content: "\f356"; }
+
+.item-avatar .note {
+  right: 16px;
+  font-size: 20px; }
 
 .item-avatar__face-placeholder {
   position: absolute;
