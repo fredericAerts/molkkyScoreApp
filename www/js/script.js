@@ -5249,7 +5249,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     GameCtrl.$inject = ['$scope',
                             'gameService',
-                            'playersService',
                             'settingsService',
                             'modalsService',
                             'TEMPLATES_ROOT',
@@ -5258,7 +5257,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     function GameCtrl($scope,
                         gameService,
-                        playersService,
                         settingsService,
                         modalsService,
                         TEMPLATES_ROOT,
@@ -5266,43 +5264,55 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         $ionicActionSheet) {
         /* jshint validthis: true */
         var vm = this;
-        var addPlayersToGameModal = {};
+        var addPlayersToGameModal = {}; // opened from actionSheet
+        var settings = settingsService.getSettings();
 
-        // vm.participants = gameService.getParticipants();
-        vm.participants = playersService.all();
+        vm.participants = [];
         vm.scoreboard = {};
         vm.activatedScore = -1;
-        vm.activePlayer = vm.participants[0];
+        vm.activePlayer = {};
+        vm.scoreDetailsModal = {};
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
-        vm.scoreDetailsModal = {};
         vm.showActionSheet = showActionSheet;
-        vm.scoreDetailsModal = {};
-
-        var settings = settingsService.getSettings();
 
         activate();
 
         ////////////////
 
         function activate() {
-            initScoreboard();
             initParticipants();
+            initScoreboard();
+            initGame();
+
             initScoreDetailsModal();
             initAddPlayersToGameModal();
         }
 
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            addPlayersToGameModal.remove();
+            vm.scoreDetailsModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
         function initScoreboard() {
             vm.scoreboard.rowOne = vm.participants.slice(0, 4);
             vm.scoreboard.rowTwo = vm.participants.slice(4, 8);
 
-            vm.scoreboard.colWidthPercentage = 25;
-            if (!vm.scoreboard.rowTwo.length) {
-                vm.scoreboard.colWidthPercentage = vm.participants.length === 3 ? 33 : 50;
+            switch (vm.participants.length) {
+                case 2: vm.scoreboard.colWidthPercentage = 50; break;
+                case 3: vm.scoreboard.colWidthPercentage = 33; break;
+                default: vm.scoreboard.colWidthPercentage = 25;
             }
         }
 
         function initParticipants() {
+            vm.participants = gameService.getParticipants();
+
             vm.participants.forEach(function(participant) {
                 participant.score = 0;
                 participant.scoreHistory = [];
@@ -5314,21 +5324,34 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function initGame() {
+            vm.activatedScore = -1;
+            vm.activePlayer = vm.participants[0];
+        }
+
         function initScoreDetailsModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
             })
             .then(function(modal) {
                 vm.scoreDetailsModal = modal;
+                return vm.scoreDetailsModal;
             });
         }
 
         function initAddPlayersToGameModal() {
-            modalsService.getAddPlayersToGameModal($scope)
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
             .then(function(modal) {
                 addPlayersToGameModal = modal;
+                return addPlayersToGameModal;
             });
+
+            function addPlayersToGameModalConfirmFunction() {
+                initParticipants();
+                initScoreboard();
+                initGame();
+            }
         }
 
         function showActionSheet() {
@@ -5514,15 +5537,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$scope', '$state', 'playersService', 'gameService', 'TEMPLATES_ROOT','$ionicModal'];
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
 
-    function HomeCtrl($scope, $state, playersService, gameService, TEMPLATES_ROOT, $ionicModal) {
+    function HomeCtrl($scope, $state, modalsService) {
         /* jshint validthis: true */
         var vm = this;
-        var addPlayersToGameModalScope = $scope.$new(true);
 
         vm.addPlayersToGameModal = {};
-        vm.openAddPlayersToGameModal = openAddPlayersToGameModal;
 
         activate();
 
@@ -5542,24 +5563,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  FUNCTIONS
             ======================================================================================== */
         function initAddPlayersToGameModal() {
-            /*  This modal gets a shallow copy of players from playersService as input,
-                and outputs a shallow copy of participants to gameService
-                ============================================================================*/
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/home/modal-start-players.html', {
-                scope: addPlayersToGameModalScope,
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('modalsService', modalsService);
+
+    modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
+
+    function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
+
+        var service = {
+            getAddPlayersToGameModal: getAddPlayersToGameModal
+        };
+        return service;
+
+        ////////////////
+
+        function getAddPlayersToGameModal($scope, modalConfirmFunction) {
+            /*  ==================================================================
+            This modal gets a shallow copy of players from playersService as input,
+            and outputs a shallow copy of participants to gameService
+            ====================================================================== */
+            var addPlayersToGameModal = {};
+            var modalScope = $scope.$new(true);
+
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
+                scope: modalScope,
                 animation: 'slide-in-up'
             })
             .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
+                addPlayersToGameModal = modal;
 
                 /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
                 - viewModel data is initialized (reset) each time modal is shown
-                ================================================================== */
-                addPlayersToGameModalScope.viewModel = {
+                ====================================================================== */
+                modalScope.viewModel = {
                     showReorder: false,
-                    guestColors: [],
-                    playersInDatabase: [], // modal input
+                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
+                    playersInDatabase: playersService.all().slice(), // modal input
                     participants: [], // modal output
                     addPlayerToParticipants: addPlayerToParticipants,
                     addGuestParticipant: addGuestParticipant,
@@ -5568,78 +5625,83 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     cancelAddPlayersToGame: cancelAddPlayersToGame,
                     startGame: startGame
                 };
+
+                /*  LISTENERS
+                ======================================================================================== */
+                modalScope.$on('modal.hidden', function() {
+                    gameService.setParticipants(modalScope.viewModel.participants.slice());
+                    resetAddPlayersToGameModal();
+                });
+
+                return addPlayersToGameModal;
             });
-        }
 
-        function openAddPlayersToGameModal() {
-            initializeAddPlayersToGameModalData();
-
-            vm.addPlayersToGameModal.show();
-        }
-
-        function initializeAddPlayersToGameModalData() {
-            addPlayersToGameModalScope.viewModel.showReorder = false;
-            addPlayersToGameModalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
-            addPlayersToGameModalScope.viewModel.playersInDatabase = playersService.all().slice();
-            addPlayersToGameModalScope.viewModel.participants = [];
-        }
-
-        function addPlayerToParticipants(newParticipant) {
-            var playerIndex = _.findIndex(addPlayersToGameModalScope.viewModel.playersInDatabase, function(player) {
-                return player.id === newParticipant.id;
-            });
-            var playerFromDatabase = addPlayersToGameModalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
-            addPlayersToGameModalScope.viewModel.participants.push(playerFromDatabase);
-        }
-
-        function removePlayerFromParticipants(index) {
-            var removedPlayer = addPlayersToGameModalScope.viewModel.participants.splice(index, 1)[0];
-
-            if (removedPlayer.guestColor) {
-                addPlayersToGameModalScope.viewModel.guestColors.push(removedPlayer.guestColor);
+            /*  FUNCTIONS
+                ======================================================================================== */
+            function addPlayerToParticipants(newParticipant) {
+                var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
+                    return player.id === newParticipant.id;
+                });
+                var playerFromDatabase = modalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
+                modalScope.viewModel.participants.push(playerFromDatabase);
             }
-            else {
-                addPlayersToGameModalScope.viewModel.playersInDatabase.push(removedPlayer);
+
+            function addGuestParticipant() {
+                var guestColor = pickRandomGuestColor();
+
+                modalScope.viewModel.participants.push({
+                    firstName: 'Mr.',
+                    lastName: capitalizeFirstLetter(guestColor),
+                    guestColor: guestColor
+                });
             }
-        }
 
-        function reorderParticipant(player, fromIndex, toIndex) {
-            addPlayersToGameModalScope.viewModel.participants.splice(fromIndex, 1);
-            addPlayersToGameModalScope.viewModel.participants.splice(toIndex, 0, player);
-        }
+            function removePlayerFromParticipants(index) {
+                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
 
-        function addGuestParticipant() {
-            var guestColor = pickRandomGuestColor();
+                if (removedPlayer.guestColor) {
+                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
+                }
+                else {
+                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
+                }
+            }
 
-            addPlayersToGameModalScope.viewModel.participants.push({
-                firstName: 'Mr.',
-                lastName: capitalizeFirstLetter(guestColor),
-                guestColor: guestColor
-            });
-        }
+            function reorderParticipant(player, fromIndex, toIndex) {
+                modalScope.viewModel.participants.splice(fromIndex, 1);
+                modalScope.viewModel.participants.splice(toIndex, 0, player);
+            }
 
-        function cancelAddPlayersToGame() {
-            vm.addPlayersToGameModal.hide();
-        }
+            function cancelAddPlayersToGame() {
+                addPlayersToGameModal.hide();
+            }
 
-        function startGame() {
-            gameService.setParticipants(addPlayersToGameModalScope.viewModel.participants.slice());
+            function startGame() {
+                // TODO: show load animation
+                addPlayersToGameModal.hide()
+                .then(function() {
+                    modalConfirmFunction();
+                });
+            }
 
-            $state.go('game');
-
-            vm.addPlayersToGameModal.hide();
-        }
-
-        /*  Helper functions
+            /*  Helper functions
             ======================================================================================== */
-        function pickRandomGuestColor() {
-            var colorIndex = Math.floor(Math.random() * addPlayersToGameModalScope.viewModel.guestColors.length);
+            function resetAddPlayersToGameModal() {
+                modalScope.viewModel.showReorder = false;
+                modalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+                modalScope.viewModel.playersInDatabase = playersService.all().slice();
+                modalScope.viewModel.participants = [];
+            }
 
-            return addPlayersToGameModalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
-        }
+            function pickRandomGuestColor() {
+                var colorIndex = Math.floor(Math.random() * modalScope.viewModel.guestColors.length);
 
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
+                return modalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
+            }
+
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
         }
     }
 })();
@@ -5905,120 +5967,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('modalsService', modalsService);
-
-    modalsService.$inject = ['$state', 'TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
-
-    function modalsService($state, TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
-
-        var service = {
-            getAddPlayersToGameModal: getAddPlayersToGameModal
-        };
-        return service;
-
-        ////////////////
-
-        function getAddPlayersToGameModal($scope) {
-            /*  ==================================================================
-            This modal gets a shallow copy of players from playersService as input,
-            and outputs a shallow copy of participants to gameService
-            ====================================================================== */
-            var addPlayersToGameModal = {};
-            var modalScope = $scope.$new(true);
-
-            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
-                scope: modalScope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                /*  ==================================================================
-                - modal template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time modal is shown
-                ====================================================================== */
-                modalScope.viewModel = {
-                    showReorder: false,
-                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
-                    playersInDatabase: playersService.all().slice(), // modal input
-                    participants: [], // modal output
-                    addPlayerToParticipants: addPlayerToParticipants,
-                    addGuestParticipant: addGuestParticipant,
-                    removePlayerFromParticipants: removePlayerFromParticipants,
-                    reorderParticipant: reorderParticipant,
-                    cancelAddPlayersToGame: cancelAddPlayersToGame,
-                    startGame: startGame
-                };
-
-                addPlayersToGameModal = modal;
-
-                return addPlayersToGameModal;
-            });
-
-            function addPlayerToParticipants(newParticipant) {
-                var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
-                    return player.id === newParticipant.id;
-                });
-                var playerFromDatabase = modalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
-                modalScope.viewModel.participants.push(playerFromDatabase);
-            }
-
-            function addGuestParticipant() {
-                var guestColor = pickRandomGuestColor();
-
-                modalScope.viewModel.participants.push({
-                    firstName: 'Mr.',
-                    lastName: capitalizeFirstLetter(guestColor),
-                    guestColor: guestColor
-                });
-            }
-
-            function removePlayerFromParticipants(index) {
-                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
-
-                if (removedPlayer.guestColor) {
-                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
-                }
-                else {
-                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
-                }
-            }
-
-            function reorderParticipant(player, fromIndex, toIndex) {
-                modalScope.viewModel.participants.splice(fromIndex, 1);
-                modalScope.viewModel.participants.splice(toIndex, 0, player);
-            }
-
-            function cancelAddPlayersToGame() {
-                addPlayersToGameModal.hide();
-            }
-
-            function startGame() {
-                gameService.setParticipants(modalScope.viewModel.participants.slice());
-
-                $state.go('game');
-
-                addPlayersToGameModal.hide();
-            }
-
-            /*  Helper functions
-            ======================================================================================== */
-            function pickRandomGuestColor() {
-                var colorIndex = Math.floor(Math.random() * modalScope.viewModel.guestColors.length);
-
-                return modalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
-            }
-
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
         }
     }
 })();

@@ -7,7 +7,6 @@
 
     GameCtrl.$inject = ['$scope',
                             'gameService',
-                            'playersService',
                             'settingsService',
                             'modalsService',
                             'TEMPLATES_ROOT',
@@ -16,7 +15,6 @@
 
     function GameCtrl($scope,
                         gameService,
-                        playersService,
                         settingsService,
                         modalsService,
                         TEMPLATES_ROOT,
@@ -24,43 +22,55 @@
                         $ionicActionSheet) {
         /* jshint validthis: true */
         var vm = this;
-        var addPlayersToGameModal = {};
+        var addPlayersToGameModal = {}; // opened from actionSheet
+        var settings = settingsService.getSettings();
 
-        // vm.participants = gameService.getParticipants();
-        vm.participants = playersService.all();
+        vm.participants = [];
         vm.scoreboard = {};
         vm.activatedScore = -1;
-        vm.activePlayer = vm.participants[0];
+        vm.activePlayer = {};
+        vm.scoreDetailsModal = {};
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
-        vm.scoreDetailsModal = {};
         vm.showActionSheet = showActionSheet;
-        vm.scoreDetailsModal = {};
-
-        var settings = settingsService.getSettings();
 
         activate();
 
         ////////////////
 
         function activate() {
-            initScoreboard();
             initParticipants();
+            initScoreboard();
+            initGame();
+
             initScoreDetailsModal();
             initAddPlayersToGameModal();
         }
 
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            addPlayersToGameModal.remove();
+            vm.scoreDetailsModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
         function initScoreboard() {
             vm.scoreboard.rowOne = vm.participants.slice(0, 4);
             vm.scoreboard.rowTwo = vm.participants.slice(4, 8);
 
-            vm.scoreboard.colWidthPercentage = 25;
-            if (!vm.scoreboard.rowTwo.length) {
-                vm.scoreboard.colWidthPercentage = vm.participants.length === 3 ? 33 : 50;
+            switch (vm.participants.length) {
+                case 2: vm.scoreboard.colWidthPercentage = 50; break;
+                case 3: vm.scoreboard.colWidthPercentage = 33; break;
+                default: vm.scoreboard.colWidthPercentage = 25;
             }
         }
 
         function initParticipants() {
+            vm.participants = gameService.getParticipants();
+
             vm.participants.forEach(function(participant) {
                 participant.score = 0;
                 participant.scoreHistory = [];
@@ -72,21 +82,34 @@
             });
         }
 
+        function initGame() {
+            vm.activatedScore = -1;
+            vm.activePlayer = vm.participants[0];
+        }
+
         function initScoreDetailsModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
             })
             .then(function(modal) {
                 vm.scoreDetailsModal = modal;
+                return vm.scoreDetailsModal;
             });
         }
 
         function initAddPlayersToGameModal() {
-            modalsService.getAddPlayersToGameModal($scope)
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
             .then(function(modal) {
                 addPlayersToGameModal = modal;
+                return addPlayersToGameModal;
             });
+
+            function addPlayersToGameModalConfirmFunction() {
+                initParticipants();
+                initScoreboard();
+                initGame();
+            }
         }
 
         function showActionSheet() {
