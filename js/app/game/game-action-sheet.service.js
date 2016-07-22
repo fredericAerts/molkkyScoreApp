@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
-    gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', 'popupService'];
+    gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
 
-    function gameActionSheetService($ionicActionSheet, $translate, popupService) {
+    function gameActionSheetService($ionicActionSheet, $translate, $ionicPopup) {
         var actionSheetData = translateActionSheetData();
 
         var service = {
@@ -35,7 +35,7 @@
                 buttonClicked: function(index) {
                     switch (index) {
                         case 0: showRestartPopup(actions.restart, isGameEnded); break; // restart game
-                        case 1: showNewPopup(actions.new, isGameEnded); break; // new game
+                        case 1: showNewPopup(actions.new); break; // new game
                         case 2: actions.undo(); break; // undo last
                         case 3: showExitPopup(actions.exit, isGameEnded); break; // exit game
                     }
@@ -66,85 +66,107 @@
         /*  Helper functions
             ======================================================================================== */
         function showRestartPopup(callback, isGameEnded) {
-            var popupOptions = {
-                title: actionSheetData.restartConfirm.title,
-                template: actionSheetData.restartConfirm.text,
-                buttons: [
-                    {
-                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
-                    },
-                    {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
-                        type: 'button-positive',
-                        onTap: function(event) {
-                            return true;
-                        }
-                    }
-                ]
-            };
+            if (isGameEnded) {
+                callback();
+            }
+            else {
+                showPopup(getPopupOptions(), callback);
+            }
 
-            showConfirm(popupOptions, callback, isGameEnded);
+            function getPopupOptions() {
+                var options = {
+                    title: actionSheetData.restartConfirm.title,
+                    template: actionSheetData.restartConfirm.text,
+                    buttons: [
+                        {
+                            text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                        },
+                        {
+                            text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                            type: 'button-positive',
+                            onTap: function(event) {
+                                return true;
+                            }
+                        }
+                    ]
+                };
+
+                return options;
+            }
         }
 
         function showNewPopup(callback) {
-            var popupOptions = {
-                title: actionSheetData.newConfirm.title,
-                template: actionSheetData.newConfirm.text,
-                cssClass: 'three-btn',
-                buttons: [
-                    {
-                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
-                    },
-                    {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.NO') + '</b>',
-                        type: 'button-positive',
-                        onTap: function(event) {
-                            callback(true); // new players
-                            return false;
-                        }
-                    },
-                    {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
-                        type: 'button-positive',
-                        onTap: function(event) {
-                            callback(false); // same players
-                            return false;
-                        }
-                    }
-                ]
-            };
+            showPopup(getPopupOptions(), callback);
 
-            showConfirm(popupOptions, callback, false);
+            function getPopupOptions() {
+                var options = {
+                    title: actionSheetData.newConfirm.title,
+                    template: actionSheetData.newConfirm.text,
+                    cssClass: 'three-btn',
+                    buttons: [
+                        {
+                            text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                        },
+                        {
+                            text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.NO') + '</b>',
+                            type: 'button-positive',
+                            onTap: function(event) {
+                                callback(true); // new players
+                                return false;
+                            }
+                        },
+                        {
+                            text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
+                            type: 'button-positive',
+                            onTap: function(event) {
+                                callback(false); // same players
+                                return false;
+                            }
+                        }
+                    ]
+                };
+
+                return options;
+            }
         }
 
         function showExitPopup(callback, isGameEnded) {
-            var popupOptions = {
-                title: actionSheetData.exitConfirm.title,
-                template: actionSheetData.exitConfirm.text,
-                buttons: [
-                    {
-                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
-                    },
-                    {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
-                        type: 'button-positive',
-                        onTap: function(event) {
-                            return true;
-                        }
-                    }
-                ]
-            };
-
-            showConfirm(popupOptions, callback, isGameEnded);
-        }
-
-        function showConfirm(popupOptions, callback, bypassPopup) {
-            if (!bypassPopup) {
-                popupService.showConfirmPopup(popupOptions, callback);
-            }
-            else {
+            if (isGameEnded) {
                 callback();
             }
+            else {
+                showPopup(getPopupOptions(), callback);
+            }
+
+            function getPopupOptions() {
+                var options = {
+                    title: actionSheetData.exitConfirm.title,
+                    template: actionSheetData.exitConfirm.text,
+                    buttons: [
+                        {
+                            text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                        },
+                        {
+                            text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                            type: 'button-positive',
+                            onTap: function(event) {
+                                return true;
+                            }
+                        }
+                    ]
+                };
+
+                return options;
+            }
+        }
+
+        function showPopup(popupOptions, callback) {
+            $ionicPopup.show(popupOptions)
+            .then(function(confirmed) {
+                if (confirmed) {
+                    callback();
+                }
+            });
         }
     }
 })();

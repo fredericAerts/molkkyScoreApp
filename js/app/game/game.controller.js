@@ -11,7 +11,6 @@
                             'gameService',
                             'settingsService',
                             'modalsService',
-                            'popupService',
                             'gameActionSheetService',
                             'TEMPLATES_ROOT',
                             '$ionicModal'];
@@ -22,7 +21,6 @@
                         gameService,
                         settingsService,
                         modalsService,
-                        popupService,
                         gameActionSheetService,
                         TEMPLATES_ROOT,
                         $ionicModal) {
