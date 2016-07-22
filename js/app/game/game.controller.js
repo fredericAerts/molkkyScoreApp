@@ -6,24 +6,31 @@
         .controller('GameCtrl', GameCtrl);
 
     GameCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            '$state',
                             'gameService',
                             'settingsService',
                             'modalsService',
+                            'popupService',
+                            'gameActionSheetService',
                             'TEMPLATES_ROOT',
-                            '$ionicModal',
-                            '$ionicActionSheet'];
+                            '$ionicModal'];
 
     function GameCtrl($scope,
+                        $rootScope,
+                        $state,
                         gameService,
                         settingsService,
                         modalsService,
+                        popupService,
+                        gameActionSheetService,
                         TEMPLATES_ROOT,
-                        $ionicModal,
-                        $ionicActionSheet) {
+                        $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
         var settings = settingsService.getSettings();
+        var actionSheetActions = getActionSheetActions();
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -51,6 +58,10 @@
 
         /*  LISTENERS
             ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            gameActionSheetService.translateActionSheetData();
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             addPlayersToGameModal.remove();
@@ -71,75 +82,7 @@
         }
 
         function initParticipants() {
-            // vm.participants = gameService.getParticipants();
-            vm.participants = [
-                {
-                    id: 0,
-                    firstName: 'Ben',
-                    lastName: 'Sparrow',
-                    tagline: 'You on your way?',
-                    face: 'img/ben.png'
-                },
-                {
-                    id: 1,
-                    firstName: 'Max',
-                    lastName: 'Lynx',
-                    tagline: 'Hey, it\'s me',
-                    face: 'img/max.png'
-                },
-                {
-                    id: 2,
-                    firstName: 'Adam',
-                    lastName: 'Bradleyson',
-                    tagline: 'I should buy a boat',
-                    face: 'img/adam.jpg'
-                },
-                {
-                    id: 3,
-                    firstName: 'Perry',
-                    lastName: 'Governor',
-                    tagline: 'Look at my mukluks!',
-                    face: 'img/perry.png'
-                },
-                {
-                    id: 4,
-                    firstName: 'Mike',
-                    lastName: 'Harrington',
-                    tagline: 'This is wicked good ice cream.',
-                    face: 'img/mike.png'
-                },
-                {
-                    id: 5,
-                    firstName: 'Dummy',
-                    lastName: 'player',
-                    tagline: 'I have a grey avatar.',
-                    face: ''
-                },
-                {
-                    id: 6,
-                    firstName: 'Mr.',
-                    lastName: 'Pink',
-                    guestColor: 'pink'
-                },
-                {
-                    id: 7,
-                    firstName: 'Dummy2',
-                    lastName: 'player2',
-                    tagline: 'I have a grey avatar2.',
-                    face: ''
-                }
-            ];
-
-            vm.participants.forEach(function(participant) {
-                participant.score = 0;
-                participant.scoreHistory = [];
-                participant.accumulatedScoreHistory = [];
-                participant.missesInARow = 0;
-                participant.finishedGame = false;
-                participant.disqualified = false;
-                participant.endPosition = -1;
-                participant.activedAvatarStatus = '';
-            });
+            vm.participants = gameService.initParticipants();
         }
 
         function initGame() {
@@ -172,29 +115,6 @@
             }
         }
 
-        function showActionSheet() {
-            // Show the action sheet
-            var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    {text: 'Restart game'},
-                    {text: 'New game'},
-                    {text: 'Undo last'},
-                    {text: 'Exit game'},
-                ],
-                titleText: 'Options',
-                cancelText: 'Continue',
-                cancel: function() {
-                    // add cancel code..
-                },
-                buttonClicked: function(index) {
-                    switch (index) {
-                        case 1: addPlayersToGameModal.show();
-                    }
-                    return true;
-                }
-            });
-        }
-
         function activateScore(score) { // user touched a number
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
 
@@ -223,7 +143,53 @@
         }
 
         function getScoreboardDetailsRowIterator() {
-            return new Array(vm.participants[0].accumulatedScoreHistory.length);
+            if (vm.participants[0]) {
+                return new Array(vm.participants[0].accumulatedScoreHistory.length);
+            }
+            else {
+                return [];
+            }
+        }
+
+        /*  ACTION SHEET FUNCTIONS
+            ====================================================================================== */
+        function getActionSheetActions() {
+            return {
+                restart: restartGame,
+                new: newGame,
+                undo: undoLast,
+                exit: exitGame
+            };
+        }
+
+        function showActionSheet() {
+            gameActionSheetService.showActionSheet(actionSheetActions, isGameEnded());
+        }
+
+        function restartGame() {
+            vm.participants = gameService.initParticipants();
+            initScoreboard();
+            initGame();
+        }
+
+        function newGame(isNewPlayers) {
+            if (isNewPlayers) {
+                addPlayersToGameModal.show();
+            }
+            else {
+                gameService.sortParticipantsOnScore(); // TODO: Implement this function
+                vm.participants = gameService.initParticipants();
+                initScoreboard();
+                initGame();
+            }
+        }
+
+        function undoLast() {
+            console.log('undo'); // TODO
+        }
+
+        function exitGame() {
+            $state.go('tab.home');
         }
 
         /*  Helper functions

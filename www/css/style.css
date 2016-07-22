@@ -9744,6 +9744,9 @@ a.button {
 .bar-footer .button-outline {
   margin-right: 5px; }
 
+.three-btn .popup {
+  width: 300px; }
+
 .action-sheet-option.button {
   color: #444; }
 

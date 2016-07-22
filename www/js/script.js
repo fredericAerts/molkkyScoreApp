@@ -5245,27 +5245,185 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .factory('gameActionSheetService', gameActionSheetService);
+
+    gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', 'popupService'];
+
+    function gameActionSheetService($ionicActionSheet, $translate, popupService) {
+        var actionSheetData = translateActionSheetData();
+
+        var service = {
+            showActionSheet: showActionSheet,
+            translateActionSheetData: translateActionSheetData
+        };
+        return service;
+
+        ////////////////
+
+        function showActionSheet(actions, isGameEnded) {
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.BUTTON')},
+                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.NEW.BUTTON')},
+                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.UNDO.BUTTON')},
+                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.BUTTON')},
+                ],
+                titleText: $translate.instant('HOME.GAME.ACTION-SHEET.TITLE'),
+                cancelText: $translate.instant('HOME.GAME.ACTION-SHEET.CONTINUE.BUTTON'),
+                cancel: function() {
+                    // add cancel code..
+                },
+                buttonClicked: function(index) {
+                    switch (index) {
+                        case 0: showRestartPopup(actions.restart, isGameEnded); break; // restart game
+                        case 1: showNewPopup(actions.new, isGameEnded); break; // new game
+                        case 2: actions.undo(); break; // undo last
+                        case 3: showExitPopup(actions.exit, isGameEnded); break; // exit game
+                    }
+                    return true;
+                }
+            });
+        }
+
+        function translateActionSheetData() {
+            actionSheetData = {
+                restartConfirm: {
+                    title: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.CONFIRM.TITLE'),
+                    text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.CONFIRM.TEXT')
+                },
+                newConfirm: {
+                    title: $translate.instant('HOME.GAME.ACTION-SHEET.NEW.CONFIRM.TITLE'),
+                    text: $translate.instant('HOME.GAME.ACTION-SHEET.NEW.CONFIRM.TEXT')
+                },
+                exitConfirm: {
+                    title: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.CONFIRM.TITLE'),
+                    text: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.CONFIRM.TEXT')
+                }
+            };
+
+            return actionSheetData;
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
+        function showRestartPopup(callback, isGameEnded) {
+            var popupOptions = {
+                title: actionSheetData.restartConfirm.title,
+                template: actionSheetData.restartConfirm.text,
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+
+            showConfirm(popupOptions, callback, isGameEnded);
+        }
+
+        function showNewPopup(callback) {
+            var popupOptions = {
+                title: actionSheetData.newConfirm.title,
+                template: actionSheetData.newConfirm.text,
+                cssClass: 'three-btn',
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.NO') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            callback(true); // new players
+                            return false;
+                        }
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            callback(false); // same players
+                            return false;
+                        }
+                    }
+                ]
+            };
+
+            showConfirm(popupOptions, callback, false);
+        }
+
+        function showExitPopup(callback, isGameEnded) {
+            var popupOptions = {
+                title: actionSheetData.exitConfirm.title,
+                template: actionSheetData.exitConfirm.text,
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+
+            showConfirm(popupOptions, callback, isGameEnded);
+        }
+
+        function showConfirm(popupOptions, callback, bypassPopup) {
+            if (!bypassPopup) {
+                popupService.showConfirmPopup(popupOptions, callback);
+            }
+            else {
+                callback();
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
     GameCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            '$state',
                             'gameService',
                             'settingsService',
                             'modalsService',
+                            'popupService',
+                            'gameActionSheetService',
                             'TEMPLATES_ROOT',
-                            '$ionicModal',
-                            '$ionicActionSheet'];
+                            '$ionicModal'];
 
     function GameCtrl($scope,
+                        $rootScope,
+                        $state,
                         gameService,
                         settingsService,
                         modalsService,
+                        popupService,
+                        gameActionSheetService,
                         TEMPLATES_ROOT,
-                        $ionicModal,
-                        $ionicActionSheet) {
+                        $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
         var settings = settingsService.getSettings();
+        var actionSheetActions = getActionSheetActions();
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -5293,6 +5451,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         /*  LISTENERS
             ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            gameActionSheetService.translateActionSheetData();
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             addPlayersToGameModal.remove();
@@ -5313,75 +5475,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initParticipants() {
-            // vm.participants = gameService.getParticipants();
-            vm.participants = [
-                {
-                    id: 0,
-                    firstName: 'Ben',
-                    lastName: 'Sparrow',
-                    tagline: 'You on your way?',
-                    face: 'img/ben.png'
-                },
-                {
-                    id: 1,
-                    firstName: 'Max',
-                    lastName: 'Lynx',
-                    tagline: 'Hey, it\'s me',
-                    face: 'img/max.png'
-                },
-                {
-                    id: 2,
-                    firstName: 'Adam',
-                    lastName: 'Bradleyson',
-                    tagline: 'I should buy a boat',
-                    face: 'img/adam.jpg'
-                },
-                {
-                    id: 3,
-                    firstName: 'Perry',
-                    lastName: 'Governor',
-                    tagline: 'Look at my mukluks!',
-                    face: 'img/perry.png'
-                },
-                {
-                    id: 4,
-                    firstName: 'Mike',
-                    lastName: 'Harrington',
-                    tagline: 'This is wicked good ice cream.',
-                    face: 'img/mike.png'
-                },
-                {
-                    id: 5,
-                    firstName: 'Dummy',
-                    lastName: 'player',
-                    tagline: 'I have a grey avatar.',
-                    face: ''
-                },
-                {
-                    id: 6,
-                    firstName: 'Mr.',
-                    lastName: 'Pink',
-                    guestColor: 'pink'
-                },
-                {
-                    id: 7,
-                    firstName: 'Dummy2',
-                    lastName: 'player2',
-                    tagline: 'I have a grey avatar2.',
-                    face: ''
-                }
-            ];
-
-            vm.participants.forEach(function(participant) {
-                participant.score = 0;
-                participant.scoreHistory = [];
-                participant.accumulatedScoreHistory = [];
-                participant.missesInARow = 0;
-                participant.finishedGame = false;
-                participant.disqualified = false;
-                participant.endPosition = -1;
-                participant.activedAvatarStatus = '';
-            });
+            vm.participants = gameService.initParticipants();
         }
 
         function initGame() {
@@ -5414,29 +5508,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
         }
 
-        function showActionSheet() {
-            // Show the action sheet
-            var hideSheet = $ionicActionSheet.show({
-                buttons: [
-                    {text: 'Restart game'},
-                    {text: 'New game'},
-                    {text: 'Undo last'},
-                    {text: 'Exit game'},
-                ],
-                titleText: 'Options',
-                cancelText: 'Continue',
-                cancel: function() {
-                    // add cancel code..
-                },
-                buttonClicked: function(index) {
-                    switch (index) {
-                        case 1: addPlayersToGameModal.show();
-                    }
-                    return true;
-                }
-            });
-        }
-
         function activateScore(score) { // user touched a number
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
 
@@ -5465,7 +5536,53 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function getScoreboardDetailsRowIterator() {
-            return new Array(vm.participants[0].accumulatedScoreHistory.length);
+            if (vm.participants[0]) {
+                return new Array(vm.participants[0].accumulatedScoreHistory.length);
+            }
+            else {
+                return [];
+            }
+        }
+
+        /*  ACTION SHEET FUNCTIONS
+            ====================================================================================== */
+        function getActionSheetActions() {
+            return {
+                restart: restartGame,
+                new: newGame,
+                undo: undoLast,
+                exit: exitGame
+            };
+        }
+
+        function showActionSheet() {
+            gameActionSheetService.showActionSheet(actionSheetActions, isGameEnded());
+        }
+
+        function restartGame() {
+            vm.participants = gameService.initParticipants();
+            initScoreboard();
+            initGame();
+        }
+
+        function newGame(isNewPlayers) {
+            if (isNewPlayers) {
+                addPlayersToGameModal.show();
+            }
+            else {
+                gameService.sortParticipantsOnScore(); // TODO: Implement this function
+                vm.participants = gameService.initParticipants();
+                initScoreboard();
+                initGame();
+            }
+        }
+
+        function undoLast() {
+            console.log('undo'); // TODO
+        }
+
+        function exitGame() {
+            $state.go('tab.home');
         }
 
         /*  Helper functions
@@ -5580,7 +5697,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         var service = {
             setParticipants: setParticipants,
-            getParticipants: getParticipants
+            getParticipants: getParticipants,
+            initParticipants: initParticipants,
+            sortParticipantsOnScore: sortParticipantsOnScore
         };
         return service;
 
@@ -5591,6 +5710,26 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function getParticipants() {
+            return participants;
+        }
+
+        function initParticipants() {
+            participants.forEach(function(participant) {
+                participant.score = 0;
+                participant.scoreHistory = [];
+                participant.accumulatedScoreHistory = [];
+                participant.missesInARow = 0;
+                participant.finishedGame = false;
+                participant.disqualified = false;
+                participant.endPosition = -1;
+                participant.activedAvatarStatus = '';
+            });
+
+            return participants;
+        }
+
+        function sortParticipantsOnScore() {
+            console.log('sort');
             return participants;
         }
     }
@@ -5697,7 +5836,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 /*  LISTENERS
                 ======================================================================================== */
                 modalScope.$on('modal.hidden', function() {
-                    gameService.setParticipants(modalScope.viewModel.participants.slice());
                     resetAddPlayersToGameModal();
                 });
 
@@ -5746,6 +5884,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             function startGame() {
+                gameService.setParticipants(modalScope.viewModel.participants.slice());
                 // TODO: show load animation
                 addPlayersToGameModal.hide()
                 .then(function() {
@@ -6036,6 +6175,37 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('popupService', popupService);
+
+    popupService.$inject = ['$ionicPopup'];
+
+    function popupService($ionicPopup) {
+        /*  Service for creating modals that are used in more than one controller
+            ====================================================================== */
+
+        var service = {
+            showConfirmPopup: showConfirmPopup
+        };
+        return service;
+
+        ////////////////
+
+        function showConfirmPopup(popupOptions, callback) {
+            $ionicPopup.show(popupOptions)
+            .then(function(confirmed) {
+                if (confirmed) {
+                    callback();
+                }
+            });
         }
     }
 })();

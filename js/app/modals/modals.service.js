@@ -53,7 +53,6 @@
                 /*  LISTENERS
                 ======================================================================================== */
                 modalScope.$on('modal.hidden', function() {
-                    gameService.setParticipants(modalScope.viewModel.participants.slice());
                     resetAddPlayersToGameModal();
                 });
 
@@ -102,6 +101,7 @@
             }
 
             function startGame() {
+                gameService.setParticipants(modalScope.viewModel.participants.slice());
                 // TODO: show load animation
                 addPlayersToGameModal.hide()
                 .then(function() {

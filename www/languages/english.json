@@ -1,5 +1,13 @@
 {
     "HOME": {
+        "GENERAL": {
+            "CONFIRM": {
+                "CANCEL": "Cancel",
+                "OK": "Ok",
+                "NO": "No",
+                "YES": "Yes"
+            }
+        },
         "VIEW-TITLE": "Home",
         "START": {
             "BUTTON-TITLE": "Start game",
@@ -27,6 +35,36 @@
                     "DETAILS": {
                         "TITLE": "Score Details"
                     }
+                }
+            },
+            "ACTION-SHEET": {
+                "TITLE": "Options",
+                "RESTART": {
+                    "BUTTON": "Restart game",
+                    "CONFIRM": {
+                        "TITLE": "Restart game",
+                        "TEXT": "Are you sure you want to restart game?"
+                    }
+                },
+                "NEW": {
+                    "BUTTON": "New game",
+                    "CONFIRM": {
+                        "TITLE": "New game",
+                        "TEXT": "Do you want to use the same players?"
+                    }
+                },
+                "UNDO": {
+                    "BUTTON": "Undo last"
+                },
+                "EXIT": {
+                    "BUTTON": "Exit game",
+                    "CONFIRM": {
+                        "TITLE": "Exit game",
+                        "TEXT": "Are you sure you want to exit game?"
+                    }
+                },
+                "CONTINUE": {
+                    "BUTTON": "Continue"
                 }
             }
         },
