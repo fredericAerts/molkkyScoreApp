@@ -5905,9 +5905,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('modalsService', modalsService);
 
-    modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService'];
+    modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService', '$cordovaToast'];
 
-    function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService) {
+    function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService, $cordovaToast) {
         /*  Service for creating modals that are used in more than one controller
             ====================================================================== */
 
@@ -5963,7 +5963,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ======================================================================================== */
             function addPlayerToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
-                    console.log('max participants reached'); // TODO: make toast
+                    $cordovaToast.show('max participants reached', 'long', 'center');
                     return;
                 }
 
@@ -5976,7 +5976,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             function addGuestParticipant() {
                 if (modalScope.viewModel.participants.length === 8) {
-                    console.log('max participants reached'); // TODO: make toast
+                    $cordovaToast.show('max participants reached', 'long', 'center');
                     return;
                 }
 
