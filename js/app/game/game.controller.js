@@ -117,10 +117,10 @@
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
 
             if (vm.activatedScore > -1) {
-                vm.activePlayer.activedAvatarStatus = getActivedAvatarStatus();
+                vm.activePlayer.activatedAvatarStatus = getActivatedAvatarStatus();
             }
             else {
-                vm.activePlayer.activedAvatarStatus = ''; // reset
+                vm.activePlayer.activatedAvatarStatus = ''; // reset
             }
         }
 
@@ -129,7 +129,7 @@
                 return;
             }
 
-            vm.activePlayer.activedAvatarStatus = ''; // reset
+            vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
 
             if (!isGameEnded()) {
@@ -183,7 +183,8 @@
         }
 
         function undoLast() {
-            console.log('undo'); // TODO
+            moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, getActivePlayerIndex());
+            undoLastThrow(vm.activePlayer);
         }
 
         function exitGame() {
@@ -200,7 +201,6 @@
 
             if (vm.activePlayer.missesInARow > 2) {
                 processThreeMisses();
-                vm.activePlayer.missesInARow = 0; // reset
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 processWinningScoreExceeded();
@@ -214,9 +214,17 @@
 
         function processThreeMisses() {
             switch (settings.threeMisses) {
-                case 'to zero': vm.activePlayer.score = 0; break;
-                case 'halved': vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2); break;
-                case 'disqualified': vm.activePlayer.disqualified = true; break;
+                case 'to zero':
+                    vm.activePlayer.score = 0;
+                    vm.activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'halved':
+                    vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2);
+                    vm.activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'disqualified':
+                    vm.activePlayer.disqualified = true;
+                    break;
             }
         }
 
@@ -234,15 +242,41 @@
         }
 
         function moveToNextPlayer() {
-            var activePlayerIndex = _.findIndex(vm.participants, function(participant) {
-                return vm.activePlayer === participant;
-            });
+            var activePlayerIndex = getActivePlayerIndex();
             var endOfRound = activePlayerIndex >= vm.participants.length - 1;
             vm.activePlayer = endOfRound ? vm.participants[0] : vm.participants[activePlayerIndex + 1];
 
             if (vm.activePlayer.finishedGame || vm.activePlayer.disqualified) {
                 moveToNextPlayer();
             }
+        }
+
+        function moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex) {
+            var activePlayerIndex = getActivePlayerIndex();
+            var firstOfRound = activePlayerIndex === 0;
+
+            vm.activePlayer = firstOfRound ? vm.participants[vm.participants.length - 1] : vm.participants[activePlayerIndex - 1];
+
+            var isInSameRound = throwingPlayerIndex > getActivePlayerIndex();
+
+            if (isInSameRound) {
+                if (currentThrowNumber !== vm.activePlayer.scoreHistory.length) {
+                    moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
+                }
+            }
+            else {
+                if (currentThrowNumber !== vm.activePlayer.scoreHistory.length + 1) {
+                    moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
+                }
+            }
+        }
+
+        function getActivePlayerIndex() {
+            var activePlayerIndex = _.findIndex(vm.participants, function(participant) {
+                return vm.activePlayer === participant;
+            });
+
+            return activePlayerIndex;
         }
 
         function getEndPosition() {
@@ -257,7 +291,22 @@
             return numberOfPlayersThatFinishedGame;
         }
 
-        function getActivedAvatarStatus() {
+        function undoLastThrow(player) {
+            var isFirstThrow = player.accumulatedScoreHistory.length < 2;
+            vm.activatedScore = -1;
+            player.scoreHistory.shift();
+            player.accumulatedScoreHistory.pop();
+            player.score = isFirstThrow ? 0 : player.accumulatedScoreHistory[player.accumulatedScoreHistory.length - 1];
+            if (player.missesInARow) {
+                player.missesInARow = player.missesInARow - 1;
+            }
+            player.finishedGame = false;
+            player.disqualified = false;
+            player.endPosition = -1;
+            player.activedAvatarStatus = '';
+        }
+
+        function getActivatedAvatarStatus() {
             var status = '';
             var potentialScore = vm.activePlayer.score + vm.activatedScore;
 

@@ -5532,10 +5532,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
 
             if (vm.activatedScore > -1) {
-                vm.activePlayer.activedAvatarStatus = getActivedAvatarStatus();
+                vm.activePlayer.activatedAvatarStatus = getActivatedAvatarStatus();
             }
             else {
-                vm.activePlayer.activedAvatarStatus = ''; // reset
+                vm.activePlayer.activatedAvatarStatus = ''; // reset
             }
         }
 
@@ -5544,7 +5544,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return;
             }
 
-            vm.activePlayer.activedAvatarStatus = ''; // reset
+            vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
 
             if (!isGameEnded()) {
@@ -5598,7 +5598,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function undoLast() {
-            console.log('undo'); // TODO
+            moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, getActivePlayerIndex());
+            undoLastThrow(vm.activePlayer);
         }
 
         function exitGame() {
@@ -5615,7 +5616,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             if (vm.activePlayer.missesInARow > 2) {
                 processThreeMisses();
-                vm.activePlayer.missesInARow = 0; // reset
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 processWinningScoreExceeded();
@@ -5629,9 +5629,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processThreeMisses() {
             switch (settings.threeMisses) {
-                case 'to zero': vm.activePlayer.score = 0; break;
-                case 'halved': vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2); break;
-                case 'disqualified': vm.activePlayer.disqualified = true; break;
+                case 'to zero':
+                    vm.activePlayer.score = 0;
+                    vm.activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'halved':
+                    vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2);
+                    vm.activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'disqualified':
+                    vm.activePlayer.disqualified = true;
+                    break;
             }
         }
 
@@ -5649,15 +5657,41 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function moveToNextPlayer() {
-            var activePlayerIndex = _.findIndex(vm.participants, function(participant) {
-                return vm.activePlayer === participant;
-            });
+            var activePlayerIndex = getActivePlayerIndex();
             var endOfRound = activePlayerIndex >= vm.participants.length - 1;
             vm.activePlayer = endOfRound ? vm.participants[0] : vm.participants[activePlayerIndex + 1];
 
             if (vm.activePlayer.finishedGame || vm.activePlayer.disqualified) {
                 moveToNextPlayer();
             }
+        }
+
+        function moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex) {
+            var activePlayerIndex = getActivePlayerIndex();
+            var firstOfRound = activePlayerIndex === 0;
+
+            vm.activePlayer = firstOfRound ? vm.participants[vm.participants.length - 1] : vm.participants[activePlayerIndex - 1];
+
+            var isInSameRound = throwingPlayerIndex > getActivePlayerIndex();
+
+            if (isInSameRound) {
+                if (currentThrowNumber !== vm.activePlayer.scoreHistory.length) {
+                    moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
+                }
+            }
+            else {
+                if (currentThrowNumber !== vm.activePlayer.scoreHistory.length + 1) {
+                    moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
+                }
+            }
+        }
+
+        function getActivePlayerIndex() {
+            var activePlayerIndex = _.findIndex(vm.participants, function(participant) {
+                return vm.activePlayer === participant;
+            });
+
+            return activePlayerIndex;
         }
 
         function getEndPosition() {
@@ -5672,7 +5706,22 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return numberOfPlayersThatFinishedGame;
         }
 
-        function getActivedAvatarStatus() {
+        function undoLastThrow(player) {
+            var isFirstThrow = player.accumulatedScoreHistory.length < 2;
+            vm.activatedScore = -1;
+            player.scoreHistory.shift();
+            player.accumulatedScoreHistory.pop();
+            player.score = isFirstThrow ? 0 : player.accumulatedScoreHistory[player.accumulatedScoreHistory.length - 1];
+            if (player.missesInARow) {
+                player.missesInARow = player.missesInARow - 1;
+            }
+            player.finishedGame = false;
+            player.disqualified = false;
+            player.endPosition = -1;
+            player.activedAvatarStatus = '';
+        }
+
+        function getActivatedAvatarStatus() {
             var status = '';
             var potentialScore = vm.activePlayer.score + vm.activatedScore;
 
@@ -5710,10 +5759,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('gameService', gameService);
 
-    gameService.$inject = [];
+    gameService.$inject = ['playersService'];
 
-    function gameService() {
-        var participants = [];
+    function gameService(playersService) {
+        // var participants = [];
+        var participants = playersService.all();
 
         var service = {
             setParticipants: setParticipants,
@@ -6134,40 +6184,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 lastName: 'Bradleyson',
                 tagline: 'I should buy a boat',
                 face: 'img/adam.jpg'
-            },
-            {
-                id: 3,
-                firstName: 'Perry',
-                lastName: 'Governor',
-                tagline: 'Look at my mukluks!',
-                face: 'img/perry.png'
-            },
-            {
-                id: 4,
-                firstName: 'Mike',
-                lastName: 'Harrington',
-                tagline: 'This is wicked good ice cream.',
-                face: 'img/mike.png'
-            },
-            {
-                id: 5,
-                firstName: 'Dummy',
-                lastName: 'player',
-                tagline: 'I have a grey avatar.',
-                face: ''
-            },
-            {
-                id: 6,
-                firstName: 'Mr.',
-                lastName: 'Pink',
-                guestColor: 'pink'
-            },
-            {
-                id: 7,
-                firstName: 'Dummy2',
-                lastName: 'player2',
-                tagline: 'I have a grey avatar2.',
-                face: ''
             }
         ];
 

@@ -5,10 +5,11 @@
         .module('molkkyscore')
         .factory('gameService', gameService);
 
-    gameService.$inject = [];
+    gameService.$inject = ['playersService'];
 
-    function gameService() {
-        var participants = [];
+    function gameService(playersService) {
+        // var participants = [];
+        var participants = playersService.all();
 
         var service = {
             setParticipants: setParticipants,

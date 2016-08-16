@@ -30,40 +30,6 @@
                 lastName: 'Bradleyson',
                 tagline: 'I should buy a boat',
                 face: 'img/adam.jpg'
-            },
-            {
-                id: 3,
-                firstName: 'Perry',
-                lastName: 'Governor',
-                tagline: 'Look at my mukluks!',
-                face: 'img/perry.png'
-            },
-            {
-                id: 4,
-                firstName: 'Mike',
-                lastName: 'Harrington',
-                tagline: 'This is wicked good ice cream.',
-                face: 'img/mike.png'
-            },
-            {
-                id: 5,
-                firstName: 'Dummy',
-                lastName: 'player',
-                tagline: 'I have a grey avatar.',
-                face: ''
-            },
-            {
-                id: 6,
-                firstName: 'Mr.',
-                lastName: 'Pink',
-                guestColor: 'pink'
-            },
-            {
-                id: 7,
-                firstName: 'Dummy2',
-                lastName: 'player2',
-                tagline: 'I have a grey avatar2.',
-                face: ''
             }
         ];
 
