@@ -12,27 +12,42 @@
 
         var service = {
             showActionSheet: showActionSheet,
-            translateActionSheetData: translateActionSheetData
+            translateActionSheetData: translateActionSheetData,
+            showNewPopup: showNewPopup,
+            showExitPopup: showExitPopup
+
         };
         return service;
 
         ////////////////
 
-        function showActionSheet(actions, isGameEnded) {
+        function showActionSheet(actions, isGameStarted, isGameEnded, gameViewModel) {
             // Show the action sheet
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.BUTTON')},
-                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.NEW.BUTTON')},
-                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.UNDO.BUTTON')},
-                    {text: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.BUTTON')},
+                    {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.BUTTON'),
+                        className: isGameStarted ? '' : 'disabled'
+                    },
+                    {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.NEW.BUTTON')
+                    },
+                    {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.UNDO.BUTTON'),
+                        className: isGameStarted ? '' : 'disabled'
+                    },
+                    {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.BUTTON')
+                    }
                 ],
                 titleText: $translate.instant('HOME.GAME.ACTION-SHEET.TITLE'),
                 cancelText: $translate.instant('HOME.GAME.ACTION-SHEET.CONTINUE.BUTTON'),
                 cancel: function() {
-                    // add cancel code..
+                    gameViewModel.settingsAnimation = false;
                 },
                 buttonClicked: function(index) {
+                    gameViewModel.settingsAnimation = false;
+
                     switch (index) {
                         case 0: showRestartPopup(actions.restart, isGameEnded); break; // restart game
                         case 1: showNewPopup(actions.new); break; // new game

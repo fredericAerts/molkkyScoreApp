@@ -7,7 +7,8 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 @import "general/variables",
         "general/layout",
-        "general/helper-classes";
+        "general/helper-classes",
+        "general/animations";
 
 @import "components/avatar-block",
         "components/add-avatar-block",

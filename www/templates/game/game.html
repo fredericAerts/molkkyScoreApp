@@ -26,14 +26,14 @@
             </div>
             <div class="col col-33">
                 <div class="game-board-cell game-board-cell--settings" ng-click="game.showActionSheet()">
-                    <button class="button button-icon icon ion-ios-gear-outline"></button>
+                    <button class="button button-icon icon ion-ios-gear-outline" ng-class="{'animate-spin': game.settingsAnimation}"></button>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col col-66">
                 <div class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore > -1}" ng-click="game.processThrow();">
-                    <ion-item class="item-avatar item-icon-right" type="item-text-wrap" ng-class="game.activePlayer.activedAvatarStatus">
+                    <ion-item class="item-avatar item-icon-right" type="item-text-wrap" ng-class="game.activePlayer.activatedAvatarStatus">
                         <img ng-if="game.activePlayer.face"  ng-src="{{game.activePlayer.face}}">
                         <div ng-if="!game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
                         <h2>{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>

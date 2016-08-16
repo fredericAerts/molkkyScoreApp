@@ -34,12 +34,15 @@
         vm.scoreboard = {};
         vm.activatedScore = -1;
         vm.activePlayer = {};
+        vm.gameEnded = false;
         vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
         vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
         vm.showActionSheet = showActionSheet;
+        vm.showExitGamePopup = showExitGamePopup;
+        vm.showNewGamePopup = showNewGamePopup;
 
         activate();
 
@@ -84,6 +87,7 @@
         }
 
         function initGame() {
+            vm.gameEnded = false;
             vm.activatedScore = -1;
             vm.activePlayer = vm.participants[0];
         }
@@ -136,17 +140,26 @@
                 moveToNextPlayer();
             }
             else {
-                console.log('game has ended');
+                vm.gameEnded = true;
+                vm.scoreDetailsModal.show();
             }
         }
 
         function getScoreboardDetailsRowIterator() {
             if (vm.participants[0]) {
-                return new Array(vm.participants[0].accumulatedScoreHistory.length);
+                return new Array(vm.activePlayer.scoreHistory.length + 1);
             }
             else {
                 return [];
             }
+        }
+
+        function showExitGamePopup() {
+            gameActionSheetService.showExitPopup(exitGame, isGameEnded());
+        }
+
+        function showNewGamePopup() {
+            gameActionSheetService.showNewPopup(newGame);
         }
 
         /*  ACTION SHEET FUNCTIONS
@@ -161,10 +174,15 @@
         }
 
         function showActionSheet() {
-            gameActionSheetService.showActionSheet(actionSheetActions, isGameEnded());
+            vm.settingsAnimation = true;
+            gameActionSheetService.showActionSheet(actionSheetActions, isGameStarted(), isGameEnded(), vm);
         }
 
         function restartGame() {
+            if (!isGameStarted()) {
+                return;
+            }
+
             vm.participants = gameService.initParticipants();
             initScoreboard();
             initGame();
@@ -180,9 +198,15 @@
                 initScoreboard();
                 initGame();
             }
+
+            vm.scoreDetailsModal.hide();
         }
 
         function undoLast() {
+            if (!isGameStarted()) {
+                return;
+            }
+
             moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, getActivePlayerIndex());
             undoLastThrow(vm.activePlayer);
         }
@@ -239,6 +263,10 @@
         function processPlayerFinishedGame() {
             vm.activePlayer.finishedGame = true;
             vm.activePlayer.endPosition = getEndPosition();
+
+            if (vm.activePlayer.endPosition === 1) {
+                vm.scoreDetailsModal.show();
+            }
         }
 
         function moveToNextPlayer() {
@@ -303,7 +331,7 @@
             player.finishedGame = false;
             player.disqualified = false;
             player.endPosition = -1;
-            player.activedAvatarStatus = '';
+            player.activatedAvatarStatus = '';
         }
 
         function getActivatedAvatarStatus() {
@@ -333,6 +361,10 @@
             });
 
             return playersStillParticipating < 2;
+        }
+
+        function isGameStarted() {
+            return vm.participants[0].scoreHistory.length;
         }
     }
 })();

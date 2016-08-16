@@ -62,6 +62,11 @@
             /*  FUNCTIONS
                 ======================================================================================== */
             function addPlayerToParticipants(newParticipant) {
+                if (modalScope.viewModel.participants.length === 8) {
+                    console.log('max participants reached'); // TODO: make toast
+                    return;
+                }
+
                 var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
                     return player.id === newParticipant.id;
                 });
@@ -70,6 +75,11 @@
             }
 
             function addGuestParticipant() {
+                if (modalScope.viewModel.participants.length === 8) {
+                    console.log('max participants reached'); // TODO: make toast
+                    return;
+                }
+
                 var guestColor = pickRandomGuestColor();
 
                 modalScope.viewModel.participants.push({

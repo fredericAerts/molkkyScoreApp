@@ -9684,6 +9684,27 @@ a.button {
 .center-align {
   text-align: center; }
 
+.animate-spin {
+  -webkit-animation: spin 1.5s cubic-bezier(0, 0, 0.19, 1.17);
+  animation: spin 1.5s cubic-bezier(0, 0, 0.19, 1.17);
+  display: inline-block; }
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
 .avatar-block {
   padding: 30px;
   color: #fff;
@@ -9796,7 +9817,7 @@ a.button {
   background: #f8f8f8;
   overflow: hidden; }
   .game-board-cell--scoreboard {
-    background: transparent; }
+    background: #f8f8f8; }
     .game-board-cell--scoreboard .row {
       padding: 1px; }
       .game-board-cell--scoreboard .row + .row {
@@ -9853,6 +9874,8 @@ a.button {
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.blonde {
             color: #444;
             background: #F2D300; }
+            .game-board-cell--scoreboard .row .col .game-board-cell.guest.blonde .icon {
+              color: #fff; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.orange {
             background: #FF8704; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.pink {
@@ -9874,17 +9897,23 @@ a.button {
             line-height: 34px; }
           .game-board-cell--scoreboard .row .col .game-board-cell img {
             position: absolute;
-            left: 0;
+            left: 50%;
             top: 50%;
-            -webkit-transform: translateY(-50%);
-                    transform: translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+                    transform: translateX(-50%) translateY(-50%);
             z-index: 1;
-            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
             border-radius: 4px; }
   .game-board-cell--settings {
-    background: #444; }
+    background: #f8f8f8; }
     .game-board-cell--settings .button {
-      color: #fff; }
+      color: #444; }
+      .game-board-cell--settings .button:before {
+        margin-top: 1px;
+        height: 47px;
+        line-height: 47px; }
   .game-board-cell--player {
     text-align: left; }
     .game-board-cell--player.active {
@@ -9916,11 +9945,13 @@ a.button {
   .scoreboard-details th {
     border-right: 1px solid #bdbdbd;
     border-left: 1px solid #bdbdbd;
+    border-radius: 4px;
     font-size: 0; }
     .scoreboard-details th img,
     .scoreboard-details th .scoreboard-details__face-placeholder {
       width: 100%;
       margin: auto;
+      border-radius: 4px;
       font-size: inherit;
       background: #bdbdbd; }
     .scoreboard-details th .scoreboard-details__face-placeholder:before {
@@ -9943,8 +9974,10 @@ a.button {
     .scoreboard-details th .scoreboard-details__face-placeholder.blue {
       background: #01B7FF; }
   .scoreboard-details td {
+    padding-bottom: 5px;
     border-right: 1px solid #bdbdbd;
     border-left: 1px solid #bdbdbd;
+    font-size: 18px;
     vertical-align: middle; }
 
 .item-input--text {
