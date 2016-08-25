@@ -26,6 +26,7 @@
             ====================================================================== */
             var addPlayersToGameModal = {};
             var modalScope = $scope.$new(true);
+            var guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
 
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
                 scope: modalScope,
@@ -40,7 +41,7 @@
                 ====================================================================== */
                 modalScope.viewModel = {
                     showReorder: false,
-                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'],
+                    guestColors: guestColors,
                     playersInDatabase: playersService.all().slice(), // modal input
                     participants: [], // modal output
                     addPlayerToParticipants: addPlayerToParticipants,
@@ -124,7 +125,7 @@
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
                 modalScope.viewModel.showReorder = false;
-                modalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
+                modalScope.viewModel.guestColors = guestColors;
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
                 modalScope.viewModel.participants = [];
             }

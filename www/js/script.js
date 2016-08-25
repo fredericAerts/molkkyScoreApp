@@ -5436,27 +5436,101 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .factory('gameUtilities', gameUtilities);
+
+    gameUtilities.$inject = [];
+
+    function gameUtilities() {
+        var service = {
+            getActivePlayerIndex: getActivePlayerIndex,
+            getEndPosition: getEndPosition,
+            getActivatedAvatarStatus: getActivatedAvatarStatus,
+            isGameEnded: isGameEnded,
+            isGameStarted: isGameStarted
+        };
+        return service;
+
+        ////////////////
+
+        function getActivePlayerIndex(activePlayer, participants) {
+            var activePlayerIndex = _.findIndex(participants, function(participant) {
+                return activePlayer === participant;
+            });
+
+            return activePlayerIndex;
+        }
+
+        function getEndPosition(participants) {
+            var numberOfPlayersThatFinishedGame = 0;
+
+            participants.forEach(function(participant) {
+                if (participant.finishedGame) {
+                    numberOfPlayersThatFinishedGame += 1;
+                }
+            });
+
+            return numberOfPlayersThatFinishedGame;
+        }
+
+        function getActivatedAvatarStatus(activatedScore, activePlayer, settings) {
+            var status = '';
+            var potentialScore = activePlayer.score + activatedScore;
+
+            if (activatedScore === 0 && activePlayer.missesInARow === 2) {
+                status = settings.threeMisses === 'disqualified' ? 'error' : 'warning';
+            }
+            else if (potentialScore > settings.winningScore) {
+                status = 'warning';
+            }
+            else if (potentialScore === settings.winningScore) {
+                status = 'success';
+            }
+
+            return status;
+        }
+
+        function isGameEnded(participants) {
+            var playersStillParticipating = participants.length;
+
+            participants.forEach(function(participant) {
+                if (participant.finishedGame || participant.disqualified) {
+                    playersStillParticipating -= 1;
+                }
+            });
+
+            return playersStillParticipating < 2;
+        }
+
+        function isGameStarted(participants) {
+            return participants[0].scoreHistory.length;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('GameCtrl', GameCtrl);
 
     GameCtrl.$inject = ['$scope',
                             '$rootScope',
                             '$state',
                             'gameService',
+                            'gameUtilities',
                             'settingsService',
                             'modalsService',
-                            'gameActionSheetService',
-                            'TEMPLATES_ROOT',
-                            '$ionicModal'];
+                            'gameActionSheetService'];
 
     function GameCtrl($scope,
                         $rootScope,
                         $state,
                         gameService,
+                        gameUtilities,
                         settingsService,
                         modalsService,
-                        gameActionSheetService,
-                        TEMPLATES_ROOT,
-                        $ionicModal) {
+                        gameActionSheetService) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -5546,7 +5620,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.activatedScore = vm.activatedScore !== score ? score : -1;
 
             if (vm.activatedScore > -1) {
-                vm.activePlayer.activatedAvatarStatus = getActivatedAvatarStatus();
+                vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore, vm.activePlayer, settings);
             }
             else {
                 vm.activePlayer.activatedAvatarStatus = ''; // reset
@@ -5561,7 +5635,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
 
-            if (!isGameEnded()) {
+            if (!gameUtilities.isGameEnded(vm.participants)) {
                 moveToNextPlayer();
             }
             else {
@@ -5584,7 +5658,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function showExitGamePopup() {
-            gameActionSheetService.showExitPopup(exitGame, isGameEnded());
+            gameActionSheetService.showExitPopup(exitGame, gameUtilities.isGameEnded(vm.participants));
         }
 
         function showNewGamePopup() {
@@ -5603,12 +5677,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function showActionSheet() {
+            var isGameStarted = gameUtilities.isGameStarted(vm.participants);
+            var isGameEnded = gameUtilities.isGameEnded(vm.participants);
+
             vm.settingsAnimation = true;
-            gameActionSheetService.showActionSheet(actionSheetActions, isGameStarted(), isGameEnded(), vm);
+            gameActionSheetService.showActionSheet(actionSheetActions, isGameStarted, isGameEnded, vm);
         }
 
         function restartGame() {
-            if (!isGameStarted()) {
+            if (!gameUtilities.isGameStarted(vm.participants)) {
                 return;
             }
 
@@ -5632,11 +5709,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function undoLast() {
-            if (!isGameStarted()) {
+            if (!gameUtilities.isGameStarted(vm.participants)) {
                 return;
             }
 
-            moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, getActivePlayerIndex());
+            var activePlayerIndex = gameUtilities.getActivePlayerIndex(vm.activePlayer, vm.participants);
+
+            moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, activePlayerIndex);
             undoLastThrow(vm.activePlayer);
         }
 
@@ -5695,7 +5774,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processPlayerFinishedGame() {
             vm.activePlayer.finishedGame = true;
-            vm.activePlayer.endPosition = getEndPosition();
+            vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
 
             if (vm.activePlayer.endPosition === 1) {
                 vm.scoreDetailsModal.show();
@@ -5703,7 +5782,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function moveToNextPlayer() {
-            var activePlayerIndex = getActivePlayerIndex();
+            var activePlayerIndex = gameUtilities.getActivePlayerIndex(vm.activePlayer, vm.participants);
             var endOfRound = activePlayerIndex >= vm.participants.length - 1;
             vm.activePlayer = endOfRound ? vm.participants[0] : vm.participants[activePlayerIndex + 1];
 
@@ -5713,7 +5792,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex) {
-            var activePlayerIndex = getActivePlayerIndex();
+            var activePlayerIndex = gameUtilities.getActivePlayerIndex(vm.activePlayer, vm.participants);
             var firstOfRound = activePlayerIndex === 0;
 
             if (firstOfRound) {
@@ -5723,7 +5802,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 vm.activePlayer = vm.participants[activePlayerIndex - 1];
             }
 
-            var isInSameRound = throwingPlayerIndex > getActivePlayerIndex();
+            activePlayerIndex = gameUtilities.getActivePlayerIndex(vm.activePlayer, vm.participants);
+            var isInSameRound = throwingPlayerIndex > activePlayerIndex;
 
             if (isInSameRound) {
                 if (currentThrowNumber !== vm.activePlayer.scoreHistory.length) {
@@ -5735,26 +5815,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
                 }
             }
-        }
-
-        function getActivePlayerIndex() {
-            var activePlayerIndex = _.findIndex(vm.participants, function(participant) {
-                return vm.activePlayer === participant;
-            });
-
-            return activePlayerIndex;
-        }
-
-        function getEndPosition() {
-            var numberOfPlayersThatFinishedGame = 0;
-
-            vm.participants.forEach(function(participant) {
-                if (participant.finishedGame) {
-                    numberOfPlayersThatFinishedGame += 1;
-                }
-            });
-
-            return numberOfPlayersThatFinishedGame;
         }
 
         function undoLastThrow(player) {
@@ -5770,39 +5830,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             player.disqualified = false;
             player.endPosition = -1;
             player.activatedAvatarStatus = '';
-        }
-
-        function getActivatedAvatarStatus() {
-            var status = '';
-            var potentialScore = vm.activePlayer.score + vm.activatedScore;
-
-            if (vm.activatedScore === 0 && vm.activePlayer.missesInARow === 2) {
-                status = settings.threeMisses === 'disqualified' ? 'error' : 'warning';
-            }
-            else if (potentialScore > settings.winningScore) {
-                status = 'warning';
-            }
-            else if (potentialScore === settings.winningScore) {
-                status = 'success';
-            }
-
-            return status;
-        }
-
-        function isGameEnded() {
-            var playersStillParticipating = vm.participants.length;
-
-            vm.participants.forEach(function(participant) {
-                if (participant.finishedGame || participant.disqualified) {
-                    playersStillParticipating -= 1;
-                }
-            });
-
-            return playersStillParticipating < 2;
-        }
-
-        function isGameStarted() {
-            return vm.participants[0].scoreHistory.length;
         }
     }
 })();
@@ -5965,6 +5992,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ====================================================================== */
             var addPlayersToGameModal = {};
             var modalScope = $scope.$new(true);
+            var guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
 
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
                 scope: modalScope,
@@ -5979,7 +6007,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ====================================================================== */
                 modalScope.viewModel = {
                     showReorder: false,
-                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'],
+                    guestColors: guestColors,
                     playersInDatabase: playersService.all().slice(), // modal input
                     participants: [], // modal output
                     addPlayerToParticipants: addPlayerToParticipants,
@@ -6063,7 +6091,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
                 modalScope.viewModel.showReorder = false;
-                modalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
+                modalScope.viewModel.guestColors = guestColors;
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
                 modalScope.viewModel.participants = [];
             }
