@@ -37,6 +37,9 @@
         vm.gameEnded = false;
         vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
+        vm.isDetailsScoreListSorted = false;
+        vm.scoreListSortPredicate = '';
+        vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
         vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
@@ -145,6 +148,10 @@
             }
         }
 
+        function toggleScoreListSortPredicate() {
+            vm.scoreListSortPredicate = vm.isDetailsScoreListSorted ? ['-score', 'endPosition'] : '';
+        }
+
         function getScoreboardDetailsRowIterator() {
             if (vm.participants[0]) {
                 return new Array(vm.activePlayer.scoreHistory.length + 1);
@@ -234,6 +241,10 @@
             }
 
             vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
+
+            if (vm.activePlayer.disqualified) {
+                vm.activePlayer.score = 0;
+            }
         }
 
         function processThreeMisses() {

@@ -14,15 +14,18 @@
     </div>
     <ion-content class="has-tabs-top">
         <div ng-show="game.scoreDetailsModalActiveTabIndex === 0">
+            <ion-toggle ng-model="game.isDetailsScoreListSorted" ng-change="game.toggleScoreListSortPredicate()">
+                <span>{{ 'HOME.GAME.SCORE-DETAILS-MODAL.TABS.SCORE-LIST.SORT-TOGGLE' | translate }}</span>
+            </ion-toggle>
             <ion-list>
-                <ion-item class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants">
-                <img ng-if="participant.face" ng-src="{{participant.face}}">
-                <div ng-if="!participant.face" class="item-avatar__face-placeholder {{participant.guestColor}}"></div>
-                <h2>{{participant.firstName}} {{participant.lastName}}</h2>
-                <p>{{participant.tagline}}</p>
-                <i class="icon note">
-                    {{participant.score}}
-                </i>
+                <ion-item class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants | orderBy: game.scoreListSortPredicate">
+                    <img ng-if="participant.face" ng-src="{{participant.face}}">
+                    <div ng-if="!participant.face" class="item-avatar__face-placeholder {{participant.guestColor}}"></div>
+                    <h2>{{participant.firstName}} {{participant.lastName}}</h2>
+                    <p>{{participant.tagline}}</p>
+                    <i class="icon note">
+                        {{participant.score}}
+                    </i>
                 </ion-item>
             </ion-list>
         </div>

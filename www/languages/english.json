@@ -30,7 +30,8 @@
                 "TITLE": "Scoreboard",
                 "TABS": {
                     "SCORE-LIST": {
-                        "TITLE": "Score List"
+                        "TITLE": "Score List",
+                        "SORT-TOGGLE": "Sort players on score"
                     },
                     "DETAILS": {
                         "TITLE": "Score Details"

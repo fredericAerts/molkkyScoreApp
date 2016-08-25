@@ -5467,6 +5467,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.gameEnded = false;
         vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
+        vm.isDetailsScoreListSorted = false;
+        vm.scoreListSortPredicate = '';
+        vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
         vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
@@ -5575,6 +5578,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
         }
 
+        function toggleScoreListSortPredicate() {
+            vm.scoreListSortPredicate = vm.isDetailsScoreListSorted ? ['-score', 'endPosition'] : '';
+        }
+
         function getScoreboardDetailsRowIterator() {
             if (vm.participants[0]) {
                 return new Array(vm.activePlayer.scoreHistory.length + 1);
@@ -5664,6 +5671,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
+
+            if (vm.activePlayer.disqualified) {
+                vm.activePlayer.score = 0;
+            }
         }
 
         function processThreeMisses() {
