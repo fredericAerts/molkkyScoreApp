@@ -5072,10 +5072,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .config(configure)
         .run(runBlock);
 
-    configure.$inject = ['$provide', '$translateProvider', 'LANGUAGES_ROOT'];
+    configure.$inject = ['$provide', '$translateProvider', '$ionicConfigProvider', 'LANGUAGES_ROOT'];
     runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform', '$cordovaSQLite'];
 
-    function configure($provide, $translateProvider, LANGUAGES_ROOT) {
+    function configure($provide, $translateProvider, $ionicConfigProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
         $provide.decorator('$exceptionHandler', extendExceptionHandler);
 
@@ -5083,6 +5083,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
         }).preferredLanguage('english');
+
+        $ionicConfigProvider.tabs.style('standard');
+        $ionicConfigProvider.tabs.position('bottom');
     }
 
     function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
