@@ -283,7 +283,12 @@
             var activePlayerIndex = getActivePlayerIndex();
             var firstOfRound = activePlayerIndex === 0;
 
-            vm.activePlayer = firstOfRound ? vm.participants[vm.participants.length - 1] : vm.participants[activePlayerIndex - 1];
+            if (firstOfRound) {
+                vm.activePlayer = vm.participants[vm.participants.length - 1];
+            }
+            else {
+                vm.activePlayer = vm.participants[activePlayerIndex - 1];
+            }
 
             var isInSameRound = throwingPlayerIndex > getActivePlayerIndex();
 

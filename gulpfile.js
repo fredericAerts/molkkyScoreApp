@@ -31,13 +31,11 @@ var paths = {
     },
     dest: {
         js: './www/js/',
-        sass: './www/css/',
-        templates: './www/templates'
+        sass: './www/css/'
     },
     clean: {
         js: './www/js/*.js',
-        css: './www/css/*.css',
-        templates: './www/templates/**/*.html'
+        css: './www/css/*.css'
     },
     watch: {
         js: [
@@ -48,8 +46,7 @@ var paths = {
         sass: [
             './scss/*.scss',
             './scss/**/*.scss',
-        ],
-        templates: ['./js/app/**/*.html']
+        ]
     }
 };
 
@@ -57,13 +54,7 @@ var paths = {
    ========================================================================== */
 // clean
 gulp.task('clean', function() {
-    return del([paths.clean.js, paths.clean.css, paths.clean.templates], {force: true});
-});
-
-// move templates
-gulp.task('moveTemplates', function() {
-    return gulp.src(paths.src.templates)
-        .pipe(gulp.dest(paths.dest.templates));
+    return del([paths.clean.js, paths.clean.css], {force: true});
 });
 
 // scripts
@@ -119,7 +110,6 @@ gulp.task('watch', function() {
     gulp.watch(paths.watch.sass, ['sass']);
     gulp.watch(paths.watch.js, ['scripts']);
     gulp.watch(paths.src.customJs, ['jshint', 'jscs']);
-    gulp.watch(paths.watch.templates, ['moveTemplates']);
 });
 
 gulp.task('tests', function(cb) {
@@ -150,7 +140,7 @@ gulp.task('git-check', function(done) {
 
 /* ============================================================ */
 gulp.task('default', ['clean'], function() {
-    gulp.start('moveTemplates', 'scripts', 'jshint', 'jscs', 'tests', 'sass', 'watch');
+    gulp.start('scripts', 'jshint', 'jscs', 'tests', 'sass', 'watch');
 });
 
 /////////////////////
