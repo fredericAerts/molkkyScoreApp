@@ -9879,7 +9879,7 @@ a.button {
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.orange {
             background: #FF8704; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.pink {
-            background: #FF5DE7; }
+            background: #E91E63; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.white {
             border: 1px solid #000;
             color: #444;
@@ -9888,6 +9888,10 @@ a.button {
             background: #682A01; }
           .game-board-cell--scoreboard .row .col .game-board-cell.guest.blue {
             background: #01B7FF; }
+          .game-board-cell--scoreboard .row .col .game-board-cell.guest.green {
+            background: #388E3C; }
+          .game-board-cell--scoreboard .row .col .game-board-cell.guest.purple {
+            background: #7B1FA2; }
           .game-board-cell--scoreboard .row .col .game-board-cell span,
           .game-board-cell--scoreboard .row .col .game-board-cell .icon {
             position: relative;
@@ -9964,7 +9968,7 @@ a.button {
     .scoreboard-details th .scoreboard-details__face-placeholder.orange {
       background: #FF8704; }
     .scoreboard-details th .scoreboard-details__face-placeholder.pink {
-      background: #FF5DE7; }
+      background: #E91E63; }
     .scoreboard-details th .scoreboard-details__face-placeholder.white {
       border: 1px solid #000;
       color: #444;
@@ -9973,6 +9977,10 @@ a.button {
       background: #682A01; }
     .scoreboard-details th .scoreboard-details__face-placeholder.blue {
       background: #01B7FF; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.green {
+      background: #388E3C; }
+    .scoreboard-details th .scoreboard-details__face-placeholder.purple {
+      background: #7B1FA2; }
   .scoreboard-details td {
     padding-bottom: 5px;
     border-right: 1px solid #bdbdbd;
@@ -10070,7 +10078,7 @@ a.button {
   .item-avatar__face-placeholder.orange {
     background: #FF8704; }
   .item-avatar__face-placeholder.pink {
-    background: #FF5DE7; }
+    background: #E91E63; }
   .item-avatar__face-placeholder.white {
     border: 1px solid #000;
     background: #FFFFFF; }
@@ -10078,3 +10086,7 @@ a.button {
     background: #682A01; }
   .item-avatar__face-placeholder.blue {
     background: #01B7FF; }
+  .item-avatar__face-placeholder.green {
+    background: #388E3C; }
+  .item-avatar__face-placeholder.purple {
+    background: #7B1FA2; }

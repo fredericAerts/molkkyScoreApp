@@ -5944,7 +5944,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ====================================================================== */
                 modalScope.viewModel = {
                     showReorder: false,
-                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'],
+                    guestColors: ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'],
                     playersInDatabase: playersService.all().slice(), // modal input
                     participants: [], // modal output
                     addPlayerToParticipants: addPlayerToParticipants,
@@ -6028,7 +6028,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
                 modalScope.viewModel.showReorder = false;
-                modalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue'];
+                modalScope.viewModel.guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
                 modalScope.viewModel.participants = [];
             }
