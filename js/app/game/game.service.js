@@ -45,7 +45,24 @@
         }
 
         function sortParticipantsOnScore() {
-            console.log('sort');
+            participants.sort(function(participantOne, participantTwo) {
+                if (participantOne.score < participantTwo.score) {
+                    return 1;
+                }
+                else if (participantOne.score > participantTwo.score) {
+                    return -1;
+                } // score is equal
+                else if (participantOne.endPosition > participantTwo.endPosition) {
+                    return 1;
+                }
+                else if (participantOne.endPosition < participantTwo.endPosition) {
+                    return -1;
+                }
+                else {
+                    return 0; // both score and andPosition are equal
+                }
+            });
+
             return participants;
         }
     }

@@ -5245,6 +5245,52 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
     gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
@@ -5862,54 +5908,25 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function sortParticipantsOnScore() {
-            console.log('sort');
-            return participants;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
+            participants.sort(function(participantOne, participantTwo) {
+                if (participantOne.score < participantTwo.score) {
+                    return 1;
+                }
+                else if (participantOne.score > participantTwo.score) {
+                    return -1;
+                } // score is equal
+                else if (participantOne.endPosition > participantTwo.endPosition) {
+                    return 1;
+                }
+                else if (participantOne.endPosition < participantTwo.endPosition) {
+                    return -1;
+                }
+                else {
+                    return 0; // both score and andPosition are equal
+                }
             });
 
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
+            return participants;
         }
     }
 })();
