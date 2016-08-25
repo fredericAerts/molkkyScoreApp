@@ -5248,52 +5248,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
     gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
@@ -5553,19 +5507,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         /*  FUNCTIONS
             ======================================================================================== */
-        function initScoreboard() {
-            vm.scoreboard.rowOne = vm.participants.slice(0, 4);
-            vm.scoreboard.rowTwo = vm.participants.slice(4, 8);
-
-            switch (vm.participants.length) {
-                case 2: vm.scoreboard.colWidthPercentage = 50; break;
-                case 3: vm.scoreboard.colWidthPercentage = 33; break;
-                default: vm.scoreboard.colWidthPercentage = 25;
-            }
-        }
-
         function initParticipants() {
             vm.participants = gameService.initParticipants();
+        }
+
+        function initScoreboard() {
+            vm.scoreboard = gameService.initScoreboard(vm.scoreboard);
         }
 
         function initGame() {
@@ -5575,11 +5522,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initScoreDetailsModal() {
-            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
-                scope: $scope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
+            return modalsService.initScoreDetailsModal($scope).then(function(modal) {
                 vm.scoreDetailsModal = modal;
                 return vm.scoreDetailsModal;
             });
@@ -5881,7 +5824,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             setParticipants: setParticipants,
             getParticipants: getParticipants,
             initParticipants: initParticipants,
-            sortParticipantsOnScore: sortParticipantsOnScore
+            sortParticipantsOnScore: sortParticipantsOnScore,
+            initScoreboard: initScoreboard
         };
         return service;
 
@@ -5931,6 +5875,65 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             return participants;
         }
+
+        function initScoreboard(scoreboard) {
+            scoreboard.rowOne = participants.slice(0, 4);
+            scoreboard.rowTwo = participants.slice(4, 8);
+
+            switch (participants.length) {
+                case 2: scoreboard.colWidthPercentage = 50; break;
+                case 3: scoreboard.colWidthPercentage = 33; break;
+                default: scoreboard.colWidthPercentage = 25;
+            }
+
+            return scoreboard;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
     }
 })();
 
@@ -5948,7 +5951,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ====================================================================== */
 
         var service = {
-            getAddPlayersToGameModal: getAddPlayersToGameModal
+            getAddPlayersToGameModal: getAddPlayersToGameModal,
+            initScoreDetailsModal: initScoreDetailsModal
         };
         return service;
 
@@ -6073,6 +6077,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             function capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
+        }
+
+        function initScoreDetailsModal($scope) {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            });
         }
     }
 })();

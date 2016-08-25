@@ -74,19 +74,12 @@
 
         /*  FUNCTIONS
             ======================================================================================== */
-        function initScoreboard() {
-            vm.scoreboard.rowOne = vm.participants.slice(0, 4);
-            vm.scoreboard.rowTwo = vm.participants.slice(4, 8);
-
-            switch (vm.participants.length) {
-                case 2: vm.scoreboard.colWidthPercentage = 50; break;
-                case 3: vm.scoreboard.colWidthPercentage = 33; break;
-                default: vm.scoreboard.colWidthPercentage = 25;
-            }
-        }
-
         function initParticipants() {
             vm.participants = gameService.initParticipants();
+        }
+
+        function initScoreboard() {
+            vm.scoreboard = gameService.initScoreboard(vm.scoreboard);
         }
 
         function initGame() {
@@ -96,11 +89,7 @@
         }
 
         function initScoreDetailsModal() {
-            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
-                scope: $scope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
+            return modalsService.initScoreDetailsModal($scope).then(function(modal) {
                 vm.scoreDetailsModal = modal;
                 return vm.scoreDetailsModal;
             });

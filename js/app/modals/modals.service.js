@@ -12,7 +12,8 @@
             ====================================================================== */
 
         var service = {
-            getAddPlayersToGameModal: getAddPlayersToGameModal
+            getAddPlayersToGameModal: getAddPlayersToGameModal,
+            initScoreDetailsModal: initScoreDetailsModal
         };
         return service;
 
@@ -137,6 +138,13 @@
             function capitalizeFirstLetter(string) {
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
+        }
+
+        function initScoreDetailsModal($scope) {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            });
         }
     }
 })();

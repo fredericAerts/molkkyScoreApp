@@ -15,7 +15,8 @@
             setParticipants: setParticipants,
             getParticipants: getParticipants,
             initParticipants: initParticipants,
-            sortParticipantsOnScore: sortParticipantsOnScore
+            sortParticipantsOnScore: sortParticipantsOnScore,
+            initScoreboard: initScoreboard
         };
         return service;
 
@@ -64,6 +65,19 @@
             });
 
             return participants;
+        }
+
+        function initScoreboard(scoreboard) {
+            scoreboard.rowOne = participants.slice(0, 4);
+            scoreboard.rowTwo = participants.slice(4, 8);
+
+            switch (participants.length) {
+                case 2: scoreboard.colWidthPercentage = 50; break;
+                case 3: scoreboard.colWidthPercentage = 33; break;
+                default: scoreboard.colWidthPercentage = 25;
+            }
+
+            return scoreboard;
         }
     }
 })();
