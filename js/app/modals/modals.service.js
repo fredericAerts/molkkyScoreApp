@@ -5,9 +5,19 @@
         .module('molkkyscore')
         .factory('modalsService', modalsService);
 
-    modalsService.$inject = ['TEMPLATES_ROOT','$ionicModal', 'gameService', 'playersService', '$cordovaToast'];
+    modalsService.$inject = ['TEMPLATES_ROOT',
+                                '$ionicModal',
+                                'gameService',
+                                'playersService',
+                                '$cordovaToast',
+                                'loadingService'];
 
-    function modalsService(TEMPLATES_ROOT, $ionicModal, gameService, playersService, $cordovaToast) {
+    function modalsService(TEMPLATES_ROOT,
+                            $ionicModal,
+                            gameService,
+                            playersService,
+                            $cordovaToast,
+                            loadingService) {
         /*  Service for creating modals that are used in more than one controller
             ====================================================================== */
 
@@ -114,7 +124,9 @@
 
             function startGame() {
                 gameService.setParticipants(modalScope.viewModel.participants.slice());
-                // TODO: show load animation
+
+                loadingService.show('starting game');
+
                 addPlayersToGameModal.hide()
                 .then(function() {
                     modalConfirmFunction();

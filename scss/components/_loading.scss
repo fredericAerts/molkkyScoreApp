@@ -1,0 +1,17 @@
+.loading-container {
+
+    &.active {
+        background: $light;
+    }
+
+    & .loading {
+        background: transparent;
+    }
+}
+
+.loading__message {
+    display: block;
+    margin-bottom: 15px;
+
+    color: $dark;
+}

@@ -12,7 +12,8 @@
                             'gameUtilities',
                             'settingsService',
                             'modalsService',
-                            'gameActionSheetService'];
+                            'gameActionSheetService',
+                            'loadingService'];
 
     function GameCtrl($scope,
                         $rootScope,
@@ -21,7 +22,8 @@
                         gameUtilities,
                         settingsService,
                         modalsService,
-                        gameActionSheetService) {
+                        gameActionSheetService,
+                        loadingService) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -180,6 +182,8 @@
                 return;
             }
 
+            loadingService.show('restarting game');
+
             vm.participants = gameService.initParticipants();
             initScoreboard();
             initGame();
@@ -190,6 +194,8 @@
                 addPlayersToGameModal.show();
             }
             else {
+                loadingService.show('starting new game');
+
                 gameService.sortParticipantsOnScore(); // TODO: Implement this function
                 vm.participants = gameService.initParticipants();
                 initScoreboard();
