@@ -28,23 +28,21 @@
         ////////////////
 
         function activate() {
-            statisticsService.translateMetricsListingTitles();
-            statisticsService.translateMetricsListingViewTitles();
-            initAddPlayerModal();
+            statisticsService.translateMetrics();
+            initStatisticsInfoModal();
             initStatsItemsInfoPopover();
         }
 
         /*  LISTENERS
             ======================================================================================== */
         $rootScope.$on('$translateChangeSuccess', function () {
-            statisticsService.translateMetricsListingTitles();
-            statisticsService.translateMetricsListingViewTitles();
+            statisticsService.translateMetrics();
 
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
-        function initAddPlayerModal() {
+        function initStatisticsInfoModal() {
             $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
                 scope: statisticsInfoModalScope,
                 animation: 'slide-in-up'

@@ -1,8 +1,21 @@
 <ion-popover-view>
     <ion-header-bar>
-        <h1 class="title">{{ viewModel.metric.listingViewTitle }}</h1>
+        <h1 class="title">{{ viewModel.metric.viewTitle }}</h1>
     </ion-header-bar>
-    <ion-content>
-        <div class="padding" ng-include="viewModel.metric.infoPopupIncludeTemplate"></div>
+    <ion-content class="padding">
+        <h5 class="popover__content-title">What is this?</h5>
+        <p>
+            {{viewModel.metric.info.summary}}
+        </p>
+
+        <h5 class="popover__content-title">When is it recorded?</h5>
+        <p>
+            {{viewModel.metric.info.recorded}}
+        </p>
+
+        <h5 ng-if="viewModel.metric.info.calculation" class="popover__content-title">How is it calculated?</h5>
+        <p ng-if="viewModel.metric.info.calculation" translate="{{ viewModel.metric.info.calculation }}"></p>
+
+        <br>
     </ion-content>
 </ion-popover-view>

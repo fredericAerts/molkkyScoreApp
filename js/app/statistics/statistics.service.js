@@ -5,37 +5,50 @@
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'TEMPLATES_ROOT'];
+    statisticsService.$inject = ['$translate'];
 
-    function statisticsService($translate, TEMPLATES_ROOT) {
-        var metrics = [{ // 'listingTitle' & 'listingViewTitle' properties are attached later on
+    function statisticsService($translate) {
+        var metrics = [{
                 id: 0,
-                propertyName: 'hallOfFame',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-hall-of-fame.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // added via translations
+                category: 'OVERALL',
+                propertyName: 'TOTAL-GAMES-PLAYED'
             },
             {
                 id: 1,
-                propertyName: 'effectiveness',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-effectiveness.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // added via translations
+                category: 'PLAYERS',
+                propertyName: 'HALL-OF-FAME'
             },
             {
                 id: 2,
-                propertyName: 'accuracy',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-accuracy.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // init via translations
+                category: 'PLAYERS',
+                propertyName: 'WINNING-RATIO'
+            },
+            {
+                id: 3,
+                category: 'PLAYERS',
+                propertyName: 'VERSATILITY'
+            },
+            {
+                id: 4,
+                category: 'PLAYERS',
+                propertyName: 'ACCURACY'
+            },
+            {
+                id: 5,
+                category: 'PLAYERS',
+                propertyName: 'EFFICIENCY'
+            },
+            {
+                id: 6,
+                category: 'PLAYERS',
+                propertyName: 'EFFECTIVENESS'
             }
         ];
 
         var service = {
             getMetrics: getMetrics,
             getMetric: getMetric,
-            translateMetricsListingTitles: translateMetricsListingTitles,
-            translateMetricsListingViewTitles: translateMetricsListingViewTitles
+            translateMetrics: translateMetrics
         };
         return service;
 
@@ -49,17 +62,19 @@
             return _.findWhere(metrics, {id: metricId});
         }
 
-        function translateMetricsListingTitles() {
+        function translateMetrics() {
             metrics.forEach(function(metric) {
-                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE';
-                metric.listingTitle = $translate.instant(translationId);
-            });
-        }
+                var viewTitle = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.VIEW-TITLE';
+                var infoSummary = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.SUMMARY';
+                var infoRecorded = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.RECORDED';
+                var infoCalculation = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.CALCULATION';
 
-        function translateMetricsListingViewTitles() {
-            metrics.forEach(function(metric) {
-                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.VIEW-TITLE';
-                metric.listingViewTitle = $translate.instant(translationId);
+                metric.viewTitle = $translate.instant(viewTitle);
+                metric.info = {
+                    summary: $translate.instant(infoSummary),
+                    recorded: $translate.instant(infoRecorded),
+                    calculation: $translate.instant(infoCalculation)
+                }
             });
         }
     }
