@@ -5446,7 +5446,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             getEndPosition: getEndPosition,
             getActivatedAvatarStatus: getActivatedAvatarStatus,
             isGameEnded: isGameEnded,
-            isGameStarted: isGameStarted
+            isGameStarted: isGameStarted,
+            processThreeMisses: processThreeMisses,
+            processWinningScoreExceeded: processWinningScoreExceeded
         };
         return service;
 
@@ -5503,6 +5505,34 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function isGameStarted(participants) {
             return participants[0].scoreHistory.length;
+        }
+
+        function processThreeMisses(activePlayer, settings) {
+            switch (settings.threeMisses) {
+                case 'to zero':
+                    activePlayer.score = 0;
+                    activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'halved':
+                    activePlayer.score = Math.floor(activePlayer.score / 2);
+                    activePlayer.missesInARow = 0; // reset
+                    break;
+                case 'disqualified':
+                    activePlayer.disqualified = true;
+                    break;
+            }
+
+            return activePlayer;
+        }
+
+        function processWinningScoreExceeded(activePlayer, settings) {
+            switch (settings.winningScoreExceeded) {
+                case 'to zero': activePlayer.score = 0; break;
+                case 'halved': activePlayer.score = Math.floor(activePlayer.score / 2); break;
+                case 'half of winning score': activePlayer.score = Math.floor(settings.winningScore / 2); break;
+            }
+
+            return activePlayer;
         }
     }
 })();
@@ -5732,52 +5762,24 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.activatedScore = -1; // reset
 
             if (vm.activePlayer.missesInARow > 2) {
-                processThreeMisses();
+                gameUtilities.processThreeMisses(vm.activePlayer, settings);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
-                processWinningScoreExceeded();
+                gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
             }
-            else if (vm.activePlayer.score === settings.winningScore) {
-                processPlayerFinishedGame();
+            else if (vm.activePlayer.score === settings.winningScore) { // player finished
+                vm.activePlayer.finishedGame = true;
+                vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
+
+                if (vm.activePlayer.endPosition === 1) {
+                    vm.scoreDetailsModal.show();
+                }
             }
 
             vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
 
             if (vm.activePlayer.disqualified) {
                 vm.activePlayer.score = 0;
-            }
-        }
-
-        function processThreeMisses() {
-            switch (settings.threeMisses) {
-                case 'to zero':
-                    vm.activePlayer.score = 0;
-                    vm.activePlayer.missesInARow = 0; // reset
-                    break;
-                case 'halved':
-                    vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2);
-                    vm.activePlayer.missesInARow = 0; // reset
-                    break;
-                case 'disqualified':
-                    vm.activePlayer.disqualified = true;
-                    break;
-            }
-        }
-
-        function processWinningScoreExceeded() {
-            switch (settings.winningScoreExceeded) {
-                case 'to zero': vm.activePlayer.score = 0; break;
-                case 'halved': vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2); break;
-                case 'half of winning score': vm.activePlayer.score = Math.floor(settings.winningScore / 2); break;
-            }
-        }
-
-        function processPlayerFinishedGame() {
-            vm.activePlayer.finishedGame = true;
-            vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
-
-            if (vm.activePlayer.endPosition === 1) {
-                vm.scoreDetailsModal.show();
             }
         }
 
@@ -6121,61 +6123,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('PlayerDetailCtrl', PlayerDetailCtrl);
+        .controller('StatisticsListingCtrl', StatisticsListing);
 
-    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
+    StatisticsListing.$inject = ['$stateParams', 'statisticsService'];
 
-    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal) {
+    function StatisticsListing($stateParams, statisticsService) {
         /* jshint validthis: true */
         var vm = this;
-        var editPlayerModalScope = $scope.$new(true);
 
-        vm.player = playersService.get($stateParams.playerId);
-        vm.editPlayerModal = {};
-        vm.showPlayerModal = showPlayerModal;
+        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
 
         activate();
 
         ////////////////
 
         function activate() {
-            initEditPlayerModal();
-        }
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initEditPlayerModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-edit-player.html', {
-                scope: editPlayerModalScope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                vm.editPlayerModal = modal;
-
-                /*  ==================================================================
-                - modal template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time modal is shown
-                ================================================================== */
-                editPlayerModalScope.viewModel = {
-                    player: {},
-                    cancelPlayer: cancelPlayer,
-                    confirmPlayer: confirmPlayer
-
-                };
-            });
-        }
-
-        function showPlayerModal(player) {
-            editPlayerModalScope.viewModel.player = player;
-            vm.editPlayerModal.show();
-        }
-
-        function cancelPlayer() {
-            vm.editPlayerModal.hide();
-        }
-
-        function confirmPlayer() {
-            vm.editPlayerModal.hide();
         }
     }
 })();
@@ -6185,101 +6147,87 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('PlayersCtrl', PlayersCtrl);
+        .controller('StatisticsCtrl', StatisticsCtrl);
 
-    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
+    StatisticsCtrl.$inject = ['$rootScope',
+                                '$scope',
+                                'statisticsService',
+                                'TEMPLATES_ROOT',
+                                '$ionicPopover',
+                                '$ionicModal'];
 
-    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
+    function StatisticsCtrl($rootScope, $scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
-        var addPlayerModalScope = $scope.$new(true);
+        var statisticsInfoModalScope = $scope.$new(true);
+        var statsItemsInfoPopoverScope = $scope.$new(true);
 
-        vm.players = playersService.all();
-        vm.removeVisible = false;
-        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
-        vm.addPlayerModal = {};
-        vm.showPlayerModal = showPlayerModal;
+        vm.metrics = statisticsService.getMetrics();
+        vm.statisticsInfoModal = {};
+        vm.statsItemsInfoPopover = {};
+        vm.showItemInfo = showItemInfo;
 
         activate();
 
         ////////////////
 
         function activate() {
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
             initAddPlayerModal();
+            initStatsItemsInfoPopover();
         }
 
         /*  LISTENERS
             ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayerModal.remove();
+        $rootScope.$on('$translateChangeSuccess', function () {
+            statisticsService.translateMetricsListingTitles();
+            statisticsService.translateMetricsListingViewTitles();
+
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
         function initAddPlayerModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
-                scope: addPlayerModalScope,
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
+                scope: statisticsInfoModalScope,
                 animation: 'slide-in-up'
             })
             .then(function(modal) {
-                vm.addPlayerModal = modal;
+                vm.statisticsInfoModal = modal;
 
                 /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-                addPlayerModalScope.viewModel = {
-                    player: {},
-                    cancelPlayer: cancelPlayer,
-                    confirmPlayer: confirmPlayer
-
+                statisticsInfoModalScope.viewModel = {
+                    modal: vm.statisticsInfoModal
                 };
             });
         }
 
-        function showPlayerModal() {
-            initializeAddPlayerModalData();
-
-            vm.addPlayerModal.show();
-        }
-
-        function initializeAddPlayerModalData() {
-            addPlayerModalScope.viewModel.player.id = vm.players.length; // TODO: make unique
-            addPlayerModalScope.viewModel.player.firstName = '';
-            addPlayerModalScope.viewModel.player.lastName = '';
-            addPlayerModalScope.viewModel.player.tagline = '';
-            addPlayerModalScope.viewModel.player.face = '';
-        }
-
-        function cancelPlayer() {
-            vm.addPlayerModal.hide();
-        }
-
-        function confirmPlayer() {
-            vm.players.push(addPlayerModalScope.viewModel.player);
-
-            vm.addPlayerModal.hide();
-        }
-
-        function showRemoveConfirmPopup(player) {
-            var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
-            var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
-
-            $ionicPopup.confirm({
-                title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant(templateTranslationId, templateTranslationVariable)
-            })
-            .then(function(confirmed) {
-                if (confirmed) {
-                    remove(player);
-                }
-                vm.removeVisible = false;
+        function initStatsItemsInfoPopover() {
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
+                scope: statsItemsInfoPopoverScope
+            }).then(function(popover) {
+                vm.statsItemsInfoPopover = popover;
             });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time popover is shown
+                ================================================================== */
+            statsItemsInfoPopoverScope.viewModel = {
+                metric: {}
+            };
         }
 
-        function remove(player) {
-            playersService.remove(player);
+        function showItemInfo($event, metric) {
+            statsItemsInfoPopoverScope.viewModel.metric = metric;
+
+            vm.statsItemsInfoPopover.show($event);
+
+            $event.stopPropagation();
+            $event.preventDefault();
         }
     }
 })();
@@ -6289,60 +6237,64 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .factory('playersService', playersService);
+        .factory('statisticsService', statisticsService);
 
-    playersService.$inject = [];
+    statisticsService.$inject = ['$translate', 'TEMPLATES_ROOT'];
 
-    function playersService() {
-        // Some fake testing data
-        var players = [
-            {
+    function statisticsService($translate, TEMPLATES_ROOT) {
+        var metrics = [{ // 'listingTitle' & 'listingViewTitle' properties are attached later on
                 id: 0,
-                firstName: 'Ben',
-                lastName: 'Sparrow',
-                tagline: 'You on your way?',
-                face: 'img/ben.png'
+                propertyName: 'hallOfFame',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-hall-of-fame.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // added via translations
             },
             {
                 id: 1,
-                firstName: 'Max',
-                lastName: 'Lynx',
-                tagline: 'Hey, it\'s me',
-                face: 'img/max.png'
+                propertyName: 'effectiveness',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-effectiveness.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // added via translations
             },
             {
                 id: 2,
-                firstName: 'Adam',
-                lastName: 'Bradleyson',
-                tagline: 'I should buy a boat',
-                face: 'img/adam.jpg'
+                propertyName: 'accuracy',
+                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-accuracy.html',
+                listingTitle: '', // init via translations
+                listingViewTitle: '' // init via translations
             }
         ];
 
         var service = {
-            all: all,
-            get: get,
-            remove: remove
+            getMetrics: getMetrics,
+            getMetric: getMetric,
+            translateMetricsListingTitles: translateMetricsListingTitles,
+            translateMetricsListingViewTitles: translateMetricsListingViewTitles
         };
         return service;
 
         ////////////////
 
-        function all() {
-            return players;
+        function getMetrics() {
+            return metrics;
         }
 
-        function get(playerId) {
-            for (var i = 0; i < players.length; i++) {
-                if (players[i].id === parseInt(playerId)) {
-                    return players[i];
-                }
-            }
-            return null;
+        function getMetric(metricId) {
+            return _.findWhere(metrics, {id: metricId});
         }
 
-        function remove(player) {
-            players.splice(players.indexOf(player), 1);
+        function translateMetricsListingTitles() {
+            metrics.forEach(function(metric) {
+                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE';
+                metric.listingTitle = $translate.instant(translationId);
+            });
+        }
+
+        function translateMetricsListingViewTitles() {
+            metrics.forEach(function(metric) {
+                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.VIEW-TITLE';
+                metric.listingViewTitle = $translate.instant(translationId);
+            });
         }
     }
 })();
@@ -6572,21 +6524,61 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('StatisticsListingCtrl', StatisticsListing);
+        .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    StatisticsListing.$inject = ['$stateParams', 'statisticsService'];
+    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
 
-    function StatisticsListing($stateParams, statisticsService) {
+    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
+        var editPlayerModalScope = $scope.$new(true);
 
-        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
+        vm.player = playersService.get($stateParams.playerId);
+        vm.editPlayerModal = {};
+        vm.showPlayerModal = showPlayerModal;
 
         activate();
 
         ////////////////
 
         function activate() {
+            initEditPlayerModal();
+        }
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initEditPlayerModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-edit-player.html', {
+                scope: editPlayerModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.editPlayerModal = modal;
+
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ================================================================== */
+                editPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
+
+                };
+            });
+        }
+
+        function showPlayerModal(player) {
+            editPlayerModalScope.viewModel.player = player;
+            vm.editPlayerModal.show();
+        }
+
+        function cancelPlayer() {
+            vm.editPlayerModal.hide();
+        }
+
+        function confirmPlayer() {
+            vm.editPlayerModal.hide();
         }
     }
 })();
@@ -6596,87 +6588,101 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('StatisticsCtrl', StatisticsCtrl);
+        .controller('PlayersCtrl', PlayersCtrl);
 
-    StatisticsCtrl.$inject = ['$rootScope',
-                                '$scope',
-                                'statisticsService',
-                                'TEMPLATES_ROOT',
-                                '$ionicPopover',
-                                '$ionicModal'];
+    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
 
-    function StatisticsCtrl($rootScope, $scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
+    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
         /* jshint validthis: true */
         var vm = this;
-        var statisticsInfoModalScope = $scope.$new(true);
-        var statsItemsInfoPopoverScope = $scope.$new(true);
+        var addPlayerModalScope = $scope.$new(true);
 
-        vm.metrics = statisticsService.getMetrics();
-        vm.statisticsInfoModal = {};
-        vm.statsItemsInfoPopover = {};
-        vm.showItemInfo = showItemInfo;
+        vm.players = playersService.all();
+        vm.removeVisible = false;
+        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
+        vm.addPlayerModal = {};
+        vm.showPlayerModal = showPlayerModal;
 
         activate();
 
         ////////////////
 
         function activate() {
-            statisticsService.translateMetricsListingTitles();
-            statisticsService.translateMetricsListingViewTitles();
             initAddPlayerModal();
-            initStatsItemsInfoPopover();
         }
 
         /*  LISTENERS
             ======================================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function () {
-            statisticsService.translateMetricsListingTitles();
-            statisticsService.translateMetricsListingViewTitles();
-
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayerModal.remove();
         });
 
         /*  FUNCTIONS
             ======================================================================================== */
         function initAddPlayerModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
-                scope: statisticsInfoModalScope,
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
+                scope: addPlayerModalScope,
                 animation: 'slide-in-up'
             })
             .then(function(modal) {
-                vm.statisticsInfoModal = modal;
+                vm.addPlayerModal = modal;
 
                 /*  ==================================================================
                 - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
                 ================================================================== */
-                statisticsInfoModalScope.viewModel = {
-                    modal: vm.statisticsInfoModal
+                addPlayerModalScope.viewModel = {
+                    player: {},
+                    cancelPlayer: cancelPlayer,
+                    confirmPlayer: confirmPlayer
+
                 };
             });
         }
 
-        function initStatsItemsInfoPopover() {
-            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
-                scope: statsItemsInfoPopoverScope
-            }).then(function(popover) {
-                vm.statsItemsInfoPopover = popover;
-            });
+        function showPlayerModal() {
+            initializeAddPlayerModalData();
 
-            /*  ==================================================================
-                - popover template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time popover is shown
-                ================================================================== */
-            statsItemsInfoPopoverScope.viewModel = {
-                metric: {}
-            };
+            vm.addPlayerModal.show();
         }
 
-        function showItemInfo($event, metric) {
-            statsItemsInfoPopoverScope.viewModel.metric = metric;
+        function initializeAddPlayerModalData() {
+            addPlayerModalScope.viewModel.player.id = vm.players.length; // TODO: make unique
+            addPlayerModalScope.viewModel.player.firstName = '';
+            addPlayerModalScope.viewModel.player.lastName = '';
+            addPlayerModalScope.viewModel.player.tagline = '';
+            addPlayerModalScope.viewModel.player.face = '';
+        }
 
-            vm.statsItemsInfoPopover.show($event);
+        function cancelPlayer() {
+            vm.addPlayerModal.hide();
+        }
 
-            $event.stopPropagation();
-            $event.preventDefault();
+        function confirmPlayer() {
+            vm.players.push(addPlayerModalScope.viewModel.player);
+
+            vm.addPlayerModal.hide();
+        }
+
+        function showRemoveConfirmPopup(player) {
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
+            var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
+
+            $ionicPopup.confirm({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
+                template: $translate.instant(templateTranslationId, templateTranslationVariable)
+            })
+            .then(function(confirmed) {
+                if (confirmed) {
+                    remove(player);
+                }
+                vm.removeVisible = false;
+            });
+        }
+
+        function remove(player) {
+            playersService.remove(player);
         }
     }
 })();
@@ -6686,64 +6692,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .factory('statisticsService', statisticsService);
+        .factory('playersService', playersService);
 
-    statisticsService.$inject = ['$translate', 'TEMPLATES_ROOT'];
+    playersService.$inject = [];
 
-    function statisticsService($translate, TEMPLATES_ROOT) {
-        var metrics = [{ // 'listingTitle' & 'listingViewTitle' properties are attached later on
+    function playersService() {
+        // Some fake testing data
+        var players = [
+            {
                 id: 0,
-                propertyName: 'hallOfFame',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-hall-of-fame.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // added via translations
+                firstName: 'Ben',
+                lastName: 'Sparrow',
+                tagline: 'You on your way?',
+                face: 'img/ben.png'
             },
             {
                 id: 1,
-                propertyName: 'effectiveness',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-effectiveness.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // added via translations
+                firstName: 'Max',
+                lastName: 'Lynx',
+                tagline: 'Hey, it\'s me',
+                face: 'img/max.png'
             },
             {
                 id: 2,
-                propertyName: 'accuracy',
-                infoPopupIncludeTemplate: TEMPLATES_ROOT + '/statistics/info-accuracy.html',
-                listingTitle: '', // init via translations
-                listingViewTitle: '' // init via translations
+                firstName: 'Adam',
+                lastName: 'Bradleyson',
+                tagline: 'I should buy a boat',
+                face: 'img/adam.jpg'
             }
         ];
 
         var service = {
-            getMetrics: getMetrics,
-            getMetric: getMetric,
-            translateMetricsListingTitles: translateMetricsListingTitles,
-            translateMetricsListingViewTitles: translateMetricsListingViewTitles
+            all: all,
+            get: get,
+            remove: remove
         };
         return service;
 
         ////////////////
 
-        function getMetrics() {
-            return metrics;
+        function all() {
+            return players;
         }
 
-        function getMetric(metricId) {
-            return _.findWhere(metrics, {id: metricId});
+        function get(playerId) {
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].id === parseInt(playerId)) {
+                    return players[i];
+                }
+            }
+            return null;
         }
 
-        function translateMetricsListingTitles() {
-            metrics.forEach(function(metric) {
-                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.TITLE';
-                metric.listingTitle = $translate.instant(translationId);
-            });
-        }
-
-        function translateMetricsListingViewTitles() {
-            metrics.forEach(function(metric) {
-                var translationId = 'HOME.STATISTICS.METRICS.' + metric.propertyName.toUpperCase() + '.VIEW-TITLE';
-                metric.listingViewTitle = $translate.instant(translationId);
-            });
+        function remove(player) {
+            players.splice(players.indexOf(player), 1);
         }
     }
 })();

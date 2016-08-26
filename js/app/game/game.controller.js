@@ -223,52 +223,24 @@
             vm.activatedScore = -1; // reset
 
             if (vm.activePlayer.missesInARow > 2) {
-                processThreeMisses();
+                gameUtilities.processThreeMisses(vm.activePlayer, settings);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
-                processWinningScoreExceeded();
+                gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
             }
-            else if (vm.activePlayer.score === settings.winningScore) {
-                processPlayerFinishedGame();
+            else if (vm.activePlayer.score === settings.winningScore) { // player finished
+                vm.activePlayer.finishedGame = true;
+                vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
+
+                if (vm.activePlayer.endPosition === 1) {
+                    vm.scoreDetailsModal.show();
+                }
             }
 
             vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
 
             if (vm.activePlayer.disqualified) {
                 vm.activePlayer.score = 0;
-            }
-        }
-
-        function processThreeMisses() {
-            switch (settings.threeMisses) {
-                case 'to zero':
-                    vm.activePlayer.score = 0;
-                    vm.activePlayer.missesInARow = 0; // reset
-                    break;
-                case 'halved':
-                    vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2);
-                    vm.activePlayer.missesInARow = 0; // reset
-                    break;
-                case 'disqualified':
-                    vm.activePlayer.disqualified = true;
-                    break;
-            }
-        }
-
-        function processWinningScoreExceeded() {
-            switch (settings.winningScoreExceeded) {
-                case 'to zero': vm.activePlayer.score = 0; break;
-                case 'halved': vm.activePlayer.score = Math.floor(vm.activePlayer.score / 2); break;
-                case 'half of winning score': vm.activePlayer.score = Math.floor(settings.winningScore / 2); break;
-            }
-        }
-
-        function processPlayerFinishedGame() {
-            vm.activePlayer.finishedGame = true;
-            vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
-
-            if (vm.activePlayer.endPosition === 1) {
-                vm.scoreDetailsModal.show();
             }
         }
 
