@@ -13,7 +13,8 @@
                             'settingsService',
                             'modalsService',
                             'gameActionSheetService',
-                            'loadingService'];
+                            'loadingService',
+                            'toast'];
 
     function GameCtrl($scope,
                         $rootScope,
@@ -23,12 +24,14 @@
                         settingsService,
                         modalsService,
                         gameActionSheetService,
-                        loadingService) {
+                        loadingService,
+                        toast) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
         var settings = settingsService.getSettings();
         var actionSheetActions = getActionSheetActions();
+        var toastMessages = toast.getMessages().game;
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -64,6 +67,7 @@
             ======================================================================================== */
         $rootScope.$on('$translateChangeSuccess', function () {
             gameActionSheetService.translateActionSheetData();
+            toastMessages = toast.getMessages().game;
         });
 
         // Cleanup the modal when we're done with it!
@@ -214,6 +218,7 @@
 
             moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, activePlayerIndex);
             undoLastThrow(vm.activePlayer);
+            toast.show(toastMessages.undoLast);
         }
 
         function exitGame() {
@@ -230,9 +235,11 @@
 
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
+                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.threeMisses);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
+                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.maxScoreExceeded);
             }
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
@@ -240,6 +247,7 @@
 
                 if (vm.activePlayer.endPosition === 1) {
                     vm.scoreDetailsModal.show();
+                    toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
                 }
             }
 

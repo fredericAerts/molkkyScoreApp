@@ -9,17 +9,18 @@
                                 '$ionicModal',
                                 'gameService',
                                 'playersService',
-                                '$cordovaToast',
+                                'toast',
                                 'loadingService'];
 
     function modalsService(TEMPLATES_ROOT,
                             $ionicModal,
                             gameService,
                             playersService,
-                            $cordovaToast,
+                            toast,
                             loadingService) {
         /*  Service for creating modals that are used in more than one controller
             ====================================================================== */
+        var toastMessages = toast.getMessages().start; // TODO: add listener for language settings
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal,
@@ -75,7 +76,7 @@
                 ======================================================================================== */
             function addPlayerToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
-                    $cordovaToast.show('max participants reached', 'long', 'center');
+                    toast.show(toastMessages.maxParticipants);
                     return;
                 }
 
@@ -88,7 +89,7 @@
 
             function addGuestParticipant() {
                 if (modalScope.viewModel.participants.length === 8) {
-                    $cordovaToast.show('max participants reached', 'long', 'center');
+                    toast.show(toastMessages.maxParticipants);
                     return;
                 }
 

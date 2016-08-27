@@ -19,6 +19,9 @@
                 "BUTTON-ADD-GUEST": "Add guest participant",
                 "DATABASE-LIST-HEADER": "Database",
                 "PARTICIPANTS-LIST-HEADER": "Participants"
+            },
+            "TOASTS": {
+                "MAX-PARTICIPANTS": "Max participants reached"
             }
         },
         "GAME": {
@@ -67,6 +70,12 @@
                 "CONTINUE": {
                     "BUTTON": "Continue"
                 }
+            },
+            "TOASTS": {
+                "UNDO-LAST": "Last throw undone",
+                "THREE-MISSES": "missed three times in a row!",
+                "MAX-SCORE-EXCEEDED": "has exceeded maximum score!",
+                "WINNER": "wins this game!"
             }
         },
         "SETTINGS": {
@@ -198,6 +207,10 @@
                 "BUTTON-CANCEL": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.BUTTON-CANCEL",
                 "AVATAR-PLACEHOLDER": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.AVATAR-PLACEHOLDER",
                 "BUTTON-ADD-PLAYER": "Save"
+            },
+            "TOASTS": {
+                "ADD-PLAYER": "is added to players",
+                "REMOVE-PLAYER": "is removed from players"
             }
         }
     }

@@ -3,7 +3,18 @@
         "VIEW-TITLE": "Masion",
         "START": {
             "VIEW-TITLE": "fais jeu",
-            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE"
+            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE",
+            "TOASTS": {
+                "MAX-PARTICIPANTS": "French Max participants reached"
+            }
+        },
+        "GAME": {
+            "TOASTS": {
+                "UNDO-LAST": "Toast french",
+                "THREE-MISSES": "missed three times in a row!",
+                "MAX-SCORE-EXCEEDED": "has exceeded maximum score!",
+                "WINNER": "wins this game!"
+            }
         },
         "SETTINGS": {
             "VIEW-TITLE": "Configuration",

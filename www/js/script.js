@@ -5552,7 +5552,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             'settingsService',
                             'modalsService',
                             'gameActionSheetService',
-                            'loadingService'];
+                            'loadingService',
+                            'toast'];
 
     function GameCtrl($scope,
                         $rootScope,
@@ -5562,12 +5563,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         settingsService,
                         modalsService,
                         gameActionSheetService,
-                        loadingService) {
+                        loadingService,
+                        toast) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
         var settings = settingsService.getSettings();
         var actionSheetActions = getActionSheetActions();
+        var toastMessages = toast.getMessages().game;
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -5603,6 +5606,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             ======================================================================================== */
         $rootScope.$on('$translateChangeSuccess', function () {
             gameActionSheetService.translateActionSheetData();
+            toastMessages = toast.getMessages().game;
         });
 
         // Cleanup the modal when we're done with it!
@@ -5753,6 +5757,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             moveToPreviousPlayer(vm.activePlayer.scoreHistory.length + 1, activePlayerIndex);
             undoLastThrow(vm.activePlayer);
+            toast.show(toastMessages.undoLast);
         }
 
         function exitGame() {
@@ -5769,9 +5774,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
+                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.threeMisses);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
+                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.maxScoreExceeded);
             }
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
@@ -5779,6 +5786,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
                 if (vm.activePlayer.endPosition === 1) {
                     vm.scoreDetailsModal.show();
+                    toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
                 }
             }
 
@@ -6012,17 +6020,18 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                                 '$ionicModal',
                                 'gameService',
                                 'playersService',
-                                '$cordovaToast',
+                                'toast',
                                 'loadingService'];
 
     function modalsService(TEMPLATES_ROOT,
                             $ionicModal,
                             gameService,
                             playersService,
-                            $cordovaToast,
+                            toast,
                             loadingService) {
         /*  Service for creating modals that are used in more than one controller
             ====================================================================== */
+        var toastMessages = toast.getMessages().start; // TODO: add listener for language settings
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal,
@@ -6078,7 +6087,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ======================================================================================== */
             function addPlayerToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
-                    $cordovaToast.show('max participants reached', 'long', 'center');
+                    toast.show(toastMessages.maxParticipants);
                     return;
                 }
 
@@ -6091,7 +6100,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             function addGuestParticipant() {
                 if (modalScope.viewModel.participants.length === 8) {
-                    $cordovaToast.show('max participants reached', 'long', 'center');
+                    toast.show(toastMessages.maxParticipants);
                     return;
                 }
 
@@ -6172,9 +6181,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
+    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal', 'toast'];
 
-    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal) {
+    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal, toast) {
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
@@ -6225,6 +6234,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function confirmPlayer() {
             vm.editPlayerModal.hide();
+            toast.show('Update to player profile saved');
         }
     }
 })();
@@ -6236,12 +6246,27 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('PlayersCtrl', PlayersCtrl);
 
-    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
+    PlayersCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            'playersService',
+                            'TEMPLATES_ROOT',
+                            '$ionicPopup',
+                            '$ionicModal',
+                            '$translate',
+                            'toast'];
 
-    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
+    function PlayersCtrl($scope,
+                            $rootScope,
+                            playersService,
+                            TEMPLATES_ROOT,
+                            $ionicPopup,
+                            $ionicModal,
+                            $translate,
+                            toast) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayerModalScope = $scope.$new(true);
+        var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
         vm.removeVisible = false;
@@ -6259,6 +6284,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         /*  LISTENERS
             ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().players;
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             vm.addPlayerModal.remove();
@@ -6307,6 +6336,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function confirmPlayer() {
             vm.players.push(addPlayerModalScope.viewModel.player);
+            toast.show(addPlayerModalScope.viewModel.player.firstName + ' ' + toastMessages.addPlayer);
 
             vm.addPlayerModal.hide();
         }
@@ -6329,6 +6359,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             playersService.remove(player);
+            toast.show(player.firstName + ' ' + toastMessages.removePlayer);
         }
     }
 })();
@@ -6403,13 +6434,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
+    SettingsCtrl.$inject = ['$scope', '$ionicPopup', '$translate', 'settingsService'];
 
-    function SettingsCtrl($ionicPopup, $translate, settingsService) {
+    function SettingsCtrl($scope, $ionicPopup, $translate, settingsService) {
         /* jshint validthis: true */
         var vm = this;
 
         // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+        // This requieres a 'gameSettings' object on scope that will be watched for changes
 
         vm.activeTabIndex = 0;
 
@@ -6806,6 +6838,55 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     calculation: $translate.instant(infoCalculation)
                 }
             });
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('toast', toast);
+
+    toast.$inject = ['$cordovaToast', '$translate'];
+
+    function toast($cordovaToast, $translate) {
+        var service = {
+            show: show,
+            getMessages: getMessages
+        };
+        return service;
+
+        ////////////////
+
+        function show(message) {
+            $cordovaToast.showWithOptions({
+                message: message,
+                duration: 'short',
+                position: 'bottom',
+                styling: {
+                    cornerRadius: 4
+                }
+            })
+        }
+
+        function getMessages() {
+            return {
+                start: {
+                    maxParticipants: $translate.instant('HOME.START.TOASTS.MAX-PARTICIPANTS')
+                },
+                game: {
+                    undoLast: $translate.instant('HOME.GAME.TOASTS.UNDO-LAST'),
+                    threeMisses: $translate.instant('HOME.GAME.TOASTS.THREE-MISSES'),
+                    maxScoreExceeded: $translate.instant('HOME.GAME.TOASTS.MAX-SCORE-EXCEEDED'),
+                    winner: $translate.instant('HOME.GAME.TOASTS.WINNER')
+                },
+                players: {
+                    addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
+                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                }
+            }
         }
     }
 })();

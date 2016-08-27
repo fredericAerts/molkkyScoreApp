@@ -5,13 +5,14 @@
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$ionicPopup', '$translate', 'settingsService'];
+    SettingsCtrl.$inject = ['$scope', '$ionicPopup', '$translate', 'settingsService'];
 
-    function SettingsCtrl($ionicPopup, $translate, settingsService) {
+    function SettingsCtrl($scope, $ionicPopup, $translate, settingsService) {
         /* jshint validthis: true */
         var vm = this;
 
         // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
+        // This requieres a 'gameSettings' object on scope that will be watched for changes
 
         vm.activeTabIndex = 0;
 

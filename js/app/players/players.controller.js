@@ -5,12 +5,27 @@
         .module('molkkyscore')
         .controller('PlayersCtrl', PlayersCtrl);
 
-    PlayersCtrl.$inject = ['$scope', 'playersService', 'TEMPLATES_ROOT', '$ionicPopup', '$ionicModal', '$translate'];
+    PlayersCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            'playersService',
+                            'TEMPLATES_ROOT',
+                            '$ionicPopup',
+                            '$ionicModal',
+                            '$translate',
+                            'toast'];
 
-    function PlayersCtrl($scope, playersService, TEMPLATES_ROOT, $ionicPopup, $ionicModal, $translate) {
+    function PlayersCtrl($scope,
+                            $rootScope,
+                            playersService,
+                            TEMPLATES_ROOT,
+                            $ionicPopup,
+                            $ionicModal,
+                            $translate,
+                            toast) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayerModalScope = $scope.$new(true);
+        var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
         vm.removeVisible = false;
@@ -28,6 +43,10 @@
 
         /*  LISTENERS
             ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().players;
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             vm.addPlayerModal.remove();
@@ -76,6 +95,7 @@
 
         function confirmPlayer() {
             vm.players.push(addPlayerModalScope.viewModel.player);
+            toast.show(addPlayerModalScope.viewModel.player.firstName + ' ' + toastMessages.addPlayer);
 
             vm.addPlayerModal.hide();
         }
@@ -98,6 +118,7 @@
 
         function remove(player) {
             playersService.remove(player);
+            toast.show(player.firstName + ' ' + toastMessages.removePlayer);
         }
     }
 })();

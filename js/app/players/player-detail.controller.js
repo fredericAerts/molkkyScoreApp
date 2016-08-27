@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal'];
+    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal', 'toast'];
 
-    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal) {
+    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, $ionicModal, toast) {
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
@@ -58,6 +58,7 @@
 
         function confirmPlayer() {
             vm.editPlayerModal.hide();
+            toast.show('Update to player profile saved');
         }
     }
 })();
