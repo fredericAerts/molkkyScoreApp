@@ -5,48 +5,57 @@
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$scope', '$ionicPopup', '$translate', 'settingsService'];
+    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
 
-    function SettingsCtrl($scope, $ionicPopup, $translate, settingsService) {
+    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
         /* jshint validthis: true */
         var vm = this;
 
-        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
-        // This requieres a 'gameSettings' object on scope that will be watched for changes
+        var toastMessages = toast.getMessages().settings;
 
         vm.activeTabIndex = 0;
 
-        vm.gameCustomSetting = settingsService.isGameCustomSetting();
-        vm.toggleGameCustomSetting = toggleGameCustomSetting;
-        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
-        vm.setWinningScore = settingsService.setWinningScore;
-        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
-        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
-        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
-        vm.setThreeMisses = settingsService.setThreeMisses;
-
-        vm.languageOtions = settingsService.getLanguageOtions();
-        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
-        vm.setLanguageKey = settingsService.setLanguageKey;
+        vm.options = settingsService.getOptions();
+        vm.customSetting = settingsService.isCustomSetting();
+        vm.parameters = settingsService.getParameters();
 
         activate();
 
         ////////////////
 
+        /*  Listeners
+            ======================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function() {
+            toastMessages = toast.getMessages().settings;
+        });
+
+        $scope.$watch(
+            function watchCustomSetting() {
+                return vm.customSetting;
+            },
+            function handleCustomSettingChange(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    showAlert();
+                }
+            }
+        );
+
+        $scope.$watch(
+            function watchParameters() {
+                return vm.parameters;
+            },
+            function handleParametersChange(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                    toast.show(toastMessages.update);
+                }
+            }, true
+        );
+
         function activate() {
         }
 
-        function toggleGameCustomSetting() {
-            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
-            if (vm.gameCustomSetting) {
-                showAlert();
-            }
-        }
-
-        // An alert dialog
+        /*  Helper functions
+            ======================================================================== */
         function showAlert() {
             var alertPopup = $ionicPopup.alert({
                 title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
@@ -55,12 +64,6 @@
 
             alertPopup.then(function(res) {
             });
-        }
-
-        function filterOutActiveItem(array) {
-            return array.filter(function(option) {
-                return option.active;
-            })[0].value;
         }
     }
 })();

@@ -41,6 +41,9 @@
                 players: {
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                },
+                settings: {
+                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
                 }
             };
         }

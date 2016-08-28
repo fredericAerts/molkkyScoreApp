@@ -14,7 +14,7 @@
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        }).preferredLanguage('english');
+        }).preferredLanguage('english'); // TODO: get from DB
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');

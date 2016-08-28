@@ -5082,7 +5082,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        }).preferredLanguage('english');
+        }).preferredLanguage('english'); // TODO: get from DB
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');
@@ -6434,47 +6434,57 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$scope', '$ionicPopup', '$translate', 'settingsService'];
+    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
 
-    function SettingsCtrl($scope, $ionicPopup, $translate, settingsService) {
+    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
         /* jshint validthis: true */
         var vm = this;
 
-        // TODO: add toasts confirming saving of settings (http://ngcordova.com/docs/plugins/toast/)
-        // This requieres a 'gameSettings' object on scope that will be watched for changes
+        var toastMessages = toast.getMessages().settings;
 
         vm.activeTabIndex = 0;
 
-        vm.gameCustomSetting = settingsService.isGameCustomSetting();
-        vm.toggleGameCustomSetting = toggleGameCustomSetting;
-        vm.winningScoreOptions = settingsService.getWinningScoreOptions();
-        vm.winningScore = filterOutActiveItem(vm.winningScoreOptions);
-        vm.setWinningScore = settingsService.setWinningScore;
-        vm.winningScoreExceededOptions = settingsService.getWinningScoreExceededOptions();
-        vm.winningScoreExceeded = filterOutActiveItem(vm.winningScoreExceededOptions);
-        vm.setWinningScoreExceeded = settingsService.setWinningScoreExceeded;
-        vm.threeMissesOptions = settingsService.getThreeMissesOptions();
-        vm.threeMisses = filterOutActiveItem(vm.threeMissesOptions);
-        vm.setThreeMisses = settingsService.setThreeMisses;
-
-        vm.languageOtions = settingsService.getLanguageOtions();
-        vm.activeLanguageKey = settingsService.getActiveLanguageKey();
-        vm.setLanguageKey = settingsService.setLanguageKey;
+        vm.options = settingsService.getOptions();
+        vm.customSetting = settingsService.isCustomSetting();
+        vm.parameters = settingsService.getParameters();
 
         activate();
 
         ////////////////
 
+        /*  Listeners
+            ======================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function() {
+            toastMessages = toast.getMessages().settings;
+        });
+
+        $scope.$watch(
+            function watchCustomSetting() {
+                return vm.customSetting;
+            },
+            function handleCustomSettingChange(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    showAlert();
+                }
+            }
+        );
+
+        $scope.$watch(
+            function watchParameters() {
+                return vm.parameters;
+            },
+            function handleParametersChange(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                    toast.show(toastMessages.update);
+                }
+            }, true
+        );
+
         function activate() {
         }
 
-        function toggleGameCustomSetting() {
-            vm.gameCustomSetting = settingsService.toggleGameCustomSetting();
-            if (vm.gameCustomSetting) {
-                showAlert();
-            }
-        }
-
+        /*  Helper functions
+            ============================================================================================================ */
         // An alert dialog
         function showAlert() {
             var alertPopup = $ionicPopup.alert({
@@ -6484,12 +6494,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             alertPopup.then(function(res) {
             });
-        }
-
-        function filterOutActiveItem(array) {
-            return array.filter(function(option) {
-                return option.active;
-            })[0].value;
         }
     }
 })();
@@ -6504,146 +6508,56 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     settingsService.$inject = ['$translate'];
 
     function settingsService($translate) {
-        var languageOptions = [
-            {
-                value: 'English',
-                key: 'english'
-            },
-            {
-                value: 'Français',
-                key: 'french'
-            },
-            {
-                value: 'Finnish',
-                key: 'finnish'
-            }
-        ];
-        var gameCustomSetting = false;
-
-        var winningScoreOptions = [
-            {
-                value: 25,
-                active: false
-            },
-            {
-                value: 50,
-                active: true
-            },
-            {
-                value: 100,
-                active: false
-            }
-        ];
-
-        var winningScoreExceededOptions = [
-            {
-                value: 'to zero',
-                active: true
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'half of winning score',
-                active: false
-            }
-        ];
-
-        var threeMissesOptions = [
-            {
-                value: 'to zero',
-                active: false
-            },
-            {
-                value: 'halved',
-                active: false
-            },
-            {
-                value: 'disqualified',
-                active: true
-            }
-        ];
-
         var service = {
-            getSettings: getSettings,
-            getActiveLanguageKey: getActiveLanguageKey,
-            setLanguageKey: setLanguageKey,
-            getLanguageOtions: getLanguageOtions,
-            isGameCustomSetting: isGameCustomSetting,
-            toggleGameCustomSetting: toggleGameCustomSetting,
-            getWinningScoreOptions: getWinningScoreOptions,
-            setWinningScore: setWinningScore,
-            getWinningScoreExceededOptions: getWinningScoreExceededOptions,
-            setWinningScoreExceeded: setWinningScoreExceeded,
-            getThreeMissesOptions: getThreeMissesOptions,
-            setThreeMisses: setThreeMisses
+            getOptions: getOptions,
+            isCustomSetting: isCustomSetting,
+            getParameters: getParameters
         };
         return service;
 
         ////////////////
 
-        function getSettings() {
+        function getOptions() {
             return {
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
+                app: {
+                    language: [
+                        {
+                            value: 'English',
+                            key: 'english'
+                        },
+                        {
+                            value: 'Français',
+                            key: 'french'
+                        },
+                        {
+                            value: 'Finnish',
+                            key: 'finnish'
+                        }
+                    ]
+                },
+                game: {
+                    winningScore: [25, 50, 100],
+                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
+                    threeMisses: ['to zero', 'halved', 'disqualified']
+                }
             };
         }
 
-        function getActiveLanguageKey() {
-            return $translate.use();
+        function isCustomSetting() {
+            return false; // TODO: get from database
         }
 
-        function setLanguageKey(languageKey) {
-            $translate.use(languageKey); // TODO: write to database
-        }
-
-        function getLanguageOtions() {
-            return languageOptions;
-        }
-
-        function isGameCustomSetting() {
-            return gameCustomSetting; // TODO: get from database
-        }
-
-        function toggleGameCustomSetting() {
-            gameCustomSetting = !gameCustomSetting;
-            return gameCustomSetting;
-        }
-
-        function getWinningScoreOptions() {
-            return winningScoreOptions;
-        }
-
-        function setWinningScore(activeOption) { // TODO: write to database
-            winningScoreOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getWinningScoreExceededOptions() {
-            return winningScoreExceededOptions;
-        }
-
-        function setWinningScoreExceeded(activeOption) { // TODO: write to database
-            winningScoreExceededOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-        }
-
-        function getThreeMissesOptions() {
-            return threeMissesOptions;
-        }
-
-        function setThreeMisses(activeOption) { // TODO: write to database
-            threeMissesOptions.map(function(option) {
-                option.active = option.value === activeOption;
-                return option;
-            });
-            console.log(threeMissesOptions);
+        function getParameters() {
+            return {
+                app: {
+                    language: $translate.use()
+                },
+                game: {
+                    winningScore: 50,
+                    winningScoreExceeded: 'halved',
+                    threeMisses: 'disqualified'
+                }
+            };
         }
     }
 })();
@@ -6878,6 +6792,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 players: {
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                },
+                settings: {
+                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
                 }
             };
         }

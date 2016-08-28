@@ -11,34 +11,34 @@
     </div>
     <ion-content class="has-tabs-top">
         <div ng-show="settings.activeTabIndex === 0">
-            <ion-toggle ng-model="settings.gameCustomSetting" ng-change="settings.toggleGameCustomSetting()">
-                <span ng-show="settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>
-                <span ng-show="!settings.gameCustomSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.OFF' | translate }}</span>
+            <ion-toggle ng-model="settings.customSetting">
+                <span ng-show="settings.customSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>
+                <span ng-show="!settings.customSetting">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.OFF' | translate }}</span>
             </ion-toggle>
             <!-- winning score question -->
-            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
+            <div class="list card" ng-class="{'disabled': !settings.customSetting}">
                 <div class="item item-divider">
                     {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE.TITLE' | translate }}
                 </div>
-                <ion-radio ng-disabled="!settings.gameCustomSetting" name="radio-winning-score" ng-model="settings.winningScore" ng-value="option.value" ng-change="settings.setWinningScore(option.value)" ng-repeat="option in settings.winningScoreOptions">
-                    {{ option.value }}
+                <ion-radio ng-disabled="!settings.customSetting" name="radio-winning-score" ng-model="settings.parameters.game.winningScore" ng-value="option" ng-repeat="option in settings.options.game.winningScore">
+                    {{ option }}
                 </ion-radio>
             </div>
             <!-- winning score exceeded question -->
-            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
+            <div class="list card" ng-class="{'disabled': !settings.customSetting}">
                 <div class="item item-divider">
                     {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.TITLE' | translate }}
                 </div>
-                <ion-radio ng-disabled="!settings.gameCustomSetting" ng-model="settings.winningScoreExceeded" ng-value="option.value" ng-change="settings.setWinningScoreExceeded(option.value)" ng-repeat="option in settings.winningScoreExceededOptions">
+                <ion-radio ng-disabled="!settings.customSetting" name="radio-winning-score-exceeded" ng-model="settings.parameters.game.winningScoreExceeded" ng-value="option" ng-repeat="option in settings.options.game.winningScoreExceeded">
                     {{ 'HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' + ($index + 1) | translate }}
                 </ion-radio>
             </div>
             <!-- three misses question -->
-            <div class="list card" ng-class="{'disabled': !settings.gameCustomSetting}">
+            <div class="list card" ng-class="{'disabled': !settings.customSetting}">
                 <div class="item item-divider">
                     {{ 'HOME.SETTINGS.TABS.GAME.THREE-MISSES.TITLE' | translate }}
                 </div>
-                <ion-radio ng-disabled="!settings.gameCustomSetting" name="radio-three-misses" ng-model="settings.threeMisses" ng-value="option.value" ng-change="settings.setThreeMisses(option.value)" ng-repeat="option in settings.threeMissesOptions">
+                <ion-radio ng-disabled="!settings.customSetting" name="radio-three-misses" ng-model="settings.parameters.game.threeMisses" ng-value="option" ng-repeat="option in settings.options.game.threeMisses">
                     {{ 'HOME.SETTINGS.TABS.GAME.THREE-MISSES.OPTION-' + ($index + 1) | translate }}
                 </ion-radio>
             </div>
@@ -48,8 +48,8 @@
                 <div class="item item-divider">
                     {{ 'HOME.SETTINGS.TABS.APP.LANGUAGE.TITLE' | translate }}
                 </div>
-                <ion-radio name="radio-language" ng-model="settings.activeLanguageKey" ng-value="language.key" ng-change="settings.setLanguageKey(language.key)" ng-repeat="language in settings.languageOtions">
-                    {{ language.value }}
+                <ion-radio name="radio-language" ng-model="settings.parameters.app.language" ng-value="option.key" ng-repeat="option in settings.options.app.language">
+                    {{ option.value }}
                 </ion-radio>
             </div>
         </div>

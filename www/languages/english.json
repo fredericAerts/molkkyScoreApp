@@ -114,6 +114,9 @@
                         "TITLE": "Language"
                     }
                 }
+            },
+            "TOASTS": {
+                "UPDATE": "Settings updated"
             }
         },
         "STATISTICS": {
