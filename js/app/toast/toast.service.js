@@ -24,7 +24,7 @@
                 styling: {
                     cornerRadius: 4
                 }
-            })
+            });
         }
 
         function getMessages() {
@@ -42,7 +42,7 @@
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
                 }
-            }
+            };
         }
     }
 })();

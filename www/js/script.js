@@ -6770,41 +6770,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     statisticsService.$inject = ['$translate'];
 
     function statisticsService($translate) {
-        var metrics = [{
-                id: 0,
-                category: 'OVERALL',
-                propertyName: 'TOTAL-GAMES-PLAYED'
-            },
-            {
-                id: 1,
-                category: 'PLAYERS',
-                propertyName: 'HALL-OF-FAME'
-            },
-            {
-                id: 2,
-                category: 'PLAYERS',
-                propertyName: 'WINNING-RATIO'
-            },
-            {
-                id: 3,
-                category: 'PLAYERS',
-                propertyName: 'VERSATILITY'
-            },
-            {
-                id: 4,
-                category: 'PLAYERS',
-                propertyName: 'ACCURACY'
-            },
-            {
-                id: 5,
-                category: 'PLAYERS',
-                propertyName: 'EFFICIENCY'
-            },
-            {
-                id: 6,
-                category: 'PLAYERS',
-                propertyName: 'EFFECTIVENESS'
-            }
+        var metrics = [
+            metric(0, 'OVERALL', 'TOTAL-GAMES-PLAYED'),
+            metric(1, 'PLAYERS', 'HALL-OF-FAME'),
+            metric(2, 'PLAYERS', 'WINNING-RATIO'),
+            metric(3, 'PLAYERS', 'VERSATILITY'),
+            metric(4, 'PLAYERS', 'ACCURACY'),
+            metric(5, 'PLAYERS', 'EFFICIENCY'),
+            metric(6, 'PLAYERS', 'EFFECTIVENESS')
         ];
 
         var service = {
@@ -6825,19 +6798,39 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function translateMetrics() {
+            var viewTitle, summary, recorded, calculation;
+            var prefix = 'HOME.STATISTICS.METRICS.';
+
             metrics.forEach(function(metric) {
-                var viewTitle = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.VIEW-TITLE';
-                var infoSummary = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.SUMMARY';
-                var infoRecorded = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.RECORDED';
-                var infoCalculation = 'HOME.STATISTICS.METRICS.' + metric.category + '.' + metric.propertyName + '.INFO.CALCULATION';
+                viewTitle = prefix + metric.category + '.' + metric.propertyName + '.VIEW-TITLE';
+                summary = prefix + metric.category + '.' + metric.propertyName + '.INFO.SUMMARY';
+                recorded = prefix + metric.category + '.' + metric.propertyName + '.INFO.RECORDED';
+                calculation = prefix + metric.category + '.' + metric.propertyName + '.INFO.CALCULATION';
 
                 metric.viewTitle = $translate.instant(viewTitle);
                 metric.info = {
-                    summary: $translate.instant(infoSummary),
-                    recorded: $translate.instant(infoRecorded),
-                    calculation: $translate.instant(infoCalculation)
-                }
+                    summary: $translate.instant(summary),
+                    recorded: $translate.instant(recorded),
+                    calculation: $translate.instant(calculation)
+                };
             });
+        }
+
+        /*  Helper classes
+            ================================================================================= */
+        /* metric factory */
+        function metric(id, category, propertyName) {
+            return {
+                id: id,
+                category: category,
+                propertyName: propertyName,
+                viewTitle: '',
+                info: {
+                    summary: '',
+                    recorded: '',
+                    calculation: ''
+                }
+            };
         }
     }
 })();
@@ -6868,7 +6861,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 styling: {
                     cornerRadius: 4
                 }
-            })
+            });
         }
 
         function getMessages() {
@@ -6886,7 +6879,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
                 }
-            }
+            };
         }
     }
 })();
