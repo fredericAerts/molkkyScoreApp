@@ -8,10 +8,23 @@
     settingsService.$inject = ['$translate'];
 
     function settingsService($translate) {
+        var parameters = {
+            app: {
+                language: $translate.use()
+            },
+            game: {
+                winningScore: 50,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'disqualified'
+            }
+        };
+
         var service = {
             getOptions: getOptions,
             isCustomSetting: isCustomSetting,
-            getParameters: getParameters
+            getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
+            updateAppParameter: updateAppParameter
         };
         return service;
 
@@ -48,16 +61,19 @@
         }
 
         function getParameters() {
-            return {
-                app: {
-                    language: $translate.use()
-                },
-                game: {
-                    winningScore: 50,
-                    winningScoreExceeded: 'halved',
-                    threeMisses: 'disqualified'
-                }
-            };
+            return parameters;
+        }
+
+        function updateAppParameter(key, value) {
+            parameters.app[key] = value;
+
+            switch (key) {
+                case 'language': $translate.use(value); break;
+            }
+        }
+
+        function updateGameParameter(key, value) {
+            parameters.game[key] = value;
         }
     }
 })();

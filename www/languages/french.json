@@ -36,6 +36,9 @@
                         "TITLE": "Langue"
                     }
                 }
+            },
+            "TOASTS": {
+                "UPDATE": "French Settings updated"
             }
         },
         "STATISTICS": {

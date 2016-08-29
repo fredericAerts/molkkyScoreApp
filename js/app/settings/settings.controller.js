@@ -46,6 +46,7 @@
             },
             function handleParametersChange(newValue, oldValue) {
                 if (!_.isEqual(newValue, oldValue)) {
+                    updateParameters(newValue, oldValue);
                     toast.show(toastMessages.update);
                 }
             }, true
@@ -64,6 +65,28 @@
 
             alertPopup.then(function(res) {
             });
+        }
+
+        function updateParameters(newParameters, oldParameters) {
+            var updatedKey = '';
+            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
+            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
+
+            if (!_.isEmpty(diffApp)) {
+                updatedKey = Object.keys(diffApp)[0];
+                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+            }
+
+            if (!_.isEmpty(diffGame)) {
+                updatedKey = Object.keys(diffGame)[0];
+                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+            }
+        }
+
+        function isPropertySameIn(otherObject) {
+            return function(value, key) {
+                return otherObject[key] === value;
+            };
         }
     }
 })();

@@ -6,6 +6,7 @@
         .factory('modalsService', modalsService);
 
     modalsService.$inject = ['TEMPLATES_ROOT',
+                                '$rootScope',
                                 '$ionicModal',
                                 'gameService',
                                 'playersService',
@@ -13,6 +14,7 @@
                                 'loadingService'];
 
     function modalsService(TEMPLATES_ROOT,
+                            $rootScope,
                             $ionicModal,
                             gameService,
                             playersService,
@@ -20,12 +22,19 @@
                             loadingService) {
         /*  Service for creating modals that are used in more than one controller
             ====================================================================== */
-        var toastMessages = toast.getMessages().start; // TODO: add listener for language settings
+        var toastMessages = toast.getMessages().start;
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal,
             initScoreDetailsModal: initScoreDetailsModal
         };
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().start;
+        });
+
         return service;
 
         ////////////////
@@ -37,7 +46,7 @@
             ====================================================================== */
             var addPlayersToGameModal = {};
             var modalScope = $scope.$new(true);
-            var guestColors = ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
+            var guestColors = getGuestColors();
 
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
                 scope: modalScope,
@@ -138,7 +147,7 @@
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
                 modalScope.viewModel.showReorder = false;
-                modalScope.viewModel.guestColors = guestColors;
+                modalScope.viewModel.guestColors = getGuestColors();
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
                 modalScope.viewModel.participants = [];
             }
@@ -159,6 +168,10 @@
                 scope: $scope,
                 animation: 'slide-in-up'
             });
+        }
+
+        function getGuestColors() {
+            return ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
         }
     }
 })();

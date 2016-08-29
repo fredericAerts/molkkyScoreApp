@@ -29,7 +29,7 @@
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
-        var settings = settingsService.getSettings();
+        var settings = settingsService.getParameters().game;
         var actionSheetActions = getActionSheetActions();
         var toastMessages = toast.getMessages().game;
 
