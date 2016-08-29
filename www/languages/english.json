@@ -132,8 +132,8 @@
                     }
                 },
                 "PLAYERS": {
-                    "HALL-OF-FAME": {
-                        "VIEW-TITLE": "Hall of fame",
+                    "TOTAL-WINS": {
+                        "VIEW-TITLE": "Total wins",
                         "INFO": {
                             "SUMMARY": "Total number of wins",
                             "RECORDED": "When player wins game",

@@ -5073,7 +5073,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .run(runBlock);
 
     configure.$inject = ['$provide', '$translateProvider', '$ionicConfigProvider', 'LANGUAGES_ROOT'];
-    runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform', '$cordovaSQLite'];
+    runBlock.$inject = ['$rootScope',
+                        'IMAGES_ROOT',
+                        '$ionicPlatform',
+                        '$cordovaSQLite',
+                        'playersService',
+                        'statisticsService'];
 
     function configure($provide, $translateProvider, $ionicConfigProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
@@ -5088,8 +5093,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $ionicConfigProvider.tabs.position('bottom');
     }
 
-    function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
+    function runBlock($rootScope,
+                        IMAGES_ROOT,
+                        $ionicPlatform,
+                        $cordovaSQLite,
+                        playersService,
+                        statisticsService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
+
+        initStatistics(playersService.all(), statisticsService);
 
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -5142,6 +5154,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
              * throw exception;
              */
         };
+    }
+
+    function initStatistics(players, statisticsService) {
+        // game statistics
+        statisticsService.initOverallStatistics();
+
+        // player statistics
+        players.forEach(function(player) {
+            statisticsService.initPlayerStatistics(player);
+        });
     }
 })();
 
@@ -5243,6 +5265,52 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .constant('TEMPLATES_ROOT', '/templates')
         .constant('LANGUAGES_ROOT', '/languages')
         .constant('IMAGES_ROOT', '/img');
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
 })();
 
 (function() {
@@ -6238,6 +6306,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
+        console.log(vm.players);
         vm.removeVisible = false;
         vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
         vm.addPlayerModal = {};
@@ -6692,19 +6761,25 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     function statisticsService($translate) {
         var metrics = [
-            metric(0, 'OVERALL', 'TOTAL-GAMES-PLAYED'),
-            metric(1, 'PLAYERS', 'HALL-OF-FAME'),
-            metric(2, 'PLAYERS', 'WINNING-RATIO'),
-            metric(3, 'PLAYERS', 'VERSATILITY'),
-            metric(4, 'PLAYERS', 'ACCURACY'),
-            metric(5, 'PLAYERS', 'EFFICIENCY'),
-            metric(6, 'PLAYERS', 'EFFECTIVENESS')
+            metric(0, 'totalGamesPlayed', 'overall', 'TOTAL-GAMES-PLAYED'),
+            metric(1, 'totalWins', 'players', 'TOTAL-WINS'),
+            metric(2, 'winningRatio', 'players', 'WINNING-RATIO'),
+            metric(3, 'versatility', 'players', 'VERSATILITY'),
+            metric(4, 'accuracy', 'players', 'ACCURACY'),
+            metric(5, 'efficiency', 'players', 'EFFICIENCY'),
+            metric(6, 'effectiveness', 'players', 'EFFECTIVENESS')
         ];
+        var overallStatistics = {};
 
         var service = {
             getMetrics: getMetrics,
             getMetric: getMetric,
-            translateMetrics: translateMetrics
+            translateMetrics: translateMetrics,
+            initOverallStatistics: initOverallStatistics,
+            getOverallStatistics: getOverallStatistics,
+            updateOverallStatistics: updateOverallStatistics,
+            initPlayerStatistics: initPlayerStatistics,
+            updatePlayerStatistics: updatePlayerStatistics
         };
         return service;
 
@@ -6723,10 +6798,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var prefix = 'HOME.STATISTICS.METRICS.';
 
             metrics.forEach(function(metric) {
-                viewTitle = prefix + metric.category + '.' + metric.propertyName + '.VIEW-TITLE';
-                summary = prefix + metric.category + '.' + metric.propertyName + '.INFO.SUMMARY';
-                recorded = prefix + metric.category + '.' + metric.propertyName + '.INFO.RECORDED';
-                calculation = prefix + metric.category + '.' + metric.propertyName + '.INFO.CALCULATION';
+                viewTitle = prefix + metric.category.toUpperCase() + '.' + metric.translationId + '.VIEW-TITLE';
+                summary = prefix + metric.category.toUpperCase() + '.' + metric.translationId + '.INFO.SUMMARY';
+                recorded = prefix + metric.category.toUpperCase() + '.' + metric.translationId + '.INFO.RECORDED';
+                calculation = prefix + metric.category.toUpperCase() + '.' + metric.translationId + '.INFO.CALCULATION';
 
                 metric.viewTitle = $translate.instant(viewTitle);
                 metric.info = {
@@ -6737,14 +6812,51 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
-        /*  Helper classes
+        function initOverallStatistics() { // cached on statistics service
+            getMetrics().forEach(function(metric) {
+                if (metric.category === 'overall') {
+                    overallStatistics[metric.keyName] = 0; // TODO: fetch from DB
+                }
+            });
+
+            return overallStatistics;
+        }
+
+        function getOverallStatistics() {
+            return overallStatistics;
+        }
+
+        function updateOverallStatistics(key, value) {
+            overallStatistics[key] = value; // TODO: write to DB
+        }
+
+        function initPlayerStatistics(player) { // cached on player object
+            player.statistics = {};
+
+            getMetrics().forEach(function(metric) {
+                if (metric.category === 'players') {
+                    player.statistics[metric.keyName] = 0; // TODO: fetch from DB
+                }
+            });
+
+            return player;
+        }
+
+        function updatePlayerStatistics(key, value, player) {
+            player.statistics[key] = value; // TODO: write to DB
+
+            return player;
+        }
+
+        /*  Helper functions
             ================================================================================= */
         /* metric factory */
-        function metric(id, category, propertyName) {
+        function metric(id, keyName, category, translationId) {
             return {
                 id: id,
+                keyName: keyName,
                 category: category,
-                propertyName: propertyName,
+                translationId: translationId,
                 viewTitle: '',
                 info: {
                     summary: '',
@@ -6775,7 +6887,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         ////////////////
 
         function show(message) {
-            if (!window.cordova) return;
+            if (!window.cordova) {
+                return;
+            }
 
             $cordovaToast.showWithOptions({
                 message: message,
@@ -6806,52 +6920,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
                 }
             };
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
         }
     }
 })();

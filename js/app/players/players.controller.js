@@ -28,6 +28,7 @@
         var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
+        console.log(vm.players);
         vm.removeVisible = false;
         vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
         vm.addPlayerModal = {};

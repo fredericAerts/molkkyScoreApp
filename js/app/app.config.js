@@ -5,7 +5,12 @@
         .run(runBlock);
 
     configure.$inject = ['$provide', '$translateProvider', '$ionicConfigProvider', 'LANGUAGES_ROOT'];
-    runBlock.$inject = ['$rootScope', 'IMAGES_ROOT', '$ionicPlatform', '$cordovaSQLite'];
+    runBlock.$inject = ['$rootScope',
+                        'IMAGES_ROOT',
+                        '$ionicPlatform',
+                        '$cordovaSQLite',
+                        'playersService',
+                        'statisticsService'];
 
     function configure($provide, $translateProvider, $ionicConfigProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
@@ -20,8 +25,15 @@
         $ionicConfigProvider.tabs.position('bottom');
     }
 
-    function runBlock($rootScope, IMAGES_ROOT, $ionicPlatform, $cordovaSQLite) {
+    function runBlock($rootScope,
+                        IMAGES_ROOT,
+                        $ionicPlatform,
+                        $cordovaSQLite,
+                        playersService,
+                        statisticsService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
+
+        initStatistics(playersService.all(), statisticsService);
 
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -74,5 +86,15 @@
              * throw exception;
              */
         };
+    }
+
+    function initStatistics(players, statisticsService) {
+        // game statistics
+        statisticsService.initOverallStatistics();
+
+        // player statistics
+        players.forEach(function(player) {
+            statisticsService.initPlayerStatistics(player);
+        });
     }
 })();
