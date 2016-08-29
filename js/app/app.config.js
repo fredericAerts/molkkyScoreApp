@@ -24,7 +24,6 @@
         $rootScope.imagesRoot = IMAGES_ROOT;
 
         $ionicPlatform.ready(function() {
-            // console.log('test');
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -36,7 +35,10 @@
                 // org.apache.cordova.statusbar required
                 window.StatusBar.styleDefault();
             }
-            testDb();
+
+            if (window.cordova) {
+                testDb();
+            }
 
             function testDb() {
                 var db = $cordovaSQLite.openDB({

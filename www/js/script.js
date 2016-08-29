@@ -5092,7 +5092,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $rootScope.imagesRoot = IMAGES_ROOT;
 
         $ionicPlatform.ready(function() {
-            // console.log('test');
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -5104,7 +5103,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 // org.apache.cordova.statusbar required
                 window.StatusBar.styleDefault();
             }
-            testDb();
+
+            if (window.cordova) {
+                testDb();
+            }
 
             function testDb() {
                 var db = $cordovaSQLite.openDB({
@@ -6759,6 +6761,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .factory('toast', toast);
+
+    toast.$inject = ['$cordovaToast', '$translate'];
+
+    function toast($cordovaToast, $translate) {
+        var service = {
+            show: show,
+            getMessages: getMessages
+        };
+        return service;
+
+        ////////////////
+
+        function show(message) {
+            if (!window.cordova) return;
+
+            $cordovaToast.showWithOptions({
+                message: message,
+                duration: 'short',
+                position: 'bottom',
+                styling: {
+                    cornerRadius: 4
+                }
+            });
+        }
+
+        function getMessages() {
+            return {
+                start: {
+                    maxParticipants: $translate.instant('HOME.START.TOASTS.MAX-PARTICIPANTS')
+                },
+                game: {
+                    undoLast: $translate.instant('HOME.GAME.TOASTS.UNDO-LAST'),
+                    threeMisses: $translate.instant('HOME.GAME.TOASTS.THREE-MISSES'),
+                    maxScoreExceeded: $translate.instant('HOME.GAME.TOASTS.MAX-SCORE-EXCEEDED'),
+                    winner: $translate.instant('HOME.GAME.TOASTS.WINNER')
+                },
+                players: {
+                    addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
+                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                },
+                settings: {
+                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
+                }
+            };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
     HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
@@ -6796,58 +6852,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             function addPlayersToGameModalConfirmFunction() {
                 $state.go('game');
             }
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('toast', toast);
-
-    toast.$inject = ['$cordovaToast', '$translate'];
-
-    function toast($cordovaToast, $translate) {
-        var service = {
-            show: show,
-            getMessages: getMessages
-        };
-        return service;
-
-        ////////////////
-
-        function show(message) {
-            $cordovaToast.showWithOptions({
-                message: message,
-                duration: 'short',
-                position: 'bottom',
-                styling: {
-                    cornerRadius: 4
-                }
-            });
-        }
-
-        function getMessages() {
-            return {
-                start: {
-                    maxParticipants: $translate.instant('HOME.START.TOASTS.MAX-PARTICIPANTS')
-                },
-                game: {
-                    undoLast: $translate.instant('HOME.GAME.TOASTS.UNDO-LAST'),
-                    threeMisses: $translate.instant('HOME.GAME.TOASTS.THREE-MISSES'),
-                    maxScoreExceeded: $translate.instant('HOME.GAME.TOASTS.MAX-SCORE-EXCEEDED'),
-                    winner: $translate.instant('HOME.GAME.TOASTS.WINNER')
-                },
-                players: {
-                    addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
-                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
-                },
-                settings: {
-                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
-                }
-            };
         }
     }
 })();

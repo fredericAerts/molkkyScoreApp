@@ -17,6 +17,8 @@
         ////////////////
 
         function show(message) {
+            if (!window.cordova) return;
+
             $cordovaToast.showWithOptions({
                 message: message,
                 duration: 'short',
