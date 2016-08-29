@@ -1,20 +1,29 @@
 <ion-popover-view>
     <ion-header-bar>
-        <h1 class="title">{{ viewModel.metric.viewTitle }}</h1>
+        <h1 class="title">
+            {{ 'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.VIEW-TITLE' | translate }}
+        </h1>
     </ion-header-bar>
     <ion-content class="padding">
-        <h5 class="popover__content-title">What is this?</h5>
+        <h5 class="popover__content-title">
+            {{ 'HOME.STATISTICS.INFO-POPOVER.CONTENT.WHAT' | translate }}
+        </h5>
         <p>
-            {{viewModel.metric.info.summary}}
+            {{ 'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.INFO.SUMMARY' | translate }}
         </p>
 
-        <h5 class="popover__content-title">When is it recorded?</h5>
+        <h5 class="popover__content-title">
+            {{ 'HOME.STATISTICS.INFO-POPOVER.CONTENT.WHEN' | translate }}
+        </h5>
         <p>
-            {{viewModel.metric.info.recorded}}
+            {{ 'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.INFO.RECORDED' | translate }}
         </p>
 
-        <h5 ng-if="viewModel.metric.info.calculation" class="popover__content-title">How is it calculated?</h5>
-        <p ng-if="viewModel.metric.info.calculation" translate="{{ viewModel.metric.info.calculation }}"></p>
+        <h5 ng-if="'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.INFO.CALCULATION' | translate" class="popover__content-title">
+            {{ 'HOME.STATISTICS.INFO-POPOVER.CONTENT.HOW' | translate }}
+        </h5>
+        <p ng-if="'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.INFO.CALCULATION' | translate" translate="{{ 'HOME.STATISTICS.METRICS.' + viewModel.metric.translationId + '.INFO.CALCULATION' }}">
+        </p>
 
         <br>
     </ion-content>

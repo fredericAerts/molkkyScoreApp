@@ -55,6 +55,13 @@
                     "VIEW-TITLE": "Les plus accurate",
                     "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
                 }
+            },
+            "INFO-POPOVER": {
+                "CONTENT": {
+                    "WHAT": "French What is this?",
+                    "WHEN": "French When is it updated?",
+                    "HOW": "French How is it calculated?"
+                }
             }
         }
     }

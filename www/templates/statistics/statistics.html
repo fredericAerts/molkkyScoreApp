@@ -7,17 +7,19 @@
             <div class="item item-divider">
                 Overall
             </div>
-            <ion-item class="item-icon-left item-icon-right" ng-repeat="metric in statistics.metrics | filter: {category: 'OVERALL'}" href="#/tab/statistics/{{metric.id}}">
+            <ion-item class="item-icon-left item-icon-right" ng-repeat="metric in statistics.metrics | filter: {category: 'overall'}">
                 <i class="icon ion-ios-information-outline" ng-click="statistics.showItemInfo($event, metric)"></i>
-                {{ metric.viewTitle }}
-                <i class="icon ion-chevron-right icon-accessory"></i>
+                {{ 'HOME.STATISTICS.METRICS.' + metric.translationId + '.VIEW-TITLE' | translate }}
+                <span class="badge badge-positive">
+                    {{ statistics.overallStatistics[metric.keyName] }}
+                </span>
             </ion-item>
             <div class="item item-divider">
                 Players
             </div>
-            <ion-item class="item-icon-left item-icon-right" ng-repeat="metric in statistics.metrics  | filter: {category: 'PLAYERS'}" href="#/tab/statistics/{{metric.id}}">
+            <ion-item class="item-icon-left item-icon-right" ng-repeat="metric in statistics.metrics  | filter: {category: 'players'}" href="#/tab/statistics/{{metric.id}}">
                 <i class="icon ion-ios-information-outline" ng-click="statistics.showItemInfo($event, metric)"></i>
-                {{ metric.viewTitle }}
+                {{ 'HOME.STATISTICS.METRICS.' + metric.translationId + '.VIEW-TITLE' | translate }}
                 <i class="icon ion-chevron-right icon-accessory"></i>
             </ion-item>
         </ion-list>

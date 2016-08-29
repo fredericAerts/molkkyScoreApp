@@ -11,6 +11,7 @@
                             'gameService',
                             'gameUtilities',
                             'settingsService',
+                            'statisticsService',
                             'modalsService',
                             'gameActionSheetService',
                             'loadingService',
@@ -22,6 +23,7 @@
                         gameService,
                         gameUtilities,
                         settingsService,
+                        statisticsService,
                         modalsService,
                         gameActionSheetService,
                         loadingService,
@@ -244,10 +246,12 @@
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
                 vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
+                statisticsService.updateStatistics('gameReachedMaxScore', vm.activePlayer);
 
-                if (vm.activePlayer.endPosition === 1) {
+                if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
+                    statisticsService.updateStatistics('gameWon', vm.activePlayer);
                 }
             }
 

@@ -5,20 +5,20 @@
         .module('molkkyscore')
         .controller('StatisticsCtrl', StatisticsCtrl);
 
-    StatisticsCtrl.$inject = ['$rootScope',
-                                '$scope',
+    StatisticsCtrl.$inject = ['$scope',
                                 'statisticsService',
                                 'TEMPLATES_ROOT',
                                 '$ionicPopover',
                                 '$ionicModal'];
 
-    function StatisticsCtrl($rootScope, $scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
+    function StatisticsCtrl($scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
         var statisticsInfoModalScope = $scope.$new(true);
         var statsItemsInfoPopoverScope = $scope.$new(true);
 
         vm.metrics = statisticsService.getMetrics();
+        vm.overallStatistics = statisticsService.getOverallStatistics();
         vm.statisticsInfoModal = {};
         vm.statsItemsInfoPopover = {};
         vm.showItemInfo = showItemInfo;
@@ -28,17 +28,9 @@
         ////////////////
 
         function activate() {
-            statisticsService.translateMetrics();
             initStatisticsInfoModal();
             initStatsItemsInfoPopover();
         }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function () {
-            statisticsService.translateMetrics();
-
-        });
 
         /*  FUNCTIONS
             ======================================================================================== */

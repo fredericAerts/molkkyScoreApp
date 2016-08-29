@@ -185,6 +185,13 @@
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
                 "BUTTON-CLOSE": "Close"
+            },
+            "INFO-POPOVER": {
+                "CONTENT": {
+                    "WHAT": "What is this?",
+                    "WHEN": "When is it updated?",
+                    "HOW": "How is it calculated?"
+                }
             }
         },
         "PLAYERS": {
