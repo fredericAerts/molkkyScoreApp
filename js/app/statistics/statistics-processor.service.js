@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .factory('statisticsProcessor', statisticsProcessor);
 
-    statisticsProcessor.$inject = ['playersService'];
+    statisticsProcessor.$inject = ['gameService'];
 
-    function statisticsProcessor(playersService) {
+    function statisticsProcessor(gameService) {
 
         var service = {
             update: update
@@ -22,38 +22,99 @@
             switch (event) {
                 case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
                 case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
-                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
                 case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
+                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
             }
         }
 
         /*  Helper functions
             ================================================================================= */
         function updatePlayerWonGame(player, overallStatistics, undo) {
+            var participants = gameService.getParticipants();
             var increment = undo ? -1 : 1;
+
+            // update raw data
             player.statistics.rawData.gamesWon += increment;
 
             // non player specific updates
             overallStatistics.totalGamesPlayed += increment;
-            playersService.all().forEach(function(player) {
+            participants.forEach(function(player) {
                 player.statistics.rawData.gamesPlayed += increment;
             });
+
+            updatePlayerMetric('totalWins', player);
+            updatePlayerMetric('winningRatio', player);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
             var increment = undo ? -1 : 1;
             player.statistics.rawData.gamesReachedMaxScore += increment;
             player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
+
+            updatePlayerMetric('efficiency', player);
+        }
+
+        function updatePlayerThrowsSinglePin(player, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throwsSinglePin += increment;
         }
 
         function updatePlayerThrow(player, throws, undo) {
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throws += increment;
+
+            updatePlayerMetric('accuracy', player);
         }
 
-        function updatePlayerThrowsSinglePin(player, undo) {
-            var increment = undo ? -1 : 1;
-            player.statistics.rawData.throwsOnePin += increment;
+        function updatePlayerMetric(event, player) {
+            switch (event) {
+                case 'totalWins': updatePlayerMetricTotalWins(player); break;
+                case 'winningRatio': updatePlayerMetricWinningRatio(player); break;
+                case 'versatility': updatePlayerMetricVersatility(player); break;
+                case 'accuracy': updatePlayerMetricAccuracy(player); break;
+                case 'efficiency': updatePlayerMetricEfficiency(player); break;
+            }
+        }
+
+        function updatePlayerMetricTotalWins(player) {
+            var gamesWon = player.statistics.rawData.gamesWon;
+
+            player.statistics.totalWins = gamesWon;
+        }
+
+        function updatePlayerMetricVersatility(player) {
+            var accuracy = player.statistics.accuracy;
+            var efficiency = player.statistics.efficiency;
+            var winningRatio = player.statistics.winningRatio;
+
+            player.statistics.versatility = (accuracy + efficiency + winningRatio) / 3;
+        }
+
+        function updatePlayerMetricWinningRatio(player) {
+            var gamesWon = player.statistics.rawData.gamesWon;
+            var gamesPlayed = player.statistics.rawData.gamesPlayed;
+
+            player.statistics.winningRatio = (gamesWon / gamesPlayed) * 100;
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function updatePlayerMetricAccuracy(player) {
+            var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
+            var totalThrows = player.statistics.rawData.throws;
+
+            player.statistics.accuracy = (totalThrowsThatHitSinglePin / totalThrows) * 100;
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function updatePlayerMetricEfficiency(player) {
+            var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
+            var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
+
+            player.statistics.efficiency = (4 / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100;
+
+            updatePlayerMetric('versatility', player);
         }
     }
 })();

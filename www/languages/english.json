@@ -140,20 +140,20 @@
                             "CALCULATION": ""
                         }
                     },
+                    "VERSATILITY": {
+                        "VIEW-TITLE": "Versatility",
+                        "INFO": {
+                            "SUMMARY": "Winning ratio, accuracy and efficiency combined into one value",
+                            "RECORDED": "On each throw",
+                            "CALCULATION": "a = winning ratio<br>b = efficiency<br>c = accuracy<br><i>Versatility</i> = (a + b + c) / 3"
+                        }
+                    },
                     "WINNING-RATIO": {
                         "VIEW-TITLE": "Winning ratio",
                         "INFO": {
                             "SUMMARY": "Total number of wins as per total number of games played",
                             "RECORDED": "When game is won by a player",
                             "CALCULATION": "a = total wins<br>b = total games played<br><i>Winning ratio</i> = (a / b) * 100"
-                        }
-                    },
-                    "VERSATILITY": {
-                        "VIEW-TITLE": "Versatility",
-                        "INFO": {
-                            "SUMMARY": "Accuracy, efficiency and effectiveness combined into one value",
-                            "RECORDED": "On each throw",
-                            "CALCULATION": "a = accuracy<br>b = efficiency<br>c = effectiveness<br><i>Versatility</i> = (accuracy + efficiency + effectiveness) / 3"
                         }
                     },
                     "ACCURACY": {
@@ -170,14 +170,6 @@
                             "SUMMARY": "The player’s ability to minimize the number of throws to finish a game",
                             "RECORDED": "When player reaches maximum score",
                             "CALCULATION": "a = total throws in games in which player reached maximum score<br>b = number of games in which player reached maximum score<br><i>Efficiency</i> = (4 / (a / b)) * 100"
-                        }
-                    },
-                    "EFFECTIVENESS": {
-                        "VIEW-TITLE": "Effectiveness",
-                        "INFO": {
-                            "SUMMARY": "The player’s ability to rank high in a game",
-                            "RECORDED": "When player reaches maximum score",
-                            "CALCULATION": "a = player ranking in current game (eg. winner gets ranking 1)<br>b = player effectiveness before start of game<br>c = number of games in which player reached maximum score<br><i>Effectiveness</i> = b + (((1/a * 100) - b) / c)"
                         }
                     }
                 }

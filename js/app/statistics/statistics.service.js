@@ -1,3 +1,30 @@
+/*  ==============================================================================
+    METRICS
+    ----------
+        ----------
+        Overall
+        ----------
+        - totalGamesPlayed: Total games played
+        ----------
+        Player
+        ----------
+        - totalWins: Total number of wins
+        - winningRatio: Total number of wins as per total number of games played
+        - versatility: winningRatio, efficiency and accuracy combined into one value
+        - accuracy: The player’s ability to hit single pins
+        - efficiency: The player’s ability to minimize the number of throws to finish a game
+
+    RAW DATA
+    ----------
+    - throws: Total throws of player
+    - throwsSinglePin: Total throws of player that hit only one pin
+    - throwsInGamesReachedMaxScore: Total throws of player in games in which player
+                                    reached max score
+    - gamesPlayed: Total games played that had a winner
+    - gamesReachedMaxScore: Total games in which player reached max score
+    - gamesWon: Total games won
+    ============================================================================== */
+
 (function() {
     'use strict';
 
@@ -11,11 +38,10 @@
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
-            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
             metric(3, 'versatility', 'players', 'PLAYERS.VERSATILITY', '%'),
+            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
             metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
-            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%'),
-            metric(6, 'effectiveness', 'players', 'PLAYERS.EFFECTIVENESS', '%')
+            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
         ];
         var overallStatistics = {};
 
@@ -54,21 +80,10 @@
         }
 
         function initPlayerStatistics(player) { // cached on player object
-            /*  ==============================================================================
-                RAW DATA
-                ----------
-                - throws: total throws of player
-                - throwsOnePin: total throws of player that hit only one pin
-                - throwsInGamesReachedMaxScore: total throws of player in games in which player
-                                                reached max score
-                - gamesPlayed: total games played that had a winner
-                - gamesReachedMaxScore: total games in which player reached max score
-                - gamesWon: total games won
-                ============================================================================== */
             player.statistics = {
                 rawData: {
                     throws: 0,
-                    throwsOnePin: 0,
+                    throwsSinglePin: 0,
                     throwsInGamesReachedMaxScore: 0,
                     gamesPlayed: 0,
                     gamesReachedMaxScore: 0,

@@ -5272,6 +5272,52 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
     gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
@@ -5804,11 +5850,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
-            vm.activePlayer.scoreHistory.unshift(_.clone(vm.activatedScore));
-            statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             if (vm.activatedScore.singlePin || vm.activatedScore.value === 1) {
+                // need to be executed before 'playerThrow' event for proper metric 'accuracy' calculation
                 statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer, false);
             }
+            vm.activePlayer.scoreHistory.unshift(_.clone(vm.activatedScore));
+            statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             vm.activePlayer.score += vm.activatedScore.value;
             vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
             resetActivatedScore();
@@ -5993,52 +6040,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             return scoreboard;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
         }
     }
 })();
@@ -6707,9 +6708,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('statisticsProcessor', statisticsProcessor);
 
-    statisticsProcessor.$inject = ['playersService'];
+    statisticsProcessor.$inject = ['gameService'];
 
-    function statisticsProcessor(playersService) {
+    function statisticsProcessor(gameService) {
 
         var service = {
             update: update
@@ -6724,38 +6725,99 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             switch (event) {
                 case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
                 case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
-                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
                 case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
+                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
             }
         }
 
         /*  Helper functions
             ================================================================================= */
         function updatePlayerWonGame(player, overallStatistics, undo) {
+            var participants = gameService.getParticipants();
             var increment = undo ? -1 : 1;
+
+            // update raw data
             player.statistics.rawData.gamesWon += increment;
 
             // non player specific updates
             overallStatistics.totalGamesPlayed += increment;
-            playersService.all().forEach(function(player) {
+            participants.forEach(function(player) {
                 player.statistics.rawData.gamesPlayed += increment;
             });
+
+            updatePlayerMetric('totalWins', player);
+            updatePlayerMetric('winningRatio', player);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
             var increment = undo ? -1 : 1;
             player.statistics.rawData.gamesReachedMaxScore += increment;
             player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
+
+            updatePlayerMetric('efficiency', player);
+        }
+
+        function updatePlayerThrowsSinglePin(player, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throwsSinglePin += increment;
         }
 
         function updatePlayerThrow(player, throws, undo) {
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throws += increment;
+
+            updatePlayerMetric('accuracy', player);
         }
 
-        function updatePlayerThrowsSinglePin(player, undo) {
-            var increment = undo ? -1 : 1;
-            player.statistics.rawData.throwsOnePin += increment;
+        function updatePlayerMetric(event, player) {
+            switch (event) {
+                case 'totalWins': updatePlayerMetricTotalWins(player); break;
+                case 'winningRatio': updatePlayerMetricWinningRatio(player); break;
+                case 'versatility': updatePlayerMetricVersatility(player); break;
+                case 'accuracy': updatePlayerMetricAccuracy(player); break;
+                case 'efficiency': updatePlayerMetricEfficiency(player); break;
+            }
+        }
+
+        function updatePlayerMetricTotalWins(player) {
+            var gamesWon = player.statistics.rawData.gamesWon;
+
+            player.statistics.totalWins = gamesWon;
+        }
+
+        function updatePlayerMetricVersatility(player) {
+            var accuracy = player.statistics.accuracy;
+            var efficiency = player.statistics.efficiency;
+            var winningRatio = player.statistics.winningRatio;
+
+            player.statistics.versatility = (accuracy + efficiency + winningRatio) / 3;
+        }
+
+        function updatePlayerMetricWinningRatio(player) {
+            var gamesWon = player.statistics.rawData.gamesWon;
+            var gamesPlayed = player.statistics.rawData.gamesPlayed;
+
+            player.statistics.winningRatio = (gamesWon / gamesPlayed) * 100;
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function updatePlayerMetricAccuracy(player) {
+            var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
+            var totalThrows = player.statistics.rawData.throws;
+
+            player.statistics.accuracy = (totalThrowsThatHitSinglePin / totalThrows) * 100;
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function updatePlayerMetricEfficiency(player) {
+            var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
+            var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
+
+            player.statistics.efficiency = (4 / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100;
+
+            updatePlayerMetric('versatility', player);
         }
     }
 })();
@@ -6840,6 +6902,33 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     }
 })();
 
+/*  ==============================================================================
+    METRICS
+    ----------
+        ----------
+        Overall
+        ----------
+        - totalGamesPlayed: Total games played
+        ----------
+        Player
+        ----------
+        - totalWins: Total number of wins
+        - winningRatio: Total number of wins as per total number of games played
+        - versatility: winningRatio, efficiency and accuracy combined into one value
+        - accuracy: The player’s ability to hit single pins
+        - efficiency: The player’s ability to minimize the number of throws to finish a game
+
+    RAW DATA
+    ----------
+    - throws: Total throws of player
+    - throwsSinglePin: Total throws of player that hit only one pin
+    - throwsInGamesReachedMaxScore: Total throws of player in games in which player
+                                    reached max score
+    - gamesPlayed: Total games played that had a winner
+    - gamesReachedMaxScore: Total games in which player reached max score
+    - gamesWon: Total games won
+    ============================================================================== */
+
 (function() {
     'use strict';
 
@@ -6853,11 +6942,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
-            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
             metric(3, 'versatility', 'players', 'PLAYERS.VERSATILITY', '%'),
+            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
             metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
-            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%'),
-            metric(6, 'effectiveness', 'players', 'PLAYERS.EFFECTIVENESS', '%')
+            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
         ];
         var overallStatistics = {};
 
@@ -6896,21 +6984,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initPlayerStatistics(player) { // cached on player object
-            /*  ==============================================================================
-                RAW DATA
-                ----------
-                - throws: total throws of player
-                - throwsOnePin: total throws of player that hit only one pin
-                - throwsInGamesReachedMaxScore: total throws of player in games in which player
-                                                reached max score
-                - gamesPlayed: total games played that had a winner
-                - gamesReachedMaxScore: total games in which player reached max score
-                - gamesWon: total games won
-                ============================================================================== */
             player.statistics = {
                 rawData: {
                     throws: 0,
-                    throwsOnePin: 0,
+                    throwsSinglePin: 0,
                     throwsInGamesReachedMaxScore: 0,
                     gamesPlayed: 0,
                     gamesReachedMaxScore: 0,

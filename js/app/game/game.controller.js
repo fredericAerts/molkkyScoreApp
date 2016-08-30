@@ -240,11 +240,12 @@
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
-            vm.activePlayer.scoreHistory.unshift(_.clone(vm.activatedScore));
-            statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             if (vm.activatedScore.singlePin || vm.activatedScore.value === 1) {
+                // need to be executed before 'playerThrow' event for proper metric 'accuracy' calculation
                 statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer, false);
             }
+            vm.activePlayer.scoreHistory.unshift(_.clone(vm.activatedScore));
+            statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             vm.activePlayer.score += vm.activatedScore.value;
             vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
             resetActivatedScore();
