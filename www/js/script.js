@@ -5272,52 +5272,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
     gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
@@ -6049,6 +6003,52 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .factory('loadingService', loadingService);
 
     loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
@@ -6684,13 +6684,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('StatisticsListingCtrl', StatisticsListing);
 
-    StatisticsListing.$inject = ['$stateParams', 'statisticsService'];
+    StatisticsListing.$inject = ['$stateParams', 'statisticsService', 'playersService'];
 
-    function StatisticsListing($stateParams, statisticsService) {
+    function StatisticsListing($stateParams, statisticsService, playersService) {
         /* jshint validthis: true */
         var vm = this;
 
         vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
+        vm.players = playersService.all();
 
         activate();
 
@@ -6708,9 +6709,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('statisticsProcessor', statisticsProcessor);
 
-    statisticsProcessor.$inject = ['gameService'];
+    statisticsProcessor.$inject = ['gameService', 'settingsService'];
 
-    function statisticsProcessor(gameService) {
+    function statisticsProcessor(gameService, settingsService) {
 
         var service = {
             update: update
@@ -6790,14 +6791,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var efficiency = player.statistics.efficiency;
             var winningRatio = player.statistics.winningRatio;
 
-            player.statistics.versatility = (accuracy + efficiency + winningRatio) / 3;
+            player.statistics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
         }
 
         function updatePlayerMetricWinningRatio(player) {
             var gamesWon = player.statistics.rawData.gamesWon;
             var gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-            player.statistics.winningRatio = (gamesWon / gamesPlayed) * 100;
+            player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
             updatePlayerMetric('versatility', player);
         }
@@ -6806,18 +6807,31 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
             var totalThrows = player.statistics.rawData.throws;
 
-            player.statistics.accuracy = (totalThrowsThatHitSinglePin / totalThrows) * 100;
+            player.statistics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
 
             updatePlayerMetric('versatility', player);
         }
 
         function updatePlayerMetricEfficiency(player) {
+            var minThrowsToWin = getMinThrowsToWin();
             var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
             var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
 
-            player.statistics.efficiency = (4 / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100;
+            player.statistics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
 
             updatePlayerMetric('versatility', player);
+        }
+
+        function getMinThrowsToWin() {
+            var minThrowsToWin = 0;
+            var winningScore = settingsService.getParameters().game.winningScore;
+            switch (winningScore) {
+                case 25: minThrowsToWin = 3; break;
+                case 50: minThrowsToWin = 5; break;
+                case 100: minThrowsToWin = 9; break;
+            }
+
+            return minThrowsToWin;
         }
     }
 })();

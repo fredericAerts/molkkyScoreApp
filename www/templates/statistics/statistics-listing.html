@@ -1,8 +1,15 @@
 <ion-view view-title="{{ 'HOME.STATISTICS.METRICS.' + listing.metric.translationId + '.VIEW-TITLE' | translate }}">
   <ion-content class="padding">
-    <p>
-    {{ listing.metric }}
-      {{listing.test}}
-    </p>
+    <ion-list>
+        <ion-item class="item-avatar item-icon-right" ng-repeat="player in listing.players | orderBy: ['-statistics.' + listing.metric.keyName, '-statistics.rawData.gamesPlayed']">
+            <img ng-if="player.face" ng-src="{{player.face}}">
+            <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
+            <h2>{{player.firstName}} {{player.lastName}}</h2>
+            <p>{{player.tagline}}</p>
+            <i class="icon note">
+                {{player.statistics[listing.metric.keyName] + listing.metric.unit}}
+            </i>
+        </ion-item>
+    </ion-list>
   </ion-content>
 </ion-view>
