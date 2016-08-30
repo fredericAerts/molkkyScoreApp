@@ -85,8 +85,8 @@
             return player;
         }
 
-        function updateStatistics(event, activePlayer) {
-            statisticsProcessor.process(event, activePlayer, overallStatistics);
+        function updateStatistics(event, activePlayer, undo) {
+            statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
         }
 
         /*  Helper functions

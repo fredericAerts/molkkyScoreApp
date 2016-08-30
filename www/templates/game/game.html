@@ -47,7 +47,7 @@
                             </span>
                             <span ng-repeat="throw in game.activePlayer.scoreHistory track by $index">
                                 <i ng-if="$index > 0">&#124;</i>
-                                <i ng-class="{'miss': !game.activePlayer.scoreHistory[$index]}">&nbsp;{{throw}}&nbsp;</i>
+                                <i ng-class="{'miss': !game.activePlayer.scoreHistory[$index].value}">&nbsp;{{throw.value}}&nbsp;</i>
                             </span>
                         </p>
                         <i ng-show="game.activatedScore.value > -1" class="icon ion-chevron-right icon-accessory"></i>

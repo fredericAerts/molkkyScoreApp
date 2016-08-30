@@ -86,6 +86,7 @@
                     break;
                 case 'disqualified':
                     activePlayer.disqualified = true;
+                    activePlayer.score = 0;
                     break;
             }
 

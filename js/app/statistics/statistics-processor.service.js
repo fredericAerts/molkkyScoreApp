@@ -10,45 +10,50 @@
     function statisticsProcessor(playersService) {
 
         var service = {
-            process: process
+            update: update
         };
         return service;
 
         ////////////////
 
-        function process(event, player, overallStatistics) {
+        function update(event, player, overallStatistics, undo) {
+            var throws = player.scoreHistory.length;
+
             switch (event) {
-                case 'playerWonGame': processPlayerWonGame(player, overallStatistics); break;
-                case 'playerReachedMaxScore': processPlayerReachedMaxScore(player, player.scoreHistory.length); break;
-                case 'playerThrow': processPlayerThrow(player, player.scoreHistory.length); break;
-                case 'playerThrowsSinglePin': processPlayerThrowsSinglePin(player); break;
+                case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
+                case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
+                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
+                case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
             }
         }
 
         /*  Helper functions
             ================================================================================= */
-        function processPlayerWonGame(player, overallStatistics) {
-            player.statistics.rawData.gamesWon = player.statistics.rawData.gamesWon + 1;
+        function updatePlayerWonGame(player, overallStatistics, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.gamesWon += increment;
 
             // non player specific updates
-            overallStatistics.totalGamesPlayed = overallStatistics.totalGamesPlayed + 1;
+            overallStatistics.totalGamesPlayed += increment;
             playersService.all().forEach(function(player) {
-                player.statistics.rawData.gamesPlayed = player.statistics.rawData.gamesPlayed + 1;
+                player.statistics.rawData.gamesPlayed += increment;
             });
         }
 
-        function processPlayerReachedMaxScore(player, throws) {
-            player.statistics.rawData.gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore + 1;
-            player.statistics.rawData.throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore + throws;
+        function updatePlayerReachedMaxScore(player, throws, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.gamesReachedMaxScore += increment;
+            player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
         }
 
-        function processPlayerThrow(player, throws) {
-            player.statistics.rawData.throws = player.statistics.rawData.throws + 1;
+        function updatePlayerThrow(player, throws, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throws += increment;
         }
 
-        function processPlayerThrowsSinglePin(player) {
-            player.statistics.rawData.throwsOnePin = player.statistics.rawData.throwsOnePin + 1;
-            console.log('one pin');
+        function updatePlayerThrowsSinglePin(player, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throwsOnePin += increment;
         }
     }
 })();

@@ -240,10 +240,10 @@
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
-            vm.activePlayer.scoreHistory.unshift(vm.activatedScore.value);
-            statisticsService.updateStatistics('playerThrow', vm.activePlayer);
+            vm.activePlayer.scoreHistory.unshift(_.clone(vm.activatedScore));
+            statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             if (vm.activatedScore.singlePin || vm.activatedScore.value === 1) {
-                statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer);
+                statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer, false);
             }
             vm.activePlayer.score += vm.activatedScore.value;
             vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
@@ -260,20 +260,16 @@
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
                 vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
-                statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer);
+                statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer, false);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
-                    statisticsService.updateStatistics('playerWonGame', vm.activePlayer);
+                    statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
             }
 
-            vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.score);
-
-            if (vm.activePlayer.disqualified) {
-                vm.activePlayer.score = 0;
-            }
+            vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.disqualified ? 'X' : vm.activePlayer.score);
         }
 
         function moveToNextPlayer() {
@@ -313,6 +309,7 @@
         }
 
         function undoLastThrow(player) {
+            undoLastStatistics(player);
             var isFirstThrow = player.accumulatedScoreHistory.length < 2;
             resetActivatedScore();
             player.scoreHistory.shift();
@@ -325,6 +322,22 @@
             player.disqualified = false;
             player.endPosition = -1;
             player.activatedAvatarStatus = '';
+        }
+
+        function undoLastStatistics(player) {
+            statisticsService.updateStatistics('playerThrow', vm.activePlayer, true);
+
+            if (player.scoreHistory[0].singlePin) {
+                statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer, true);
+            }
+
+            if (player.finishedGame) {
+                statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer, true);
+            }
+
+            if (player.endPosition === 1) {
+                statisticsService.updateStatistics('playerWonGame', vm.activePlayer, true);
+            }
         }
 
         function resetActivatedScore() {
