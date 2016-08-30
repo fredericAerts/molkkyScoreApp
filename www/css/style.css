@@ -9920,6 +9920,10 @@ a.button {
   .game-board-cell--score.active {
     color: #fff;
     background: #387ef5; }
+  .game-board-cell--score.active.single-pin {
+    background: #33cd5f; }
+  .game-board-cell--score.active.zero {
+    background: #ef473a; }
 
 .scoreboard-details {
   width: 100%;

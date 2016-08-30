@@ -13,7 +13,7 @@
                 language: $translate.use()
             },
             game: {
-                winningScore: 50,
+                winningScore: 25,
                 winningScoreExceeded: 'halved',
                 threeMisses: 'disqualified'
             }

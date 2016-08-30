@@ -54,13 +54,24 @@
         }
 
         function initPlayerStatistics(player) { // cached on player object
+            /*  ==============================================================================
+                RAW DATA
+                ----------
+                - throws: total throws of player
+                - throwsOnePin: total throws of player that hit only one pin
+                - throwsInGamesReachedMaxScore: total throws of player in games in which player
+                                                reached max score
+                - gamesPlayed: total games played that had a winner
+                - gamesReachedMaxScore: total games in which player reached max score
+                - gamesWon: total games won
+                ============================================================================== */
             player.statistics = {
                 rawData: {
                     throws: 0,
                     throwsOnePin: 0,
-                    throwsInGamesReachedMaxScore: 0, // throws in games that player reached max score
+                    throwsInGamesReachedMaxScore: 0,
                     gamesPlayed: 0,
-                    gamesReachedMaxScore: 0, // games in which player reached max score
+                    gamesReachedMaxScore: 0,
                     gamesWon: 0
                 }
             };
@@ -74,8 +85,8 @@
             return player;
         }
 
-        function updateStatistics(event, player) {
-            statisticsProcessor.process(event, player, overallStatistics);
+        function updateStatistics(event, activePlayer) {
+            statisticsProcessor.process(event, activePlayer, overallStatistics);
         }
 
         /*  Helper functions

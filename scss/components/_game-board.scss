@@ -264,5 +264,13 @@
 
             background: $positive;
         }
+
+        &.active.single-pin {
+            background: $balanced;
+        }
+
+        &.active.zero {
+            background: $assertive;
+        }
     }
 }

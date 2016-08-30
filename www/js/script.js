@@ -5600,7 +5600,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         vm.participants = [];
         vm.scoreboard = {};
-        vm.activatedScore = -1;
+        vm.activatedScore = {};
         vm.activePlayer = {};
         vm.gameEnded = false;
         vm.scoreDetailsModal = {};
@@ -5653,7 +5653,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initGame() {
             vm.gameEnded = false;
-            vm.activatedScore = -1;
+            resetActivatedScore();
             vm.activePlayer = vm.participants[0];
         }
 
@@ -5679,18 +5679,28 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function activateScore(score) { // user touched a number
-            vm.activatedScore = vm.activatedScore !== score ? score : -1;
-
-            if (vm.activatedScore > -1) {
-                vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore, vm.activePlayer, settings);
+            if (score === 0 || score === 1) {
+                vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
+            }
+            else if (vm.activatedScore.singlePin && vm.activatedScore.value === score) {
+                vm.activatedScore.singlePin = false;
+            }
+            else if (vm.activatedScore.value === score) {
+                resetActivatedScore();
+                vm.activePlayer.activatedAvatarStatus = ''; // reset
             }
             else {
-                vm.activePlayer.activatedAvatarStatus = ''; // reset
+                vm.activatedScore.value = score;
+                vm.activatedScore.singlePin = true;
+            }
+
+            if (vm.activatedScore.value.value > -1) {
+                vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore.value, vm.activePlayer, settings);
             }
         }
 
         function processThrow() {
-            if (vm.activatedScore < 0) {
+            if (vm.activatedScore.value < 0) {
                 return;
             }
 
@@ -5793,10 +5803,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  Helper functions
             ======================================================================================== */
         function processScore() {
-            vm.activePlayer.scoreHistory.unshift(vm.activatedScore);
-            vm.activePlayer.score += vm.activatedScore;
-            vm.activePlayer.missesInARow = vm.activatedScore ? 0 : vm.activePlayer.missesInARow + 1;
-            vm.activatedScore = -1; // reset
+            vm.activePlayer.scoreHistory.unshift(vm.activatedScore.value);
+            statisticsService.updateStatistics('playerThrow', vm.activePlayer);
+            if (vm.activatedScore.singlePin || vm.activatedScore.value === 1) {
+                statisticsService.updateStatistics('playerThrowsSinglePin', vm.activePlayer);
+            }
+            vm.activePlayer.score += vm.activatedScore.value;
+            vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
+            resetActivatedScore();
 
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
@@ -5809,12 +5823,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
                 vm.activePlayer.endPosition = gameUtilities.getEndPosition(vm.participants);
-                statisticsService.updateStatistics('gameReachedMaxScore', vm.activePlayer);
+                statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
-                    statisticsService.updateStatistics('gameWon', vm.activePlayer);
+                    statisticsService.updateStatistics('playerWonGame', vm.activePlayer);
                 }
             }
 
@@ -5863,7 +5877,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function undoLastThrow(player) {
             var isFirstThrow = player.accumulatedScoreHistory.length < 2;
-            vm.activatedScore = -1;
+            resetActivatedScore();
             player.scoreHistory.shift();
             player.accumulatedScoreHistory.pop();
             player.score = isFirstThrow ? 0 : player.accumulatedScoreHistory[player.accumulatedScoreHistory.length - 1];
@@ -5874,6 +5888,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             player.disqualified = false;
             player.endPosition = -1;
             player.activatedAvatarStatus = '';
+        }
+
+        function resetActivatedScore() {
+            vm.activatedScore.value = -1;
+            vm.activatedScore.singlePin = false;
+
+            return vm.activatedScore;
         }
     }
 })();
@@ -6373,7 +6394,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function cancelPlayer() {
             vm.addPlayerModal.hide();
-            console.log(vm.players);
         }
 
         function confirmPlayer() {
@@ -6577,7 +6597,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 language: $translate.use()
             },
             game: {
-                winningScore: 50,
+                winningScore: 25,
                 winningScoreExceeded: 'halved',
                 threeMisses: 'disqualified'
             }
@@ -6686,15 +6706,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function process(event, player, overallStatistics) {
             switch (event) {
-                case 'gameWon': processGameWon(player.statistics, overallStatistics); break;
-                case 'gameReachedMaxScore': processGameReachedMaxScore(player.statistics, player.scoreHistory.length); break;
+                case 'playerWonGame': processPlayerWonGame(player, overallStatistics); break;
+                case 'playerReachedMaxScore': processPlayerReachedMaxScore(player, player.scoreHistory.length); break;
+                case 'playerThrow': processPlayerThrow(player, player.scoreHistory.length); break;
+                case 'playerThrowsSinglePin': processPlayerThrowsSinglePin(player); break;
             }
         }
 
         /*  Helper functions
             ================================================================================= */
-        function processGameWon(playerStatistics, overallStatistics) {
-            playerStatistics.rawData.gamesWon = playerStatistics.rawData.gamesWon + 1;
+        function processPlayerWonGame(player, overallStatistics) {
+            player.statistics.rawData.gamesWon = player.statistics.rawData.gamesWon + 1;
 
             // non player specific updates
             overallStatistics.totalGamesPlayed = overallStatistics.totalGamesPlayed + 1;
@@ -6703,9 +6725,18 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
-        function processGameReachedMaxScore(playerStatistics, throws) {
-            playerStatistics.rawData.gamesReachedMaxScore += playerStatistics.rawData.gamesReachedMaxScore + 1;
-            playerStatistics.rawData.throwsInGamesReachedMaxScore = playerStatistics.rawData.throwsInGamesReachedMaxScore + throws;
+        function processPlayerReachedMaxScore(player, throws) {
+            player.statistics.rawData.gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore + 1;
+            player.statistics.rawData.throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore + throws;
+        }
+
+        function processPlayerThrow(player, throws) {
+            player.statistics.rawData.throws = player.statistics.rawData.throws + 1;
+        }
+
+        function processPlayerThrowsSinglePin(player) {
+            player.statistics.rawData.throwsOnePin = player.statistics.rawData.throwsOnePin + 1;
+            console.log('one pin');
         }
     }
 })();
@@ -6846,13 +6877,24 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initPlayerStatistics(player) { // cached on player object
+            /*  ==============================================================================
+                RAW DATA
+                ----------
+                - throws: total throws of player
+                - throwsOnePin: total throws of player that hit only one pin
+                - throwsInGamesReachedMaxScore: total throws of player in games in which player
+                                                reached max score
+                - gamesPlayed: total games played that had a winner
+                - gamesReachedMaxScore: total games in which player reached max score
+                - gamesWon: total games won
+                ============================================================================== */
             player.statistics = {
                 rawData: {
                     throws: 0,
                     throwsOnePin: 0,
-                    throwsInGamesReachedMaxScore: 0, // throws in games that player reached max score
+                    throwsInGamesReachedMaxScore: 0,
                     gamesPlayed: 0,
-                    gamesReachedMaxScore: 0, // games in which player reached max score
+                    gamesReachedMaxScore: 0,
                     gamesWon: 0
                 }
             };
@@ -6866,8 +6908,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return player;
         }
 
-        function updateStatistics(event, player) {
-            statisticsProcessor.process(event, player, overallStatistics);
+        function updateStatistics(event, activePlayer) {
+            statisticsProcessor.process(event, activePlayer, overallStatistics);
         }
 
         /*  Helper functions

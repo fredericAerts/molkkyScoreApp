@@ -91,7 +91,6 @@
 
         function cancelPlayer() {
             vm.addPlayerModal.hide();
-            console.log(vm.players);
         }
 
         function confirmPlayer() {

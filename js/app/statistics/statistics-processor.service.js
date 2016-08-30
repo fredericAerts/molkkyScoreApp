@@ -18,15 +18,17 @@
 
         function process(event, player, overallStatistics) {
             switch (event) {
-                case 'gameWon': processGameWon(player.statistics, overallStatistics); break;
-                case 'gameReachedMaxScore': processGameReachedMaxScore(player.statistics, player.scoreHistory.length); break;
+                case 'playerWonGame': processPlayerWonGame(player, overallStatistics); break;
+                case 'playerReachedMaxScore': processPlayerReachedMaxScore(player, player.scoreHistory.length); break;
+                case 'playerThrow': processPlayerThrow(player, player.scoreHistory.length); break;
+                case 'playerThrowsSinglePin': processPlayerThrowsSinglePin(player); break;
             }
         }
 
         /*  Helper functions
             ================================================================================= */
-        function processGameWon(playerStatistics, overallStatistics) {
-            playerStatistics.rawData.gamesWon = playerStatistics.rawData.gamesWon + 1;
+        function processPlayerWonGame(player, overallStatistics) {
+            player.statistics.rawData.gamesWon = player.statistics.rawData.gamesWon + 1;
 
             // non player specific updates
             overallStatistics.totalGamesPlayed = overallStatistics.totalGamesPlayed + 1;
@@ -35,9 +37,18 @@
             });
         }
 
-        function processGameReachedMaxScore(playerStatistics, throws) {
-            playerStatistics.rawData.gamesReachedMaxScore += playerStatistics.rawData.gamesReachedMaxScore + 1;
-            playerStatistics.rawData.throwsInGamesReachedMaxScore = playerStatistics.rawData.throwsInGamesReachedMaxScore + throws;
+        function processPlayerReachedMaxScore(player, throws) {
+            player.statistics.rawData.gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore + 1;
+            player.statistics.rawData.throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore + throws;
+        }
+
+        function processPlayerThrow(player, throws) {
+            player.statistics.rawData.throws = player.statistics.rawData.throws + 1;
+        }
+
+        function processPlayerThrowsSinglePin(player) {
+            player.statistics.rawData.throwsOnePin = player.statistics.rawData.throwsOnePin + 1;
+            console.log('one pin');
         }
     }
 })();
