@@ -36,7 +36,8 @@
         var service = {
             all: all,
             get: get,
-            remove: remove
+            remove: remove,
+            updatePlayer: updatePlayer
         };
         return service;
 
@@ -57,6 +58,11 @@
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+
+        function updatePlayer(updatedPlayer) {
+            var player = get(updatedPlayer.id);
+            player = updatedPlayer;
         }
     }
 })();

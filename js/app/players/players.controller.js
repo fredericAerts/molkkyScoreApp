@@ -8,19 +8,23 @@
     PlayersCtrl.$inject = ['$scope',
                             '$rootScope',
                             'playersService',
+                            'statisticsService',
                             'TEMPLATES_ROOT',
                             '$ionicPopup',
                             '$ionicModal',
                             '$translate',
+                            '$ionicHistory',
                             'toast'];
 
     function PlayersCtrl($scope,
                             $rootScope,
                             playersService,
+                            statisticsService,
                             TEMPLATES_ROOT,
                             $ionicPopup,
                             $ionicModal,
                             $translate,
+                            $ionicHistory,
                             toast) {
         /* jshint validthis: true */
         var vm = this;
@@ -76,25 +80,22 @@
         }
 
         function showPlayerModal() {
-            initializeAddPlayerModalData();
+            addPlayerModalScope.viewModel.player = getNewPlayerTemplate();
 
             vm.addPlayerModal.show();
         }
 
-        function initializeAddPlayerModalData() {
-            addPlayerModalScope.viewModel.player.id = vm.players.length; // TODO: make unique
-            addPlayerModalScope.viewModel.player.firstName = '';
-            addPlayerModalScope.viewModel.player.lastName = '';
-            addPlayerModalScope.viewModel.player.tagline = '';
-            addPlayerModalScope.viewModel.player.face = '';
-        }
-
         function cancelPlayer() {
+            addPlayerModalScope.viewModel.player = {};
+
             vm.addPlayerModal.hide();
         }
 
         function confirmPlayer() {
+            initNewPlayer(addPlayerModalScope.viewModel.player);
+
             vm.players.push(addPlayerModalScope.viewModel.player);
+            $ionicHistory.clearCache();
             toast.show(addPlayerModalScope.viewModel.player.firstName + ' ' + toastMessages.addPlayer);
 
             vm.addPlayerModal.hide();
@@ -110,15 +111,35 @@
             })
             .then(function(confirmed) {
                 if (confirmed) {
-                    remove(player);
+                    playersService.remove(player);
+                    toast.show(player.firstName + ' ' + toastMessages.removePlayer);
                 }
                 vm.removeVisible = false;
             });
         }
 
-        function remove(player) {
-            playersService.remove(player);
-            toast.show(player.firstName + ' ' + toastMessages.removePlayer);
+        /*  Helper functions
+            ======================================================================================== */
+        function getNewPlayerTemplate() {
+            var playerId = _.max(vm.players, function(player){ return player.id; }).id + 1;
+            var player = {
+                id: playerId,
+                firstName: '',
+                lastName: '',
+                tagline: '',
+                face: ''
+            };
+
+            return player;
+        }
+
+        function initNewPlayer(player) {
+            if (!player.tagline) {
+                player.tagline = 'No tagline provided'
+            }
+            statisticsService.initPlayerStatistics(player);
+
+            return player;
         }
     }
 })();

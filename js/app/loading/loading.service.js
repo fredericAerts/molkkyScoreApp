@@ -21,7 +21,7 @@
             $ionicLoading.show({
                 templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
                 noBackdrop: true,
-                duration: 2000
+                duration: 1000
             });
         }
     }

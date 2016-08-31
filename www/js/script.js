@@ -6067,7 +6067,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             $ionicLoading.show({
                 templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
                 noBackdrop: true,
-                duration: 2000
+                duration: 1000
             });
         }
     }
@@ -6311,7 +6311,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
                 item('Throws', vm.player.statistics.rawData.throws),
                 item('Throws single pin', vm.player.statistics.rawData.throwsSinglePin),
-                item('Throws when reached max score', vm.player.statistics.rawData.gamesReachedMaxScore)
+                item('Throws when reached max score', vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
             ];
 
             vm.profileData.profile = profileItems;
@@ -6342,9 +6342,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ================================================================== */
                 editPlayerModalScope.viewModel = {
                     player: {},
-                    cancelPlayer: cancelPlayer,
                     confirmPlayer: confirmPlayer
-
                 };
             });
         }
@@ -6354,13 +6352,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.editPlayerModal.show();
         }
 
-        function cancelPlayer() {
-            vm.editPlayerModal.hide();
-        }
-
         function confirmPlayer() {
-            vm.editPlayerModal.hide();
+            if (!editPlayerModalScope.viewModel.player.tagline) {
+                editPlayerModalScope.viewModel.player.tagline = 'No tagline provided'
+            }
+
+            initProfileData();
             toast.show('Update to player profile saved');
+
+            vm.editPlayerModal.hide();
         }
     }
 })();
@@ -6375,19 +6375,23 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     PlayersCtrl.$inject = ['$scope',
                             '$rootScope',
                             'playersService',
+                            'statisticsService',
                             'TEMPLATES_ROOT',
                             '$ionicPopup',
                             '$ionicModal',
                             '$translate',
+                            '$ionicHistory',
                             'toast'];
 
     function PlayersCtrl($scope,
                             $rootScope,
                             playersService,
+                            statisticsService,
                             TEMPLATES_ROOT,
                             $ionicPopup,
                             $ionicModal,
                             $translate,
+                            $ionicHistory,
                             toast) {
         /* jshint validthis: true */
         var vm = this;
@@ -6443,25 +6447,22 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function showPlayerModal() {
-            initializeAddPlayerModalData();
+            addPlayerModalScope.viewModel.player = getNewPlayerTemplate();
 
             vm.addPlayerModal.show();
         }
 
-        function initializeAddPlayerModalData() {
-            addPlayerModalScope.viewModel.player.id = vm.players.length; // TODO: make unique
-            addPlayerModalScope.viewModel.player.firstName = '';
-            addPlayerModalScope.viewModel.player.lastName = '';
-            addPlayerModalScope.viewModel.player.tagline = '';
-            addPlayerModalScope.viewModel.player.face = '';
-        }
-
         function cancelPlayer() {
+            addPlayerModalScope.viewModel.player = {};
+
             vm.addPlayerModal.hide();
         }
 
         function confirmPlayer() {
+            initNewPlayer(addPlayerModalScope.viewModel.player);
+
             vm.players.push(addPlayerModalScope.viewModel.player);
+            $ionicHistory.clearCache();
             toast.show(addPlayerModalScope.viewModel.player.firstName + ' ' + toastMessages.addPlayer);
 
             vm.addPlayerModal.hide();
@@ -6477,15 +6478,35 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             })
             .then(function(confirmed) {
                 if (confirmed) {
-                    remove(player);
+                    playersService.remove(player);
+                    toast.show(player.firstName + ' ' + toastMessages.removePlayer);
                 }
                 vm.removeVisible = false;
             });
         }
 
-        function remove(player) {
-            playersService.remove(player);
-            toast.show(player.firstName + ' ' + toastMessages.removePlayer);
+        /*  Helper functions
+            ======================================================================================== */
+        function getNewPlayerTemplate() {
+            var playerId = _.max(vm.players, function(player){ return player.id; }).id + 1;
+            var player = {
+                id: playerId,
+                firstName: '',
+                lastName: '',
+                tagline: '',
+                face: ''
+            };
+
+            return player;
+        }
+
+        function initNewPlayer(player) {
+            if (!player.tagline) {
+                player.tagline = 'No tagline provided'
+            }
+            statisticsService.initPlayerStatistics(player);
+
+            return player;
         }
     }
 })();
@@ -6528,7 +6549,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var service = {
             all: all,
             get: get,
-            remove: remove
+            remove: remove,
+            updatePlayer: updatePlayer
         };
         return service;
 
@@ -6549,6 +6571,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function remove(player) {
             players.splice(players.indexOf(player), 1);
+        }
+
+        function updatePlayer(updatedPlayer) {
+            var player = get(updatedPlayer.id);
+            player = updatedPlayer;
         }
     }
 })();
@@ -6796,7 +6823,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
 
             updatePlayerMetric('totalWins', player);
-            updatePlayerMetric('winningRatio', player);
+            updatePlayerMetric('winningRatio', participants);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
@@ -6843,13 +6870,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             player.statistics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
         }
 
-        function updatePlayerMetricWinningRatio(player) {
-            var gamesWon = player.statistics.rawData.gamesWon;
-            var gamesPlayed = player.statistics.rawData.gamesPlayed;
+        function updatePlayerMetricWinningRatio(participants) {
+            var gamesWon, gamesPlayed;
+            participants.forEach(function(player) {
+                gamesWon = player.statistics.rawData.gamesWon;
+                gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-            player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
-            updatePlayerMetric('versatility', player);
+                updatePlayerMetric('versatility', player);
+            });
         }
 
         function updatePlayerMetricAccuracy(player) {

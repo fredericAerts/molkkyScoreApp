@@ -33,7 +33,7 @@
         margin-left: -8px;
         border-style: solid;
         border-width: 9px 8px 0 8px;
-        border-color: $assertive transparent transparent transparent;
+        border-color: lighten($assertive, 7%) transparent transparent transparent;
 
         content: "";
     }
@@ -93,5 +93,5 @@
 
     width: 100%;
 
-    background: $assertive;
+    background: lighten($assertive, 7%);
 }

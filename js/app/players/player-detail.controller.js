@@ -58,7 +58,7 @@
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
                 item('Throws', vm.player.statistics.rawData.throws),
                 item('Throws single pin', vm.player.statistics.rawData.throwsSinglePin),
-                item('Throws when reached max score', vm.player.statistics.rawData.gamesReachedMaxScore)
+                item('Throws when reached max score', vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
             ];
 
             vm.profileData.profile = profileItems;
@@ -89,9 +89,7 @@
                 ================================================================== */
                 editPlayerModalScope.viewModel = {
                     player: {},
-                    cancelPlayer: cancelPlayer,
                     confirmPlayer: confirmPlayer
-
                 };
             });
         }
@@ -101,13 +99,15 @@
             vm.editPlayerModal.show();
         }
 
-        function cancelPlayer() {
-            vm.editPlayerModal.hide();
-        }
-
         function confirmPlayer() {
-            vm.editPlayerModal.hide();
+            if (!editPlayerModalScope.viewModel.player.tagline) {
+                editPlayerModalScope.viewModel.player.tagline = 'No tagline provided'
+            }
+
+            initProfileData();
             toast.show('Update to player profile saved');
+
+            vm.editPlayerModal.hide();
         }
     }
 })();

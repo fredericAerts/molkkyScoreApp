@@ -43,7 +43,7 @@
             });
 
             updatePlayerMetric('totalWins', player);
-            updatePlayerMetric('winningRatio', player);
+            updatePlayerMetric('winningRatio', participants);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
@@ -90,13 +90,16 @@
             player.statistics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
         }
 
-        function updatePlayerMetricWinningRatio(player) {
-            var gamesWon = player.statistics.rawData.gamesWon;
-            var gamesPlayed = player.statistics.rawData.gamesPlayed;
+        function updatePlayerMetricWinningRatio(participants) {
+            var gamesWon, gamesPlayed;
+            participants.forEach(function(player) {
+                gamesWon = player.statistics.rawData.gamesWon;
+                gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-            player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
-            updatePlayerMetric('versatility', player);
+                updatePlayerMetric('versatility', player);
+            });
         }
 
         function updatePlayerMetricAccuracy(player) {

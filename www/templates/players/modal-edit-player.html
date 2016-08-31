@@ -1,37 +1,38 @@
 <ion-modal-view>
-    <ion-header-bar class="bar bar-header bar-positive">
-        <h1 class="title">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.TITLE' | translate }}</h1>
-        <button class="button" ng-click="viewModel.cancelPlayer()">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.BUTTON-CANCEL' | translate }}</button>
-    </ion-header-bar>
-    <ion-content>
-        <div class="add-avatar-block">
-            <img ng-if="viewModel.player.face" ng-src="{{viewModel.player.face}}">
-            <div ng-if="!viewModel.player.face" class="row add-avatar-block__placeholder">
-                <div class="col col-center">
-                    {{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.AVATAR-PLACEHOLDER' | translate }}
+    <form name="editPlayerForm" novalidate>
+        <ion-header-bar class="bar bar-header bar-positive">
+            <h1 class="title">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.TITLE' | translate }}</h1>
+        </ion-header-bar>
+        <ion-content>
+            <div class="add-avatar-block">
+                <img ng-if="viewModel.player.face" ng-src="{{viewModel.player.face}}">
+                <div ng-if="!viewModel.player.face" class="row add-avatar-block__placeholder">
+                    <div class="col col-center">
+                        {{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.AVATAR-PLACEHOLDER' | translate }}
+                    </div>
+                </div>
+                <div class="add-avatar-block__buttons">
+                    <button class="button button-icon icon ion-images" ng-click=""></button>
+                    <button class="button button-icon icon ion-camera" ng-click=""></button>
                 </div>
             </div>
-            <div class="add-avatar-block__buttons">
-                <button class="button button-icon icon ion-images" ng-click=""></button>
-                <button class="button button-icon icon ion-camera" ng-click=""></button>
+            <div class="list">
+                <label class="item item-input item-input--text item-floating-label">
+                    <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-FIRST-NAME' | translate }}</span>
+                    <input type="text" name="firstName" ng-model="viewModel.player.firstName" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-FIRST-NAME' | translate }}" required>
+                </label>
+                <label class="item item-input item-input--text item-floating-label">
+                    <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-LAST-NAME' | translate }}</span>
+                    <input type="text" name="lastName" ng-model="viewModel.player.lastName" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-LAST-NAME' | translate }}" required>
+                </label>
+                <label class="item item-input item-input--text item-floating-label">
+                    <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-TAGLINE' | translate }}</span>
+                    <input type="text" ng-model="viewModel.player.tagline" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-TAGLINE' | translate }}">
+                </label>
             </div>
-        </div>
-        <div class="list">
-            <label class="item item-input item-input--text item-floating-label">
-                <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-FIRST-NAME' | translate }}</span>
-                <input type="text" ng-model="viewModel.player.firstName" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-FIRST-NAME' | translate }}" required>
-            </label>
-            <label class="item item-input item-input--text item-floating-label">
-                <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-LAST-NAME' | translate }}</span>
-                <input type="text" ng-model="viewModel.player.lastName" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-LAST-NAME' | translate }}" required>
-            </label>
-            <label class="item item-input item-input--text item-floating-label">
-                <span class="input-label">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-TAGLINE' | translate }}</span>
-                <input type="text" ng-model="viewModel.player.tagline" placeholder="{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.INPUT-TAGLINE' | translate }}">
-            </label>
-        </div>
-    </ion-content>
-    <ion-footer-bar>
-        <button class="button button-positive pull-right" ng-click="viewModel.confirmPlayer()">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.BUTTON-ADD-PLAYER' | translate }}</button>
-    </ion-footer-bar>
+        </ion-content>
+        <ion-footer-bar>
+            <button class="button button-positive pull-right" ng-disabled="editPlayerForm.$invalid" ng-click="viewModel.confirmPlayer()">{{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.BUTTON-ADD-PLAYER' | translate }}</button>
+        </ion-footer-bar>
+
 </ion-modal-view>
