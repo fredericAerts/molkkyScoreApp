@@ -3,7 +3,7 @@
 
     background: $positive;
 
-    padding-bottom: 10px;
+    padding-bottom: 15px;
 
     & > .row > .col {
         text-align: center;
@@ -11,7 +11,21 @@
 }
 
 .avatar-block {
-    padding: 30px 30px 10px;
+    position: relative;
+
+    padding: 30px 30px 20px;
+
+    &:after {
+        position: absolute;
+        left: 30px;
+        bottom: 0;
+
+        display: block;
+        width: calc(100% - 60px);
+        border-bottom: 1px solid lighten($positive, 15%);
+
+        content: "";
+    }
 
     color: $light;
 

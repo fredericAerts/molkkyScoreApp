@@ -9678,13 +9678,22 @@ a.button {
 .avatar-block-wrapper {
   text-align: center;
   background: #387ef5;
-  padding-bottom: 10px; }
+  padding-bottom: 15px; }
   .avatar-block-wrapper > .row > .col {
     text-align: center; }
 
 .avatar-block {
-  padding: 30px 30px 10px;
+  position: relative;
+  padding: 30px 30px 20px;
   color: #fff; }
+  .avatar-block:after {
+    position: absolute;
+    left: 30px;
+    bottom: 0;
+    display: block;
+    width: calc(100% - 60px);
+    border-bottom: 1px solid #81adf9;
+    content: ""; }
   .avatar-block > img {
     width: 150px;
     height: 150px;
@@ -9745,6 +9754,7 @@ a.button {
 .metric-donut {
   vertical-align: top;
   display: inline-block;
+  margin-top: 15px;
   width: 60px;
   color: #fff;
   font-weight: 500; }
