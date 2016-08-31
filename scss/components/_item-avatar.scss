@@ -42,11 +42,10 @@
     &.warning,
     &.error,
     &.success,
-    &.winner {
+    &.winner,
+    &.numbered {
 
         &:after { // overlay on avatar
-            @extend .ionicons;
-
             position: absolute;
             top: 16px;
             left: 16px;
@@ -55,15 +54,12 @@
             display: inline-block;
             width: 40px;
             height: 40px;
-            padding: 3px 0;
             border-radius: 50%;
 
             color: $light;
-            font-size: 34px;
-            line-height: 34px;
             text-align: center;
 
-            background: rgba(#000, .5);
+            background: rgba(#000, .45);
 
             content: "";
         }
@@ -72,6 +68,10 @@
     &.warning {
 
         &:after {
+            @extend .ionicons;
+
+            padding: 3px 0;
+
             font-size: 30px;
             line-height: 30px;
 
@@ -84,7 +84,9 @@
     &.error {
 
         &:after {
-            padding-top: 6px;
+            @extend .ionicons;
+
+            padding: 6px 0 3px;
 
             font-size: 30px;
             line-height: 30px;
@@ -98,6 +100,13 @@
     &.success {
 
         &:after {
+            @extend .ionicons;
+
+            padding: 3px 0;
+
+            font-size: 34px;
+            line-height: 34px;
+
             background: rgba($balanced, .8);
 
             content: "\f122";
@@ -107,7 +116,9 @@
     &.winner {
 
         &:after {
-            padding-top: 6px;
+            @extend .ionicons;
+
+            padding: 6px 0 3px;
 
             font-size: 30px;
             line-height: 30px;
@@ -115,6 +126,17 @@
             background: rgba($balanced, .8);
 
             content: "\f356";
+        }
+    }
+
+    &.numbered {
+
+        &:after {
+            font-size: 20px;
+            line-height: 40px;
+
+
+            content: counter(slideNum); // see components/_list.scss
         }
     }
 

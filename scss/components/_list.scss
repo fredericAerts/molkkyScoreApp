@@ -1,0 +1,10 @@
+.list--numbered-avatar {
+
+    & .list {
+        counter-reset: countNum;
+
+        & > .item-avatar {
+            counter-increment: slideNum;
+        }
+    }
+}

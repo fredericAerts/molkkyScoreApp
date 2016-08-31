@@ -5695,7 +5695,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 vm.activatedScore.singlePin = true;
             }
 
-            if (vm.activatedScore.value.value > -1) {
+            if (vm.activatedScore.value > -1) {
                 vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore.value, vm.activePlayer, settings);
             }
         }
@@ -6078,184 +6078,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .factory('modalsService', modalsService);
-
-    modalsService.$inject = ['TEMPLATES_ROOT',
-                                '$rootScope',
-                                '$ionicModal',
-                                'gameService',
-                                'playersService',
-                                'toast',
-                                'loadingService'];
-
-    function modalsService(TEMPLATES_ROOT,
-                            $rootScope,
-                            $ionicModal,
-                            gameService,
-                            playersService,
-                            toast,
-                            loadingService) {
-        /*  Service for creating modals that are used in more than one controller
-            ====================================================================== */
-        var toastMessages = toast.getMessages().start;
-
-        var service = {
-            getAddPlayersToGameModal: getAddPlayersToGameModal,
-            initScoreDetailsModal: initScoreDetailsModal
-        };
-
-        /*  LISTENERS
-            ======================================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function () {
-            toastMessages = toast.getMessages().start;
-        });
-
-        return service;
-
-        ////////////////
-
-        function getAddPlayersToGameModal($scope, modalConfirmFunction) {
-            /*  ==================================================================
-            This modal gets a shallow copy of players from playersService as input,
-            and outputs a shallow copy of participants to gameService
-            ====================================================================== */
-            var addPlayersToGameModal = {};
-            var modalScope = $scope.$new(true);
-            var guestColors = getGuestColors();
-
-            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
-                scope: modalScope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                addPlayersToGameModal = modal;
-
-                /*  ==================================================================
-                - modal template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time modal is shown
-                ====================================================================== */
-                modalScope.viewModel = {
-                    showReorder: false,
-                    guestColors: guestColors,
-                    playersInDatabase: playersService.all().slice(), // modal input
-                    participants: [], // modal output
-                    addPlayerToParticipants: addPlayerToParticipants,
-                    addGuestParticipant: addGuestParticipant,
-                    removePlayerFromParticipants: removePlayerFromParticipants,
-                    reorderParticipant: reorderParticipant,
-                    cancelAddPlayersToGame: cancelAddPlayersToGame,
-                    startGame: startGame
-                };
-
-                /*  LISTENERS
-                ======================================================================================== */
-                modalScope.$on('modal.hidden', function() {
-                    resetAddPlayersToGameModal();
-                });
-
-                return addPlayersToGameModal;
-            });
-
-            /*  FUNCTIONS
-                ======================================================================================== */
-            function addPlayerToParticipants(newParticipant) {
-                if (modalScope.viewModel.participants.length === 8) {
-                    toast.show(toastMessages.maxParticipants);
-                    return;
-                }
-
-                var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
-                    return player.id === newParticipant.id;
-                });
-                var playerFromDatabase = modalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
-                modalScope.viewModel.participants.push(playerFromDatabase);
-            }
-
-            function addGuestParticipant() {
-                if (modalScope.viewModel.participants.length === 8) {
-                    toast.show(toastMessages.maxParticipants);
-                    return;
-                }
-
-                var guestColor = pickRandomGuestColor();
-
-                modalScope.viewModel.participants.push({
-                    firstName: 'Mr.',
-                    lastName: capitalizeFirstLetter(guestColor),
-                    tagline: 'I\'m a guest player',
-                    guestColor: guestColor
-                });
-            }
-
-            function removePlayerFromParticipants(index) {
-                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
-
-                if (removedPlayer.guestColor) {
-                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
-                }
-                else {
-                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
-                }
-            }
-
-            function reorderParticipant(player, fromIndex, toIndex) {
-                modalScope.viewModel.participants.splice(fromIndex, 1);
-                modalScope.viewModel.participants.splice(toIndex, 0, player);
-            }
-
-            function cancelAddPlayersToGame() {
-                addPlayersToGameModal.hide();
-            }
-
-            function startGame() {
-                gameService.setParticipants(modalScope.viewModel.participants.slice());
-
-                loadingService.show('starting game');
-
-                addPlayersToGameModal.hide()
-                .then(function() {
-                    modalConfirmFunction();
-                });
-            }
-
-            /*  Helper functions
-            ======================================================================================== */
-            function resetAddPlayersToGameModal() {
-                modalScope.viewModel.showReorder = false;
-                modalScope.viewModel.guestColors = getGuestColors();
-                modalScope.viewModel.playersInDatabase = playersService.all().slice();
-                modalScope.viewModel.participants = [];
-            }
-
-            function pickRandomGuestColor() {
-                var colorIndex = Math.floor(Math.random() * modalScope.viewModel.guestColors.length);
-
-                return modalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
-            }
-
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-        }
-
-        function initScoreDetailsModal($scope) {
-            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
-                scope: $scope,
-                animation: 'slide-in-up'
-            });
-        }
-
-        function getGuestColors() {
-            return ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', '$ionicModal', 'toast'];
@@ -6509,170 +6331,175 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
+        .factory('modalsService', modalsService);
 
-    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
+    modalsService.$inject = ['TEMPLATES_ROOT',
+                                '$rootScope',
+                                '$ionicModal',
+                                'gameService',
+                                'playersService',
+                                'toast',
+                                'loadingService'];
 
-    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        var toastMessages = toast.getMessages().settings;
-
-        vm.activeTabIndex = 0;
-
-        vm.options = settingsService.getOptions();
-        vm.customSetting = settingsService.isCustomSetting();
-        vm.parameters = settingsService.getParameters();
-
-        activate();
-
-        ////////////////
-
-        /*  Listeners
-            ======================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function() {
-            toastMessages = toast.getMessages().settings;
-        });
-
-        $scope.$watch(
-            function watchCustomSetting() {
-                return vm.customSetting;
-            },
-            function handleCustomSettingChange(newValue, oldValue) {
-                if (newValue !== oldValue && newValue) {
-                    showAlert();
-                }
-            }
-        );
-
-        $scope.$watch(
-            function watchParameters() {
-                return vm.parameters;
-            },
-            function handleParametersChange(newValue, oldValue) {
-                if (!_.isEqual(newValue, oldValue)) {
-                    updateParameters(newValue, oldValue);
-                    toast.show(toastMessages.update);
-                }
-            }, true
-        );
-
-        function activate() {
-        }
-
-        /*  Helper functions
-            ======================================================================== */
-        function showAlert() {
-            var alertPopup = $ionicPopup.alert({
-                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
-            });
-
-            alertPopup.then(function(res) {
-            });
-        }
-
-        function updateParameters(newParameters, oldParameters) {
-            var updatedKey = '';
-            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
-            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
-
-            if (!_.isEmpty(diffApp)) {
-                updatedKey = Object.keys(diffApp)[0];
-                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
-            }
-
-            if (!_.isEmpty(diffGame)) {
-                updatedKey = Object.keys(diffGame)[0];
-                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
-            }
-        }
-
-        function isPropertySameIn(otherObject) {
-            return function(value, key) {
-                return otherObject[key] === value;
-            };
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('settingsService', settingsService);
-
-    settingsService.$inject = ['$translate'];
-
-    function settingsService($translate) {
-        var parameters = {
-            app: {
-                language: $translate.use()
-            },
-            game: {
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
-            }
-        };
+    function modalsService(TEMPLATES_ROOT,
+                            $rootScope,
+                            $ionicModal,
+                            gameService,
+                            playersService,
+                            toast,
+                            loadingService) {
+        /*  Service for creating modals that are used in more than one controller
+            ====================================================================== */
+        var toastMessages = toast.getMessages().start;
 
         var service = {
-            getOptions: getOptions,
-            isCustomSetting: isCustomSetting,
-            getParameters: getParameters,
-            updateGameParameter: updateGameParameter,
-            updateAppParameter: updateAppParameter
+            getAddPlayersToGameModal: getAddPlayersToGameModal,
+            initScoreDetailsModal: initScoreDetailsModal
         };
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().start;
+        });
+
         return service;
 
         ////////////////
 
-        function getOptions() {
-            return {
-                app: {
-                    language: [
-                        {
-                            value: 'English',
-                            key: 'english'
-                        },
-                        {
-                            value: 'Français',
-                            key: 'french'
-                        },
-                        {
-                            value: 'Finnish',
-                            key: 'finnish'
-                        }
-                    ]
-                },
-                game: {
-                    winningScore: [25, 50, 100],
-                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
-                    threeMisses: ['to zero', 'halved', 'disqualified']
+        function getAddPlayersToGameModal($scope, modalConfirmFunction) {
+            /*  ==================================================================
+            This modal gets a shallow copy of players from playersService as input,
+            and outputs a shallow copy of participants to gameService
+            ====================================================================== */
+            var addPlayersToGameModal = {};
+            var modalScope = $scope.$new(true);
+            var guestColors = getGuestColors();
+
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
+                scope: modalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                addPlayersToGameModal = modal;
+
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time modal is shown
+                ====================================================================== */
+                modalScope.viewModel = {
+                    showReorder: false,
+                    guestColors: guestColors,
+                    playersInDatabase: playersService.all().slice(), // modal input
+                    participants: [], // modal output
+                    addPlayerToParticipants: addPlayerToParticipants,
+                    addGuestParticipant: addGuestParticipant,
+                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    reorderParticipant: reorderParticipant,
+                    cancelAddPlayersToGame: cancelAddPlayersToGame,
+                    startGame: startGame
+                };
+
+                /*  LISTENERS
+                ======================================================================================== */
+                modalScope.$on('modal.hidden', function() {
+                    resetAddPlayersToGameModal();
+                });
+
+                return addPlayersToGameModal;
+            });
+
+            /*  FUNCTIONS
+                ======================================================================================== */
+            function addPlayerToParticipants(newParticipant) {
+                if (modalScope.viewModel.participants.length === 8) {
+                    toast.show(toastMessages.maxParticipants);
+                    return;
                 }
-            };
-        }
 
-        function isCustomSetting() {
-            return false; // TODO: get from database
-        }
+                var playerIndex = _.findIndex(modalScope.viewModel.playersInDatabase, function(player) {
+                    return player.id === newParticipant.id;
+                });
+                var playerFromDatabase = modalScope.viewModel.playersInDatabase.splice(playerIndex, 1)[0];
+                modalScope.viewModel.participants.push(playerFromDatabase);
+            }
 
-        function getParameters() {
-            return parameters;
-        }
+            function addGuestParticipant() {
+                if (modalScope.viewModel.participants.length === 8) {
+                    toast.show(toastMessages.maxParticipants);
+                    return;
+                }
 
-        function updateAppParameter(key, value) {
-            parameters.app[key] = value;
+                var guestColor = pickRandomGuestColor();
 
-            switch (key) {
-                case 'language': $translate.use(value); break;
+                modalScope.viewModel.participants.push({
+                    firstName: 'Mr.',
+                    lastName: capitalizeFirstLetter(guestColor),
+                    tagline: 'I\'m a guest player',
+                    guestColor: guestColor
+                });
+            }
+
+            function removePlayerFromParticipants(index) {
+                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
+
+                if (removedPlayer.guestColor) {
+                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
+                }
+                else {
+                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
+                }
+            }
+
+            function reorderParticipant(player, fromIndex, toIndex) {
+                modalScope.viewModel.participants.splice(fromIndex, 1);
+                modalScope.viewModel.participants.splice(toIndex, 0, player);
+            }
+
+            function cancelAddPlayersToGame() {
+                addPlayersToGameModal.hide();
+            }
+
+            function startGame() {
+                gameService.setParticipants(modalScope.viewModel.participants.slice());
+
+                loadingService.show('starting game');
+
+                addPlayersToGameModal.hide()
+                .then(function() {
+                    modalConfirmFunction();
+                });
+            }
+
+            /*  Helper functions
+            ======================================================================================== */
+            function resetAddPlayersToGameModal() {
+                modalScope.viewModel.showReorder = false;
+                modalScope.viewModel.guestColors = getGuestColors();
+                modalScope.viewModel.playersInDatabase = playersService.all().slice();
+                modalScope.viewModel.participants = [];
+            }
+
+            function pickRandomGuestColor() {
+                var colorIndex = Math.floor(Math.random() * modalScope.viewModel.guestColors.length);
+
+                return modalScope.viewModel.guestColors.splice(colorIndex, 1)[0];
+            }
+
+            function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
             }
         }
 
-        function updateGameParameter(key, value) {
-            parameters.game[key] = value;
+        function initScoreDetailsModal($scope) {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            });
+        }
+
+        function getGuestColors() {
+            return ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
         }
     }
 })();
@@ -7019,6 +6846,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateStatistics(event, activePlayer, undo) {
+            if (activePlayer.guestColor) { // no statistics for guest players
+                return;
+            }
+
             statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
         }
 
@@ -7037,6 +6868,179 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processGameWon() {
 
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
+
+    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        var toastMessages = toast.getMessages().settings;
+
+        vm.activeTabIndex = 0;
+
+        vm.options = settingsService.getOptions();
+        vm.customSetting = settingsService.isCustomSetting();
+        vm.parameters = settingsService.getParameters();
+
+        activate();
+
+        ////////////////
+
+        /*  Listeners
+            ======================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function() {
+            toastMessages = toast.getMessages().settings;
+        });
+
+        $scope.$watch(
+            function watchCustomSetting() {
+                return vm.customSetting;
+            },
+            function handleCustomSettingChange(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    showAlert();
+                }
+            }
+        );
+
+        $scope.$watch(
+            function watchParameters() {
+                return vm.parameters;
+            },
+            function handleParametersChange(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                    updateParameters(newValue, oldValue);
+                    toast.show(toastMessages.update);
+                }
+            }, true
+        );
+
+        function activate() {
+        }
+
+        /*  Helper functions
+            ======================================================================== */
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function updateParameters(newParameters, oldParameters) {
+            var updatedKey = '';
+            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
+            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
+
+            if (!_.isEmpty(diffApp)) {
+                updatedKey = Object.keys(diffApp)[0];
+                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+            }
+
+            if (!_.isEmpty(diffGame)) {
+                updatedKey = Object.keys(diffGame)[0];
+                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+            }
+        }
+
+        function isPropertySameIn(otherObject) {
+            return function(value, key) {
+                return otherObject[key] === value;
+            };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate'];
+
+    function settingsService($translate) {
+        var parameters = {
+            app: {
+                language: $translate.use()
+            },
+            game: {
+                winningScore: 25,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'disqualified'
+            }
+        };
+
+        var service = {
+            getOptions: getOptions,
+            isCustomSetting: isCustomSetting,
+            getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
+            updateAppParameter: updateAppParameter
+        };
+        return service;
+
+        ////////////////
+
+        function getOptions() {
+            return {
+                app: {
+                    language: [
+                        {
+                            value: 'English',
+                            key: 'english'
+                        },
+                        {
+                            value: 'Français',
+                            key: 'french'
+                        },
+                        {
+                            value: 'Finnish',
+                            key: 'finnish'
+                        }
+                    ]
+                },
+                game: {
+                    winningScore: [25, 50, 100],
+                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
+                    threeMisses: ['to zero', 'halved', 'disqualified']
+                }
+            };
+        }
+
+        function isCustomSetting() {
+            return false; // TODO: get from database
+        }
+
+        function getParameters() {
+            return parameters;
+        }
+
+        function updateAppParameter(key, value) {
+            parameters.app[key] = value;
+
+            switch (key) {
+                case 'language': $translate.use(value); break;
+            }
+        }
+
+        function updateGameParameter(key, value) {
+            parameters.game[key] = value;
         }
     }
 })();

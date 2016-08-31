@@ -131,7 +131,7 @@
                 vm.activatedScore.singlePin = true;
             }
 
-            if (vm.activatedScore.value.value > -1) {
+            if (vm.activatedScore.value > -1) {
                 vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore.value, vm.activePlayer, settings);
             }
         }

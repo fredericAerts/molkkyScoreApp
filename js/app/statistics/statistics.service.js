@@ -101,6 +101,10 @@
         }
 
         function updateStatistics(event, activePlayer, undo) {
+            if (activePlayer.guestColor) { // no statistics for guest players
+                return;
+            }
+
             statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
         }
 

@@ -9732,6 +9732,11 @@ a.button {
   text-align: center;
   background: #bdbdbd; }
 
+.list--numbered-avatar .list {
+  counter-reset: countNum; }
+  .list--numbered-avatar .list > .item-avatar {
+    counter-increment: slideNum; }
+
 .bar-footer .button-outline {
   margin-right: 5px; }
 
@@ -10003,7 +10008,7 @@ a.button {
     width: 30px;
     height: 30px; }
 
-.item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after, .item-avatar.winner:after {
+.item-avatar.warning:after, .item-avatar.error:after, .item-avatar.success:after, .item-avatar.winner:after, .item-avatar.numbered:after {
   position: absolute;
   top: 16px;
   left: 16px;
@@ -10011,38 +10016,44 @@ a.button {
   display: inline-block;
   width: 40px;
   height: 40px;
-  padding: 3px 0;
   border-radius: 50%;
   color: #fff;
-  font-size: 34px;
-  line-height: 34px;
   text-align: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   content: ""; }
 
 .item-avatar.warning:after {
+  padding: 3px 0;
   font-size: 30px;
   line-height: 30px;
   background: rgba(255, 201, 0, 0.8);
   content: "\f3bc"; }
 
 .item-avatar.error:after {
-  padding-top: 6px;
+  padding: 6px 0 3px;
   font-size: 30px;
   line-height: 30px;
   background: rgba(239, 71, 58, 0.8);
   content: "\f12a"; }
 
 .item-avatar.success:after {
+  padding: 3px 0;
+  font-size: 34px;
+  line-height: 34px;
   background: rgba(51, 205, 95, 0.8);
   content: "\f122"; }
 
 .item-avatar.winner:after {
-  padding-top: 6px;
+  padding: 6px 0 3px;
   font-size: 30px;
   line-height: 30px;
   background: rgba(51, 205, 95, 0.8);
   content: "\f356"; }
+
+.item-avatar.numbered:after {
+  font-size: 20px;
+  line-height: 40px;
+  content: counter(slideNum); }
 
 .item-avatar .note {
   right: 16px;
