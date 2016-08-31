@@ -1,10 +1,19 @@
-.avatar-block {
-    padding: 30px;
-
-    color: $light;
+.avatar-block-wrapper {
     text-align: center;
 
     background: $positive;
+
+    padding-bottom: 10px;
+
+    & > .row > .col {
+        text-align: center;
+    }
+}
+
+.avatar-block {
+    padding: 30px 30px 10px;
+
+    color: $light;
 
     & > img {
         width: 150px;

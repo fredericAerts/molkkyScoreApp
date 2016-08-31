@@ -1,0 +1,96 @@
+.metric-donut {
+    vertical-align: top;
+
+    display: inline-block;
+    width: 60px;
+
+    color: $light;
+    font-weight: 500;
+}
+
+.metric-donut__title {
+    position: relative;
+
+    display: block;
+    margin-top: 10px;
+    background: transparent;
+
+    color: $light;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+
+    &:before { // arrow above title
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        z-index: 1;
+
+        display: block;
+        width: 0;
+        height: 0;
+        margin-left: -8px;
+        border-style: solid;
+        border-width: 9px 8px 0 8px;
+        border-color: $assertive transparent transparent transparent;
+
+        content: "";
+    }
+}
+
+/*  Actual Donut
+    ====================================================== */
+.metric-donut__circle {
+    position: relative;
+    @include transform(rotate(360deg)); // smoother border radius
+
+    height: 60px;
+    margin: 0;
+    border-radius: 50%;
+
+    overflow: hidden;
+}
+
+.metric-donut__circle__center {
+    position: relative;
+    z-index: 9;
+
+    height: 100%;
+    border: 8px solid transparent;
+    border-radius: 50%;
+    background: $positive;
+
+    background-clip: padding-box;
+}
+
+.metric-donut__circle__center__value {
+    position: absolute;
+    top: 50%;
+    left: 52%;
+    @include transform(translateX(-50%) translateY(-50%));
+
+    font-size: 15px;
+}
+
+.metric-donut__circle__bg-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+
+    background: lighten($positive, 10%);
+}
+
+.metric-donut__circle__percentage-fill {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+
+    width: 100%;
+
+    background: $assertive;
+}

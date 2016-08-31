@@ -9,17 +9,51 @@
         <button class="button button-icon ion-ios-compose-outline" ng-click="playerDetail.showPlayerModal(playerDetail.player)"></button>
     </ion-nav-buttons>
     <ion-content>
-        <div class="avatar-block">
-            <img ng-if="playerDetail.player.face" ng-src="{{playerDetail.player.face}}">
-            <div ng-if="!playerDetail.player.face" class="avatar-block__face-placeholder">
-                <i class="icon ion-help"></i>
+        <div class="avatar-block-wrapper">
+            <div class="avatar-block">
+                <img ng-if="playerDetail.player.face" ng-src="{{playerDetail.player.face}}">
+                <div ng-if="!playerDetail.player.face" class="avatar-block__face-placeholder">
+                    <i class="icon ion-help"></i>
+                </div>
+                <p class="avatar-block__name">
+                    {{playerDetail.player.firstName}} {{playerDetail.player.lastName}}
+                </p>
+                <p class="avatar-block__tagline">
+                    {{playerDetail.player.tagline}}
+                </p>
             </div>
-            <p class="avatar-block__name">
-                {{playerDetail.player.firstName}} {{playerDetail.player.lastName}}
-            </p>
-            <p class="avatar-block__tagline">
-                {{playerDetail.player.tagline}}
-            </p>
+            <div class="row">
+                <div class="col col-25" ng-repeat="donut in playerDetail.metricDonuts">
+                    <div class="metric-donut">
+                        <div class="metric-donut__circle">
+                            <div class="metric-donut__circle__center">
+                                <span class="metric-donut__circle__center__value">{{donut.value + donut.unit}}</span>
+                            </div>
+                            <div class="metric-donut__circle__bg-fill"></div>
+                            <div class="metric-donut__circle__percentage-fill" style="height:{{donut.value}}%;"></div>
+                        </div>
+                    </div>
+                    <span class="metric-donut__title">
+                        {{ 'HOME.STATISTICS.METRICS.' + donut.translationId + '.VIEW-TITLE' | translate }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="padding">
+            <ion-list>
+                <div class="item item-divider">
+                    Profile
+                </div>
+                <ion-item ng-repeat="item in playerDetail.profileData.profile">
+                    {{item.title}}: {{item.value}}
+                </ion-item>
+                <div class="item item-divider">
+                    Statistics
+                </div>
+                <ion-item ng-repeat="item in playerDetail.profileData.statistics">
+                    {{item.title}}: {{item.value + item.unit}}
+                </ion-item>
+            </ion-list>
         </div>
     </ion-content>
 </ion-view>

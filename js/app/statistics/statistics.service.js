@@ -48,6 +48,7 @@
         var service = {
             getMetrics: getMetrics,
             getMetric: getMetric,
+            getMetricByKey: getMetricByKey,
             initOverallStatistics: initOverallStatistics,
             getOverallStatistics: getOverallStatistics,
             initPlayerStatistics: initPlayerStatistics,
@@ -63,6 +64,10 @@
 
         function getMetric(metricId) {
             return _.findWhere(metrics, {id: metricId});
+        }
+
+        function getMetricByKey(keyName) {
+            return _.findWhere(metrics, {keyName: keyName});
         }
 
         function initOverallStatistics() { // cached on statistics service
