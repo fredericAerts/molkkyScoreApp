@@ -79,15 +79,15 @@
         function updatePlayerMetricTotalWins(player) {
             var gamesWon = player.statistics.rawData.gamesWon;
 
-            player.statistics.totalWins = gamesWon;
+            player.statistics.metrics.totalWins = gamesWon;
         }
 
         function updatePlayerMetricVersatility(player) {
-            var accuracy = player.statistics.accuracy;
-            var efficiency = player.statistics.efficiency;
-            var winningRatio = player.statistics.winningRatio;
+            var accuracy = player.statistics.metrics.accuracy;
+            var efficiency = player.statistics.metrics.efficiency;
+            var winningRatio = player.statistics.metrics.winningRatio;
 
-            player.statistics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
+            player.statistics.metrics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
         }
 
         function updatePlayerMetricWinningRatio(participants) {
@@ -96,7 +96,7 @@
                 gamesWon = player.statistics.rawData.gamesWon;
                 gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-                player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
                 updatePlayerMetric('versatility', player);
             });
@@ -106,7 +106,7 @@
             var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
             var totalThrows = player.statistics.rawData.throws;
 
-            player.statistics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
+            player.statistics.metrics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
 
             updatePlayerMetric('versatility', player);
         }
@@ -116,7 +116,7 @@
             var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
             var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
 
-            player.statistics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
+            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
 
             updatePlayerMetric('versatility', player);
         }

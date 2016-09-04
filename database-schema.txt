@@ -1,0 +1,43 @@
+players
+--------------------------------- */
+id
+first name
+last name
+tagline
+face
+statistics raw data id
+statistics metrics id
+
+statistics overall metrics
+--------------------------------- */
+totalGamesPlayed
+
+statistics player raw data
+--------------------------------- */
+player id
+throws
+throwsSinglePin
+throwsInGamesReachedMaxScore
+gamesPlayed
+gamesReachedMaxScore
+gamesWon
+
+statistics player metrics
+--------------------------------- */
+player id
+totalWins
+versatility
+winningRatio
+accuracy
+efficiency
+
+game settings
+--------------------------------- */
+isCustom
+winningScore
+winningScoreExceeded
+threeMisses
+
+app settings
+--------------------------------- */
+language

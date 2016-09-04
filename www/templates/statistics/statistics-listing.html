@@ -10,7 +10,7 @@
             <h2>{{player.firstName}} {{player.lastName}}</h2>
             <p>{{player.tagline}}</p>
             <i class="icon note">
-                {{player.statistics[listing.metric.keyName] + listing.metric.unit}}
+                {{player.statistics.metrics[listing.metric.keyName] + listing.metric.unit}}
             </i>
         </ion-item>
     </ion-list>

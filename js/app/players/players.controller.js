@@ -138,6 +138,7 @@
                 player.tagline = 'No tagline provided';
             }
             statisticsService.initPlayerStatistics(player);
+            console.log(player);
 
             return player;
         }

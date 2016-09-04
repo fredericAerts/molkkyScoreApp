@@ -38,7 +38,7 @@
                 metric = statisticsService.getMetricByKey(key);
                 vm.metricDonuts.push({
                     translationId: metric.translationId,
-                    value: vm.player.statistics[key],
+                    value: vm.player.statistics.metrics[key],
                     unit: metric.unit
                 });
             });
@@ -52,7 +52,7 @@
                 item('Last name', vm.player.lastName),
                 item('Tagline', vm.player.tagline)
             ];
-            var statisticsItems = [
+            var statisticsItems = [ // raw data
                 item('Games played', vm.player.statistics.rawData.gamesPlayed),
                 item('Games won', vm.player.statistics.rawData.gamesWon),
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),

@@ -6291,7 +6291,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 metric = statisticsService.getMetricByKey(key);
                 vm.metricDonuts.push({
                     translationId: metric.translationId,
-                    value: vm.player.statistics[key],
+                    value: vm.player.statistics.metrics[key],
                     unit: metric.unit
                 });
             });
@@ -6305,7 +6305,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 item('Last name', vm.player.lastName),
                 item('Tagline', vm.player.tagline)
             ];
-            var statisticsItems = [
+            var statisticsItems = [ // raw data
                 item('Games played', vm.player.statistics.rawData.gamesPlayed),
                 item('Games won', vm.player.statistics.rawData.gamesWon),
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
@@ -6505,6 +6505,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 player.tagline = 'No tagline provided';
             }
             statisticsService.initPlayerStatistics(player);
+            console.log(player);
 
             return player;
         }
@@ -6874,15 +6875,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function updatePlayerMetricTotalWins(player) {
             var gamesWon = player.statistics.rawData.gamesWon;
 
-            player.statistics.totalWins = gamesWon;
+            player.statistics.metrics.totalWins = gamesWon;
         }
 
         function updatePlayerMetricVersatility(player) {
-            var accuracy = player.statistics.accuracy;
-            var efficiency = player.statistics.efficiency;
-            var winningRatio = player.statistics.winningRatio;
+            var accuracy = player.statistics.metrics.accuracy;
+            var efficiency = player.statistics.metrics.efficiency;
+            var winningRatio = player.statistics.metrics.winningRatio;
 
-            player.statistics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
+            player.statistics.metrics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
         }
 
         function updatePlayerMetricWinningRatio(participants) {
@@ -6891,7 +6892,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 gamesWon = player.statistics.rawData.gamesWon;
                 gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-                player.statistics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
                 updatePlayerMetric('versatility', player);
             });
@@ -6901,7 +6902,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
             var totalThrows = player.statistics.rawData.throws;
 
-            player.statistics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
+            player.statistics.metrics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
 
             updatePlayerMetric('versatility', player);
         }
@@ -6911,7 +6912,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
             var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
 
-            player.statistics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
+            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
 
             updatePlayerMetric('versatility', player);
         }
@@ -7105,12 +7106,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     gamesPlayed: 0,
                     gamesReachedMaxScore: 0,
                     gamesWon: 0
-                }
+                },
+                metrics: {}
             };
 
             getMetrics().forEach(function(metric) {
                 if (metric.category === 'players') {
-                    player.statistics[metric.keyName] = 0; // TODO: fetch from DB
+                    player.statistics.metrics[metric.keyName] = 0; // TODO: fetch from DB
                 }
             });
 
