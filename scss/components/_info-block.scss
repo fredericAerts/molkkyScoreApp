@@ -1,0 +1,10 @@
+.info-block {
+    display: block;
+    margin: 0 auto 5px;
+    width: 75%;
+
+    font-size: 12px;
+    line-height: 16px;
+    color: lighten($dark, 30%);
+    text-align: center;
+}

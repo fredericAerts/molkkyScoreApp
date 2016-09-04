@@ -184,6 +184,9 @@
                     "WHEN": "When is it updated?",
                     "HOW": "How is it calculated?"
                 }
+            },
+            "LISTING": {
+                "FILTER": "Only players who have played at least five games with default game settings are listed here"
             }
         },
         "PLAYERS": {

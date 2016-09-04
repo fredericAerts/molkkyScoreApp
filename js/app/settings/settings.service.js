@@ -19,7 +19,6 @@
                 threeMisses: 'disqualified'
             }
         };
-        console.log(parameters.app.language);
 
         var service = {
             getOptions: getOptions,
