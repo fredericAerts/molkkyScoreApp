@@ -5272,52 +5272,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
     gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
@@ -6049,6 +6003,52 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .factory('loadingService', loadingService);
 
     loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
@@ -6598,7 +6598,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.activeTabIndex = 0;
 
         vm.options = settingsService.getOptions();
-        vm.customSetting = settingsService.isCustomSetting();
         vm.parameters = settingsService.getParameters();
 
         activate();
@@ -6613,7 +6612,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         $scope.$watch(
             function watchCustomSetting() {
-                return vm.customSetting;
+                return vm.parameters.game.isCustom;
             },
             function handleCustomSettingChange(newValue, oldValue) {
                 if (newValue !== oldValue && newValue) {
@@ -6688,6 +6687,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 language: $translate.use()
             },
             game: {
+                isCustom: false,
                 winningScore: 25,
                 winningScoreExceeded: 'halved',
                 threeMisses: 'disqualified'
@@ -6731,8 +6731,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             };
         }
 
-        function isCustomSetting() {
-            return false; // TODO: get from database
+        function isCustomSetting(isCustom) {
+            if (isCustom !== undefined) {
+                parameters.game.isCustom = isCustom;
+            }
+
+            return parameters.game.isCustom; // TODO: get from database
         }
 
         function getParameters() {
@@ -7029,9 +7033,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'statisticsProcessor'];
+    statisticsService.$inject = ['$translate', 'statisticsProcessor', 'settingsService'];
 
-    function statisticsService($translate, statisticsProcessor) {
+    function statisticsService($translate, statisticsProcessor, settingsService) {
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
@@ -7103,7 +7107,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            if (activePlayer.guestColor) { // no statistics for guest players
+            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
+                // no statisitcs for guest player or when game settings are customized
                 return;
             }
 

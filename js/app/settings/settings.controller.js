@@ -16,7 +16,6 @@
         vm.activeTabIndex = 0;
 
         vm.options = settingsService.getOptions();
-        vm.customSetting = settingsService.isCustomSetting();
         vm.parameters = settingsService.getParameters();
 
         activate();
@@ -31,7 +30,7 @@
 
         $scope.$watch(
             function watchCustomSetting() {
-                return vm.customSetting;
+                return vm.parameters.game.isCustom;
             },
             function handleCustomSettingChange(newValue, oldValue) {
                 if (newValue !== oldValue && newValue) {

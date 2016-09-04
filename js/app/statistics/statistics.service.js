@@ -32,9 +32,9 @@
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'statisticsProcessor'];
+    statisticsService.$inject = ['$translate', 'statisticsProcessor', 'settingsService'];
 
-    function statisticsService($translate, statisticsProcessor) {
+    function statisticsService($translate, statisticsProcessor, settingsService) {
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
@@ -106,7 +106,8 @@
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            if (activePlayer.guestColor) { // no statistics for guest players
+            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
+                // no statisitcs for guest player or when game settings are customized
                 return;
             }
 

@@ -13,6 +13,7 @@
                 language: $translate.use()
             },
             game: {
+                isCustom: false,
                 winningScore: 25,
                 winningScoreExceeded: 'halved',
                 threeMisses: 'disqualified'
@@ -56,8 +57,12 @@
             };
         }
 
-        function isCustomSetting() {
-            return false; // TODO: get from database
+        function isCustomSetting(isCustom) {
+            if (isCustom !== undefined) {
+                parameters.game.isCustom = isCustom;
+            }
+
+            return parameters.game.isCustom; // TODO: get from database
         }
 
         function getParameters() {
