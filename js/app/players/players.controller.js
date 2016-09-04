@@ -121,7 +121,7 @@
         /*  Helper functions
             ======================================================================================== */
         function getNewPlayerTemplate() {
-            var playerId = _.max(vm.players, function(player){ return player.id; }).id + 1;
+            var playerId = _.max(vm.players, function(player) { return player.id; }).id + 1;
             var player = {
                 id: playerId,
                 firstName: '',
@@ -135,7 +135,7 @@
 
         function initNewPlayer(player) {
             if (!player.tagline) {
-                player.tagline = 'No tagline provided'
+                player.tagline = 'No tagline provided';
             }
             statisticsService.initPlayerStatistics(player);
 

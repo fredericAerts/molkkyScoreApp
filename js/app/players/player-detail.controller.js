@@ -101,7 +101,7 @@
 
         function confirmPlayer() {
             if (!editPlayerModalScope.viewModel.player.tagline) {
-                editPlayerModalScope.viewModel.player.tagline = 'No tagline provided'
+                editPlayerModalScope.viewModel.player.tagline = 'No tagline provided';
             }
 
             initProfileData();

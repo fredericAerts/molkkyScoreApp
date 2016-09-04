@@ -10,7 +10,7 @@
     function settingsService($translate) {
         var parameters = {
             app: {
-                language: $translate.use()
+                language: $translate.proposedLanguage()
             },
             game: {
                 isCustom: false,
@@ -19,6 +19,7 @@
                 threeMisses: 'disqualified'
             }
         };
+        console.log(parameters.app.language);
 
         var service = {
             getOptions: getOptions,
