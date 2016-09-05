@@ -5117,19 +5117,69 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             if (window.cordova) {
-                testDb();
+                var database = initDatabase();
+                initDatabaseTables(database);
+                testDatabase(database);
             }
 
-            function testDb() {
-                var db = $cordovaSQLite.openDB({
+            function initDatabaseTables(database) {
+                var addPlayersTable = 'CREATE TABLE IF NOT EXISTS players' +
+                    ' (id integer primary key auto_increment, firstname text, lastname text, tagline text,' +
+                    ' face text, statistics_raw_data_id integer, statistics_metrics_id integer)';
+                var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS statistics_player_raw_data' +
+                    ' (id integer primary key auto_increment, throws integer, throws_single_pin integer,' +
+                    ' throws_in_games_reached_max_score integer, gamesPlayed integer,' +
+                    ' games_reached_max_score integer, games_won integer)';
+                var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_player_metrics' +
+                    ' (id integer primary key auto_increment, total_wins integer, versatility decimal(5,4),' +
+                    ' winning_ratio decimal(5,4), accuracy decimal(5,4), efficiency decimal(5,4))';
+                var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
+                    ' (id integer primary key auto_increment, total_games_played integer)';
+                var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
+                    ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
+                    ' three_misses text)';
+                var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
+                    ' (id integer primary key auto_increment, language text)';
+
+                var queries = [
+                    addPlayersTable,
+                    addStatisticsPlayerRawDataTable,
+                    addStatisticsPlayerMetricsTable,
+                    addStatisticsOverallMetricsTable,
+                    addGameSettingsTable,
+                    addAppSettingsTable
+                ];
+                queries.forEach(function(query) {
+                    $cordovaSQLite.execute(database, query);
+                });
+            }
+
+            function initDatabase() {
+                var databes = $cordovaSQLite.openDB({
                     name: 'my.db', location: 'default'
                 });
-                $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS people' +
-                    ' (id integer primary key, firstname text, lastname text)');
 
-                var query = 'INSERT INTO people (firstname, lastname) VALUES (?,?)';
-                $cordovaSQLite.execute(db, query, ['firstname', 'firstname']).then(function(res) {
-                    console.log('INSERT ID -> ' + res.insertId);
+                return databes;
+            }
+
+            function testDatabase() {
+                // var insertPlayerQuery = 'INSERT INTO players (firstname, lastname, tagline, face, statistics_raw_data_id, statistics_metrics_id) VALUES (?,?,?,?,?,?)';
+                // $cordovaSQLite.execute(database, insertPlayerQuery, ['Frederic', 'Aerts', 'Hello hello', 'img/me.png', 10, 11]).then(function(res) {
+                //     console.log('INSERT -> ' + res);
+                // }, function (err) {
+                //     console.error(err.message);
+                // });
+
+                var selectPlayersQuery = 'SELECT * FROM players';
+                $cordovaSQLite.execute(database, selectPlayersQuery).then(function(res) {
+                    var rows = [];
+                    for (var i = 0; i < res.rows.length; i++) {
+                        rows.push(res.rows.item(i));
+                    }
+                    rows.forEach(function(row) {
+                        console.log('SELECT -> ' + row.firstname);
+                        console.log('SELECT -> ' + row.id);
+                    });
                 }, function (err) {
                     console.error(err.message);
                 });
@@ -6586,183 +6636,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
-
-    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
-
-    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        var toastMessages = toast.getMessages().settings;
-
-        vm.activeTabIndex = 0;
-
-        vm.options = settingsService.getOptions();
-        vm.parameters = settingsService.getParameters();
-
-        activate();
-
-        ////////////////
-
-        /*  Listeners
-            ======================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function() {
-            toastMessages = toast.getMessages().settings;
-        });
-
-        $scope.$watch(
-            function watchCustomSetting() {
-                return vm.parameters.game.isCustom;
-            },
-            function handleCustomSettingChange(newValue, oldValue) {
-                if (newValue !== oldValue && newValue) {
-                    showAlert();
-                }
-            }
-        );
-
-        $scope.$watch(
-            function watchParameters() {
-                return vm.parameters;
-            },
-            function handleParametersChange(newValue, oldValue) {
-                if (!_.isEqual(newValue, oldValue)) {
-                    updateParameters(newValue, oldValue);
-                    toast.show(toastMessages.update);
-                }
-            }, true
-        );
-
-        function activate() {
-        }
-
-        /*  Helper functions
-            ======================================================================== */
-        function showAlert() {
-            var alertPopup = $ionicPopup.alert({
-                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
-            });
-
-            alertPopup.then(function(res) {
-            });
-        }
-
-        function updateParameters(newParameters, oldParameters) {
-            var updatedKey = '';
-            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
-            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
-
-            if (!_.isEmpty(diffApp)) {
-                updatedKey = Object.keys(diffApp)[0];
-                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
-            }
-
-            if (!_.isEmpty(diffGame)) {
-                updatedKey = Object.keys(diffGame)[0];
-                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
-            }
-        }
-
-        function isPropertySameIn(otherObject) {
-            return function(value, key) {
-                return otherObject[key] === value;
-            };
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('settingsService', settingsService);
-
-    settingsService.$inject = ['$translate'];
-
-    function settingsService($translate) {
-        var parameters = {
-            app: {
-                language: $translate.proposedLanguage()
-            },
-            game: {
-                isCustom: false,
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
-            }
-        };
-
-        var service = {
-            getOptions: getOptions,
-            isCustomSetting: isCustomSetting,
-            getParameters: getParameters,
-            updateGameParameter: updateGameParameter,
-            updateAppParameter: updateAppParameter
-        };
-        return service;
-
-        ////////////////
-
-        function getOptions() {
-            return {
-                app: {
-                    language: [
-                        {
-                            value: 'English',
-                            key: 'english'
-                        },
-                        {
-                            value: 'Français',
-                            key: 'french'
-                        },
-                        {
-                            value: 'Finnish',
-                            key: 'finnish'
-                        }
-                    ]
-                },
-                game: {
-                    winningScore: [25, 50, 100],
-                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
-                    threeMisses: ['to zero', 'halved', 'disqualified']
-                }
-            };
-        }
-
-        function isCustomSetting(isCustom) {
-            if (isCustom !== undefined) {
-                parameters.game.isCustom = isCustom;
-            }
-
-            return parameters.game.isCustom; // TODO: get from database
-        }
-
-        function getParameters() {
-            return parameters;
-        }
-
-        function updateAppParameter(key, value) {
-            parameters.app[key] = value;
-
-            switch (key) {
-                case 'language': $translate.use(value); break;
-            }
-        }
-
-        function updateGameParameter(key, value) {
-            parameters.game[key] = value;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
         .controller('StatisticsListingCtrl', StatisticsListing);
 
     StatisticsListing.$inject = ['$stateParams', 'statisticsService', 'playersService'];
@@ -7143,6 +7016,183 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processGameWon() {
 
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
+
+    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        var toastMessages = toast.getMessages().settings;
+
+        vm.activeTabIndex = 0;
+
+        vm.options = settingsService.getOptions();
+        vm.parameters = settingsService.getParameters();
+
+        activate();
+
+        ////////////////
+
+        /*  Listeners
+            ======================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function() {
+            toastMessages = toast.getMessages().settings;
+        });
+
+        $scope.$watch(
+            function watchCustomSetting() {
+                return vm.parameters.game.isCustom;
+            },
+            function handleCustomSettingChange(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    showAlert();
+                }
+            }
+        );
+
+        $scope.$watch(
+            function watchParameters() {
+                return vm.parameters;
+            },
+            function handleParametersChange(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                    updateParameters(newValue, oldValue);
+                    toast.show(toastMessages.update);
+                }
+            }, true
+        );
+
+        function activate() {
+        }
+
+        /*  Helper functions
+            ======================================================================== */
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function updateParameters(newParameters, oldParameters) {
+            var updatedKey = '';
+            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
+            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
+
+            if (!_.isEmpty(diffApp)) {
+                updatedKey = Object.keys(diffApp)[0];
+                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+            }
+
+            if (!_.isEmpty(diffGame)) {
+                updatedKey = Object.keys(diffGame)[0];
+                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+            }
+        }
+
+        function isPropertySameIn(otherObject) {
+            return function(value, key) {
+                return otherObject[key] === value;
+            };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate'];
+
+    function settingsService($translate) {
+        var parameters = {
+            app: {
+                language: $translate.proposedLanguage()
+            },
+            game: {
+                isCustom: false,
+                winningScore: 25,
+                winningScoreExceeded: 'halved',
+                threeMisses: 'disqualified'
+            }
+        };
+
+        var service = {
+            getOptions: getOptions,
+            isCustomSetting: isCustomSetting,
+            getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
+            updateAppParameter: updateAppParameter
+        };
+        return service;
+
+        ////////////////
+
+        function getOptions() {
+            return {
+                app: {
+                    language: [
+                        {
+                            value: 'English',
+                            key: 'english'
+                        },
+                        {
+                            value: 'Français',
+                            key: 'french'
+                        },
+                        {
+                            value: 'Finnish',
+                            key: 'finnish'
+                        }
+                    ]
+                },
+                game: {
+                    winningScore: [25, 50, 100],
+                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
+                    threeMisses: ['to zero', 'halved', 'disqualified']
+                }
+            };
+        }
+
+        function isCustomSetting(isCustom) {
+            if (isCustom !== undefined) {
+                parameters.game.isCustom = isCustom;
+            }
+
+            return parameters.game.isCustom; // TODO: get from database
+        }
+
+        function getParameters() {
+            return parameters;
+        }
+
+        function updateAppParameter(key, value) {
+            parameters.app[key] = value;
+
+            switch (key) {
+                case 'language': $translate.use(value); break;
+            }
+        }
+
+        function updateGameParameter(key, value) {
+            parameters.game[key] = value;
         }
     }
 })();

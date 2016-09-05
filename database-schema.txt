@@ -14,7 +14,6 @@ totalGamesPlayed
 
 statistics player raw data
 --------------------------------- */
-player id
 throws
 throwsSinglePin
 throwsInGamesReachedMaxScore
@@ -24,7 +23,6 @@ gamesWon
 
 statistics player metrics
 --------------------------------- */
-player id
 totalWins
 versatility
 winningRatio
