@@ -5076,9 +5076,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     runBlock.$inject = ['$rootScope',
                         'IMAGES_ROOT',
                         '$ionicPlatform',
-                        '$cordovaSQLite',
-                        'playersService',
-                        'statisticsService'];
+                        'dataService',
+                        'statisticsService',
+                        'loadingService'];
 
     function configure($provide, $translateProvider, $ionicConfigProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
@@ -5096,13 +5096,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     function runBlock($rootScope,
                         IMAGES_ROOT,
                         $ionicPlatform,
-                        $cordovaSQLite,
-                        playersService,
-                        statisticsService) {
+                        dataService,
+                        statisticsService,
+                        loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
-        initStatistics(playersService.all(), statisticsService);
-
+        loadingService.showIndefinite('loading application');
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -5117,72 +5116,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             if (window.cordova) {
-                var database = initDatabase();
-                initDatabaseTables(database);
-                testDatabase(database);
-            }
-
-            function initDatabaseTables(database) {
-                var addPlayersTable = 'CREATE TABLE IF NOT EXISTS players' +
-                    ' (id integer primary key auto_increment, firstname text, lastname text, tagline text,' +
-                    ' face text, statistics_raw_data_id integer, statistics_metrics_id integer)';
-                var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS statistics_player_raw_data' +
-                    ' (id integer primary key auto_increment, throws integer, throws_single_pin integer,' +
-                    ' throws_in_games_reached_max_score integer, gamesPlayed integer,' +
-                    ' games_reached_max_score integer, games_won integer)';
-                var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_player_metrics' +
-                    ' (id integer primary key auto_increment, total_wins integer, versatility decimal(5,4),' +
-                    ' winning_ratio decimal(5,4), accuracy decimal(5,4), efficiency decimal(5,4))';
-                var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
-                    ' (id integer primary key auto_increment, total_games_played integer)';
-                var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
-                    ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
-                    ' three_misses text)';
-                var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
-                    ' (id integer primary key auto_increment, language text)';
-
-                var queries = [
-                    addPlayersTable,
-                    addStatisticsPlayerRawDataTable,
-                    addStatisticsPlayerMetricsTable,
-                    addStatisticsOverallMetricsTable,
-                    addGameSettingsTable,
-                    addAppSettingsTable
-                ];
-                queries.forEach(function(query) {
-                    $cordovaSQLite.execute(database, query);
+                dataService.initDatabase();
+                dataService.initPlayers().then(function(players) {
+                    players.forEach(function(player) {
+                        statisticsService.initPlayerStatistics(player);
+                        $rootScope.$broadcast('playersInitialized');
+                        loadingService.hide();
+                    })
                 });
-            }
-
-            function initDatabase() {
-                var databes = $cordovaSQLite.openDB({
-                    name: 'my.db', location: 'default'
-                });
-
-                return databes;
-            }
-
-            function testDatabase() {
-                // var insertPlayerQuery = 'INSERT INTO players (firstname, lastname, tagline, face, statistics_raw_data_id, statistics_metrics_id) VALUES (?,?,?,?,?,?)';
-                // $cordovaSQLite.execute(database, insertPlayerQuery, ['Frederic', 'Aerts', 'Hello hello', 'img/me.png', 10, 11]).then(function(res) {
-                //     console.log('INSERT -> ' + res);
-                // }, function (err) {
-                //     console.error(err.message);
-                // });
-
-                var selectPlayersQuery = 'SELECT * FROM players';
-                $cordovaSQLite.execute(database, selectPlayersQuery).then(function(res) {
-                    var rows = [];
-                    for (var i = 0; i < res.rows.length; i++) {
-                        rows.push(res.rows.item(i));
-                    }
-                    rows.forEach(function(row) {
-                        console.log('SELECT -> ' + row.firstname);
-                        console.log('SELECT -> ' + row.id);
-                    });
-                }, function (err) {
-                    console.error(err.message);
-                });
+                dataService.initOverallStatistics();
             }
         });
     }
@@ -5204,16 +5146,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
              * throw exception;
              */
         };
-    }
-
-    function initStatistics(players, statisticsService) {
-        // game statistics
-        statisticsService.initOverallStatistics();
-
-        // player statistics
-        players.forEach(function(player) {
-            statisticsService.initPlayerStatistics(player);
-        });
     }
 })();
 
@@ -6048,6 +5980,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     }
 })();
 
+
 (function() {
     'use strict';
 
@@ -6055,9 +5988,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
 
-    function HomeCtrl($scope, $state, modalsService) {
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -6073,6 +6006,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         /*  LISTENERS
             ======================================================================================== */
+        $scope.$on('playersInitialized', function () {
+            vm.addPlayersToGameModal.remove();
+            initAddPlayersToGameModal();
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             vm.addPlayersToGameModal.remove();
@@ -6105,7 +6043,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     function loadingService($rootScope, TEMPLATES_ROOT, $ionicLoading) {
         var service = {
-            show: show
+            show: show,
+            showIndefinite: showIndefinite,
+            hide: hide
         };
         return service;
 
@@ -6119,6 +6059,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 noBackdrop: true,
                 duration: 1000
             });
+        }
+
+        function showIndefinite(message) {
+            $rootScope.loadingMessage = message;
+
+            $ionicLoading.show({
+                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
+                noBackdrop: true
+            });
+        }
+
+        function hide() {
+            $ionicLoading.hide();
         }
     }
 })();
@@ -6569,33 +6522,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('playersService', playersService);
 
-    playersService.$inject = [];
+    playersService.$inject = ['dataService'];
 
-    function playersService() {
+    function playersService(dataService) {
         // Some fake testing data
-        var players = [
-            {
-                id: 0,
-                firstName: 'Ben',
-                lastName: 'Sparrow',
-                tagline: 'You on your way?',
-                face: 'img/ben.png'
-            },
-            {
-                id: 1,
-                firstName: 'Max',
-                lastName: 'Lynx',
-                tagline: 'Hey, it\'s me',
-                face: 'img/max.png'
-            },
-            {
-                id: 2,
-                firstName: 'Adam',
-                lastName: 'Bradleyson',
-                tagline: 'I should buy a boat',
-                face: 'img/adam.jpg'
-            }
-        ];
+        var players = dataService.getAllPlayers();
 
         var service = {
             all: all,
@@ -6628,394 +6559,183 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var player = get(updatedPlayer.id);
             player = updatedPlayer;
         }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('StatisticsListingCtrl', StatisticsListing);
-
-    StatisticsListing.$inject = ['$stateParams', 'statisticsService', 'playersService'];
-
-    function StatisticsListing($stateParams, statisticsService, playersService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
-        vm.players = playersService.all();
-        vm.minGamesFilter = minGamesFilter;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-        }
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function minGamesFilter(player) {
-            if (!vm.metric.unit) {
-                return true;
-            }
-
-            return player.statistics.rawData.gamesPlayed >= 5;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('statisticsProcessor', statisticsProcessor);
-
-    statisticsProcessor.$inject = ['gameService', 'settingsService'];
-
-    function statisticsProcessor(gameService, settingsService) {
-
-        var service = {
-            update: update
-        };
-        return service;
-
-        ////////////////
-
-        function update(event, player, overallStatistics, undo) {
-            var throws = player.scoreHistory.length;
-
-            switch (event) {
-                case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
-                case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
-                case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
-                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
-            }
-        }
 
         /*  Helper functions
-            ================================================================================= */
-        function updatePlayerWonGame(player, overallStatistics, undo) {
-            var participants = gameService.getParticipants();
-            var increment = undo ? -1 : 1;
-
-            // update raw data
-            player.statistics.rawData.gamesWon += increment;
-
-            // non player specific updates
-            overallStatistics.totalGamesPlayed += increment;
-            participants.forEach(function(player) {
-                player.statistics.rawData.gamesPlayed += increment;
-            });
-
-            updatePlayerMetric('totalWins', player);
-            updatePlayerMetric('winningRatio', participants);
-        }
-
-        function updatePlayerReachedMaxScore(player, throws, undo) {
-            var increment = undo ? -1 : 1;
-            player.statistics.rawData.gamesReachedMaxScore += increment;
-            player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
-
-            updatePlayerMetric('efficiency', player);
-        }
-
-        function updatePlayerThrowsSinglePin(player, undo) {
-            var increment = undo ? -1 : 1;
-            player.statistics.rawData.throwsSinglePin += increment;
-        }
-
-        function updatePlayerThrow(player, throws, undo) {
-            var increment = undo ? -1 : 1;
-            player.statistics.rawData.throws += increment;
-
-            updatePlayerMetric('accuracy', player);
-        }
-
-        function updatePlayerMetric(event, player) {
-            switch (event) {
-                case 'totalWins': updatePlayerMetricTotalWins(player); break;
-                case 'winningRatio': updatePlayerMetricWinningRatio(player); break;
-                case 'versatility': updatePlayerMetricVersatility(player); break;
-                case 'accuracy': updatePlayerMetricAccuracy(player); break;
-                case 'efficiency': updatePlayerMetricEfficiency(player); break;
-            }
-        }
-
-        function updatePlayerMetricTotalWins(player) {
-            var gamesWon = player.statistics.rawData.gamesWon;
-
-            player.statistics.metrics.totalWins = gamesWon;
-        }
-
-        function updatePlayerMetricVersatility(player) {
-            var accuracy = player.statistics.metrics.accuracy;
-            var efficiency = player.statistics.metrics.efficiency;
-            var winningRatio = player.statistics.metrics.winningRatio;
-
-            player.statistics.metrics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
-        }
-
-        function updatePlayerMetricWinningRatio(participants) {
-            var gamesWon, gamesPlayed;
-            participants.forEach(function(player) {
-                gamesWon = player.statistics.rawData.gamesWon;
-                gamesPlayed = player.statistics.rawData.gamesPlayed;
-
-                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
-
-                updatePlayerMetric('versatility', player);
-            });
-        }
-
-        function updatePlayerMetricAccuracy(player) {
-            var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
-            var totalThrows = player.statistics.rawData.throws;
-
-            player.statistics.metrics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
-
-            updatePlayerMetric('versatility', player);
-        }
-
-        function updatePlayerMetricEfficiency(player) {
-            var minThrowsToWin = getMinThrowsToWin();
-            var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
-            var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
-
-            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
-
-            updatePlayerMetric('versatility', player);
-        }
-
-        function getMinThrowsToWin() {
-            var minThrowsToWin = 0;
-            var winningScore = settingsService.getParameters().game.winningScore;
-            switch (winningScore) {
-                case 25: minThrowsToWin = 3; break;
-                case 50: minThrowsToWin = 5; break;
-                case 100: minThrowsToWin = 9; break;
-            }
-
-            return minThrowsToWin;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('StatisticsCtrl', StatisticsCtrl);
-
-    StatisticsCtrl.$inject = ['$scope',
-                                'statisticsService',
-                                'TEMPLATES_ROOT',
-                                '$ionicPopover',
-                                '$ionicModal'];
-
-    function StatisticsCtrl($scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
-        /* jshint validthis: true */
-        var vm = this;
-        var statisticsInfoModalScope = $scope.$new(true);
-        var statsItemsInfoPopoverScope = $scope.$new(true);
-
-        vm.metrics = statisticsService.getMetrics();
-        vm.overallStatistics = statisticsService.getOverallStatistics();
-        vm.statisticsInfoModal = {};
-        vm.statsItemsInfoPopover = {};
-        vm.showItemInfo = showItemInfo;
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initStatisticsInfoModal();
-            initStatsItemsInfoPopover();
-        }
-
-        /*  FUNCTIONS
             ======================================================================================== */
-        function initStatisticsInfoModal() {
-            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
-                scope: statisticsInfoModalScope,
-                animation: 'slide-in-up'
-            })
-            .then(function(modal) {
-                vm.statisticsInfoModal = modal;
-
-                /*  ==================================================================
-                - modal template should reference 'viewModel' as its scope
-                ================================================================== */
-                statisticsInfoModalScope.viewModel = {
-                    modal: vm.statisticsInfoModal
-                };
-            });
-        }
-
-        function initStatsItemsInfoPopover() {
-            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
-                scope: statsItemsInfoPopoverScope
-            }).then(function(popover) {
-                vm.statsItemsInfoPopover = popover;
-            });
-
-            /*  ==================================================================
-                - popover template should reference 'viewModel' as its scope
-                - viewModel data is initialized (reset) each time popover is shown
-                ================================================================== */
-            statsItemsInfoPopoverScope.viewModel = {
-                metric: {}
-            };
-        }
-
-        function showItemInfo($event, metric) {
-            statsItemsInfoPopoverScope.viewModel.metric = metric;
-
-            vm.statsItemsInfoPopover.show($event);
-
-            $event.stopPropagation();
-            $event.preventDefault();
-        }
     }
 })();
-
-/*  ==============================================================================
-    METRICS
-    ----------
-        ----------
-        Overall
-        ----------
-        - totalGamesPlayed: Total games played
-        ----------
-        Player
-        ----------
-        - totalWins: Total number of wins
-        - winningRatio: Total number of wins as per total number of games played
-        - versatility: winningRatio, efficiency and accuracy combined into one value
-        - accuracy: The player’s ability to hit single pins
-        - efficiency: The player’s ability to minimize the number of throws to finish a game
-
-    RAW DATA
-    ----------
-    - throws: Total throws of player
-    - throwsSinglePin: Total throws of player that hit only one pin
-    - throwsInGamesReachedMaxScore: Total throws of player in games in which player
-                                    reached max score
-    - gamesPlayed: Total games played that had a winner
-    - gamesReachedMaxScore: Total games in which player reached max score
-    - gamesWon: Total games won
-    ============================================================================== */
 
 (function() {
     'use strict';
 
     angular
         .module('molkkyscore')
-        .factory('statisticsService', statisticsService);
+        .factory('dataService', dataService);
 
-    statisticsService.$inject = ['$translate', 'statisticsProcessor', 'settingsService'];
+    dataService.$inject = ['$ionicPlatform', '$cordovaSQLite'];
 
-    function statisticsService($translate, statisticsProcessor, settingsService) {
-        var metrics = [
-            metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
-            metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
-            metric(3, 'versatility', 'players', 'PLAYERS.VERSATILITY', '%'),
-            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
-            metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
-            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
-        ];
+    function dataService($ionicPlatform, $cordovaSQLite) {
+        var database = {};
+        var players = [];
         var overallStatistics = {};
+        // var players = [
+        //     {
+        //         id: 0,
+        //         firstName: 'Ben',
+        //         lastName: 'Sparrow',
+        //         tagline: 'You on your way?',
+        //         face: 'img/ben.png'
+        //     },
+        //     {
+        //         id: 1,
+        //         firstName: 'Max',
+        //         lastName: 'Lynx',
+        //         tagline: 'Hey, it\'s me',
+        //         face: 'img/max.png'
+        //     },
+        //     {
+        //         id: 2,
+        //         firstName: 'Adam',
+        //         lastName: 'Bradleyson',
+        //         tagline: 'I should buy a boat',
+        //         face: 'img/adam.jpg'
+        //     }
+        // ];
 
         var service = {
-            getMetrics: getMetrics,
-            getMetric: getMetric,
-            getMetricByKey: getMetricByKey,
+            initDatabase: initDatabase,
+            initPlayers: initPlayers,
             initOverallStatistics: initOverallStatistics,
+            getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
-            initPlayerStatistics: initPlayerStatistics,
-            updateStatistics: updateStatistics
+            updateOverallStatistics: updateOverallStatistics
         };
         return service;
 
         ////////////////
 
-        function getMetrics() {
-            return metrics;
-        }
+        function initDatabase() { // called from app.config.js
+            if (!window.cordova) {
+                return;
+            }
 
-        function getMetric(metricId) {
-            return _.findWhere(metrics, {id: metricId});
-        }
-
-        function getMetricByKey(keyName) {
-            return _.findWhere(metrics, {keyName: keyName});
-        }
-
-        function initOverallStatistics() { // cached on statistics service
-            getMetrics().forEach(function(metric) {
-                if (metric.category === 'overall') {
-                    overallStatistics[metric.keyName] = 0; // TODO: fetch from DB
-                }
+            database = $cordovaSQLite.openDB({
+                name: 'my.db', location: 'default'
             });
 
-            return overallStatistics;
+            initDatabaseTables(database);
+        }
+
+        function initPlayers() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectAllPlayersQuery = 'SELECT * FROM players';
+            return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var row = res.rows.item(i);
+                    players.push({
+                        id: row.id,
+                        firstName: row.firstname,
+                        lastName: row.lastname,
+                        tagline: row.tagline,
+                        face: row.face,
+                        statistics: {
+                            rawData: {
+                                id: row.statistics_raw_data_id
+                            },
+                            metrics: {
+                                id: row.statistics_metrics_id
+                            }
+                        }
+                    });
+                }
+
+                return players;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function initOverallStatistics() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectOverallStatisticsQuery = 'SELECT * FROM statistics_overall_metrics';
+            return $cordovaSQLite.execute(database, selectOverallStatisticsQuery).then(function(res) {
+                overallStatistics.totalGamesPlayed = res.rows.item(0).total_games_played;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function getAllPlayers() {
+            return players;
         }
 
         function getOverallStatistics() {
             return overallStatistics;
         }
 
-        function initPlayerStatistics(player) { // cached on player object
-            player.statistics = {
-                rawData: {
-                    throws: 0,
-                    throwsSinglePin: 0,
-                    throwsInGamesReachedMaxScore: 0,
-                    gamesPlayed: 0,
-                    gamesReachedMaxScore: 0,
-                    gamesWon: 0
-                },
-                metrics: {}
-            };
-
-            getMetrics().forEach(function(metric) {
-                if (metric.category === 'players') {
-                    player.statistics.metrics[metric.keyName] = 0; // TODO: fetch from DB
-                }
+        function updateOverallStatistics() {
+            var totalGamesPlayed = overallStatistics.totalGamesPlayed;
+            console.log(totalGamesPlayed);
+            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=' + totalGamesPlayed + ' WHERE id=1';
+            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+                // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
             });
-
-            return player;
-        }
-
-        function updateStatistics(event, activePlayer, undo) {
-            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
-                // no statisitcs for guest player or when game settings are customized
-                return;
-            }
-
-            statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
         }
 
         /*  Helper functions
-            ================================================================================= */
-        /* metric factory */
-        function metric(id, keyName, category, translationId, unit) {
-            return {
-                id: id,
-                keyName: keyName,
-                category: category,
-                translationId: translationId,
-                unit: unit
-            };
+            ======================================================================================== */
+        function initDatabaseTables(database) {
+            if (!window.cordova) {
+                return;
+            }
+            var addPlayersTable = 'CREATE TABLE IF NOT EXISTS players' +
+                ' (id integer primary key auto_increment, firstname text, lastname text, tagline text,' +
+                ' face text, statistics_raw_data_id integer, statistics_metrics_id integer)';
+            var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS statistics_player_raw_data' +
+                ' (id integer primary key auto_increment, throws integer, throws_single_pin integer,' +
+                ' throws_in_games_reached_max_score integer, gamesPlayed integer,' +
+                ' games_reached_max_score integer, games_won integer)';
+            var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_player_metrics' +
+                ' (id integer primary key auto_increment, total_wins integer, versatility decimal(5,4),' +
+                ' winning_ratio decimal(5,4), accuracy decimal(5,4), efficiency decimal(5,4))';
+            var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
+                ' (id integer primary key auto_increment, total_games_played integer)';
+            var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
+                ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
+                ' three_misses text)';
+            var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
+                ' (id integer primary key auto_increment, language text)';
+
+            var queries = [
+                addPlayersTable,
+                addStatisticsPlayerRawDataTable,
+                addStatisticsPlayerMetricsTable,
+                addStatisticsOverallMetricsTable,
+                addGameSettingsTable,
+                addAppSettingsTable
+            ];
+            queries.forEach(function(query) {
+                $cordovaSQLite.execute(database, query);
+            });
+
+            // testDatabase();
         }
 
-        function processGameWon() {
-
+        function testDatabase() {
+            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=1 WHERE id=1';
+            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+                console.log('INSERT -> ' + res);
+            }, function (err) {
+                console.error(err.message);
+            });
         }
     }
 })();
@@ -7249,6 +6969,396 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
                 }
             };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsListingCtrl', StatisticsListing);
+
+    StatisticsListing.$inject = ['$stateParams', 'statisticsService', 'playersService'];
+
+    function StatisticsListing($stateParams, statisticsService, playersService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
+        vm.players = playersService.all();
+        vm.minGamesFilter = minGamesFilter;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+        }
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function minGamesFilter(player) {
+            if (!vm.metric.unit) {
+                return true;
+            }
+
+            return player.statistics.rawData.gamesPlayed >= 5;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('statisticsProcessor', statisticsProcessor);
+
+    statisticsProcessor.$inject = ['gameService', 'settingsService', 'dataService'];
+
+    function statisticsProcessor(gameService, settingsService, dataService) {
+
+        var service = {
+            update: update
+        };
+        return service;
+
+        ////////////////
+
+        function update(event, player, overallStatistics, undo) {
+            var throws = player.scoreHistory.length;
+
+            switch (event) {
+                case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
+                case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
+                case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
+                case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
+            }
+        }
+
+        /*  Helper functions
+            ================================================================================= */
+        function updatePlayerWonGame(player, overallStatistics, undo) {
+            var participants = gameService.getParticipants();
+            var increment = undo ? -1 : 1;
+
+            // update raw data
+            player.statistics.rawData.gamesWon += increment;
+
+            // non player specific updates
+            overallStatistics.totalGamesPlayed += increment;
+            console.log(overallStatistics.totalGamesPlayed);
+            dataService.updateOverallStatistics();
+            participants.forEach(function(player) {
+                player.statistics.rawData.gamesPlayed += increment;
+            });
+
+            updatePlayerMetric('totalWins', player);
+            updatePlayerMetric('winningRatio', participants);
+        }
+
+        function updatePlayerReachedMaxScore(player, throws, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.gamesReachedMaxScore += increment;
+            player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
+
+            updatePlayerMetric('efficiency', player);
+        }
+
+        function updatePlayerThrowsSinglePin(player, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throwsSinglePin += increment;
+        }
+
+        function updatePlayerThrow(player, throws, undo) {
+            var increment = undo ? -1 : 1;
+            player.statistics.rawData.throws += increment;
+
+            updatePlayerMetric('accuracy', player);
+        }
+
+        function updatePlayerMetric(event, player) {
+            switch (event) {
+                case 'totalWins': updatePlayerMetricTotalWins(player); break;
+                case 'winningRatio': updatePlayerMetricWinningRatio(player); break;
+                case 'versatility': updatePlayerMetricVersatility(player); break;
+                case 'accuracy': updatePlayerMetricAccuracy(player); break;
+                case 'efficiency': updatePlayerMetricEfficiency(player); break;
+            }
+        }
+
+        function updatePlayerMetricTotalWins(player) {
+            var gamesWon = player.statistics.rawData.gamesWon;
+
+            player.statistics.metrics.totalWins = gamesWon;
+        }
+
+        function updatePlayerMetricVersatility(player) {
+            var accuracy = player.statistics.metrics.accuracy;
+            var efficiency = player.statistics.metrics.efficiency;
+            var winningRatio = player.statistics.metrics.winningRatio;
+
+            player.statistics.metrics.versatility = Math.round((accuracy + efficiency + winningRatio) / 3);
+        }
+
+        function updatePlayerMetricWinningRatio(participants) {
+            var gamesWon, gamesPlayed;
+            participants.forEach(function(player) {
+                gamesWon = player.statistics.rawData.gamesWon;
+                gamesPlayed = player.statistics.rawData.gamesPlayed;
+
+                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+
+                updatePlayerMetric('versatility', player);
+            });
+        }
+
+        function updatePlayerMetricAccuracy(player) {
+            var totalThrowsThatHitSinglePin = player.statistics.rawData.throwsSinglePin;
+            var totalThrows = player.statistics.rawData.throws;
+
+            player.statistics.metrics.accuracy = Math.round((totalThrowsThatHitSinglePin / totalThrows) * 100);
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function updatePlayerMetricEfficiency(player) {
+            var minThrowsToWin = getMinThrowsToWin();
+            var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
+            var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
+
+            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
+
+            updatePlayerMetric('versatility', player);
+        }
+
+        function getMinThrowsToWin() {
+            var minThrowsToWin = 0;
+            var winningScore = settingsService.getParameters().game.winningScore;
+            switch (winningScore) {
+                case 25: minThrowsToWin = 3; break;
+                case 50: minThrowsToWin = 5; break;
+                case 100: minThrowsToWin = 9; break;
+            }
+
+            return minThrowsToWin;
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('StatisticsCtrl', StatisticsCtrl);
+
+    StatisticsCtrl.$inject = ['$scope',
+                                'statisticsService',
+                                'TEMPLATES_ROOT',
+                                '$ionicPopover',
+                                '$ionicModal'];
+
+    function StatisticsCtrl($scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
+        /* jshint validthis: true */
+        var vm = this;
+        var statisticsInfoModalScope = $scope.$new(true);
+        var statsItemsInfoPopoverScope = $scope.$new(true);
+
+        vm.metrics = statisticsService.getMetrics();
+        vm.overallStatistics = statisticsService.getOverallStatistics();
+        vm.statisticsInfoModal = {};
+        vm.statsItemsInfoPopover = {};
+        vm.showItemInfo = showItemInfo;
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initStatisticsInfoModal();
+            initStatsItemsInfoPopover();
+        }
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initStatisticsInfoModal() {
+            $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/modal-statistics-info.html', {
+                scope: statisticsInfoModalScope,
+                animation: 'slide-in-up'
+            })
+            .then(function(modal) {
+                vm.statisticsInfoModal = modal;
+
+                /*  ==================================================================
+                - modal template should reference 'viewModel' as its scope
+                ================================================================== */
+                statisticsInfoModalScope.viewModel = {
+                    modal: vm.statisticsInfoModal
+                };
+            });
+        }
+
+        function initStatsItemsInfoPopover() {
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
+                scope: statsItemsInfoPopoverScope
+            }).then(function(popover) {
+                vm.statsItemsInfoPopover = popover;
+            });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time popover is shown
+                ================================================================== */
+            statsItemsInfoPopoverScope.viewModel = {
+                metric: {}
+            };
+        }
+
+        function showItemInfo($event, metric) {
+            statsItemsInfoPopoverScope.viewModel.metric = metric;
+
+            vm.statsItemsInfoPopover.show($event);
+
+            $event.stopPropagation();
+            $event.preventDefault();
+        }
+    }
+})();
+
+/*  ==============================================================================
+    METRICS
+    ----------
+        ----------
+        Overall
+        ----------
+        - totalGamesPlayed: Total games played
+        ----------
+        Player
+        ----------
+        - totalWins: Total number of wins
+        - winningRatio: Total number of wins as per total number of games played
+        - versatility: winningRatio, efficiency and accuracy combined into one value
+        - accuracy: The player’s ability to hit single pins
+        - efficiency: The player’s ability to minimize the number of throws to finish a game
+
+    RAW DATA
+    ----------
+    - throws: Total throws of player
+    - throwsSinglePin: Total throws of player that hit only one pin
+    - throwsInGamesReachedMaxScore: Total throws of player in games in which player
+                                    reached max score
+    - gamesPlayed: Total games played that had a winner
+    - gamesReachedMaxScore: Total games in which player reached max score
+    - gamesWon: Total games won
+    ============================================================================== */
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('statisticsService', statisticsService);
+
+    statisticsService.$inject = ['$translate', 'dataService', 'statisticsProcessor', 'settingsService'];
+
+    function statisticsService($translate, dataService, statisticsProcessor, settingsService) {
+        var metrics = [
+            metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
+            metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
+            metric(3, 'versatility', 'players', 'PLAYERS.VERSATILITY', '%'),
+            metric(2, 'winningRatio', 'players', 'PLAYERS.WINNING-RATIO', '%'),
+            metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
+            metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
+        ];
+        var overallStatistics = dataService.getOverallStatistics();
+
+        var service = {
+            getMetrics: getMetrics,
+            getMetric: getMetric,
+            getMetricByKey: getMetricByKey,
+            getOverallStatistics: getOverallStatistics,
+            initPlayerStatistics: initPlayerStatistics,
+            updateStatistics: updateStatistics
+        };
+        return service;
+
+        ////////////////
+
+        function getMetrics() {
+            return metrics;
+        }
+
+        function getMetric(metricId) {
+            return _.findWhere(metrics, {id: metricId});
+        }
+
+        function getMetricByKey(keyName) {
+            return _.findWhere(metrics, {keyName: keyName});
+        }
+
+        // function initOverallStatistics() { // cached on statistics service
+        //     getMetrics().forEach(function(metric) {
+        //         if (metric.category === 'overall') {
+        //             overallStatistics[metric.keyName] = 0; // TODO: fetch from DB
+        //         }
+        //     });
+
+        //     return overallStatistics;
+        // }
+
+        function getOverallStatistics() {
+            return overallStatistics;
+        }
+
+        function initPlayerStatistics(player) { // cached on player object
+            player.statistics = {
+                rawData: {
+                    throws: 0,
+                    throwsSinglePin: 0,
+                    throwsInGamesReachedMaxScore: 0,
+                    gamesPlayed: 0,
+                    gamesReachedMaxScore: 0,
+                    gamesWon: 0
+                },
+                metrics: {}
+            };
+
+            getMetrics().forEach(function(metric) {
+                if (metric.category === 'players') {
+                    player.statistics.metrics[metric.keyName] = 0; // TODO: fetch from DB
+                }
+            });
+
+            return player;
+        }
+
+        function updateStatistics(event, activePlayer, undo) {
+            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
+                // no statisitcs for guest player or when game settings are customized
+                return;
+            }
+
+            statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
+        }
+
+        /*  Helper functions
+            ================================================================================= */
+        /* metric factory */
+        function metric(id, keyName, category, translationId, unit) {
+            return {
+                id: id,
+                keyName: keyName,
+                category: category,
+                translationId: translationId,
+                unit: unit
+            };
+        }
+
+        function processGameWon() {
+
         }
     }
 })();

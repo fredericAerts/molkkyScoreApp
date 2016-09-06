@@ -1,3 +1,4 @@
+
 (function() {
     'use strict';
 
@@ -5,9 +6,9 @@
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$scope', '$state', 'modalsService'];
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
 
-    function HomeCtrl($scope, $state, modalsService) {
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -23,6 +24,11 @@
 
         /*  LISTENERS
             ======================================================================================== */
+        $scope.$on('playersInitialized', function () {
+            vm.addPlayersToGameModal.remove();
+            initAddPlayersToGameModal();
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             vm.addPlayersToGameModal.remove();

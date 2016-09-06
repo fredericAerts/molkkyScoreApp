@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .factory('statisticsProcessor', statisticsProcessor);
 
-    statisticsProcessor.$inject = ['gameService', 'settingsService'];
+    statisticsProcessor.$inject = ['gameService', 'settingsService', 'dataService'];
 
-    function statisticsProcessor(gameService, settingsService) {
+    function statisticsProcessor(gameService, settingsService, dataService) {
 
         var service = {
             update: update
@@ -38,6 +38,8 @@
 
             // non player specific updates
             overallStatistics.totalGamesPlayed += increment;
+            console.log(overallStatistics.totalGamesPlayed);
+            dataService.updateOverallStatistics();
             participants.forEach(function(player) {
                 player.statistics.rawData.gamesPlayed += increment;
             });

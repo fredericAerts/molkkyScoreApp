@@ -8,9 +8,9 @@
     runBlock.$inject = ['$rootScope',
                         'IMAGES_ROOT',
                         '$ionicPlatform',
-                        '$cordovaSQLite',
-                        'playersService',
-                        'statisticsService'];
+                        'dataService',
+                        'statisticsService',
+                        'loadingService'];
 
     function configure($provide, $translateProvider, $ionicConfigProvider, LANGUAGES_ROOT) {
         // extend default exceptionHandler
@@ -28,13 +28,12 @@
     function runBlock($rootScope,
                         IMAGES_ROOT,
                         $ionicPlatform,
-                        $cordovaSQLite,
-                        playersService,
-                        statisticsService) {
+                        dataService,
+                        statisticsService,
+                        loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
-        initStatistics(playersService.all(), statisticsService);
-
+        loadingService.showIndefinite('loading application');
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -49,72 +48,15 @@
             }
 
             if (window.cordova) {
-                var database = initDatabase();
-                initDatabaseTables(database);
-                testDatabase(database);
-            }
-
-            function initDatabaseTables(database) {
-                var addPlayersTable = 'CREATE TABLE IF NOT EXISTS players' +
-                    ' (id integer primary key auto_increment, firstname text, lastname text, tagline text,' +
-                    ' face text, statistics_raw_data_id integer, statistics_metrics_id integer)';
-                var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS statistics_player_raw_data' +
-                    ' (id integer primary key auto_increment, throws integer, throws_single_pin integer,' +
-                    ' throws_in_games_reached_max_score integer, gamesPlayed integer,' +
-                    ' games_reached_max_score integer, games_won integer)';
-                var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_player_metrics' +
-                    ' (id integer primary key auto_increment, total_wins integer, versatility decimal(5,4),' +
-                    ' winning_ratio decimal(5,4), accuracy decimal(5,4), efficiency decimal(5,4))';
-                var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
-                    ' (id integer primary key auto_increment, total_games_played integer)';
-                var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
-                    ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
-                    ' three_misses text)';
-                var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
-                    ' (id integer primary key auto_increment, language text)';
-
-                var queries = [
-                    addPlayersTable,
-                    addStatisticsPlayerRawDataTable,
-                    addStatisticsPlayerMetricsTable,
-                    addStatisticsOverallMetricsTable,
-                    addGameSettingsTable,
-                    addAppSettingsTable
-                ];
-                queries.forEach(function(query) {
-                    $cordovaSQLite.execute(database, query);
+                dataService.initDatabase();
+                dataService.initPlayers().then(function(players) {
+                    players.forEach(function(player) {
+                        statisticsService.initPlayerStatistics(player);
+                        $rootScope.$broadcast('playersInitialized');
+                        loadingService.hide();
+                    })
                 });
-            }
-
-            function initDatabase() {
-                var databes = $cordovaSQLite.openDB({
-                    name: 'my.db', location: 'default'
-                });
-
-                return databes;
-            }
-
-            function testDatabase() {
-                // var insertPlayerQuery = 'INSERT INTO players (firstname, lastname, tagline, face, statistics_raw_data_id, statistics_metrics_id) VALUES (?,?,?,?,?,?)';
-                // $cordovaSQLite.execute(database, insertPlayerQuery, ['Frederic', 'Aerts', 'Hello hello', 'img/me.png', 10, 11]).then(function(res) {
-                //     console.log('INSERT -> ' + res);
-                // }, function (err) {
-                //     console.error(err.message);
-                // });
-
-                var selectPlayersQuery = 'SELECT * FROM players';
-                $cordovaSQLite.execute(database, selectPlayersQuery).then(function(res) {
-                    var rows = [];
-                    for (var i = 0; i < res.rows.length; i++) {
-                        rows.push(res.rows.item(i));
-                    }
-                    rows.forEach(function(row) {
-                        console.log('SELECT -> ' + row.firstname);
-                        console.log('SELECT -> ' + row.id);
-                    });
-                }, function (err) {
-                    console.error(err.message);
-                });
+                dataService.initOverallStatistics();
             }
         });
     }
@@ -136,15 +78,5 @@
              * throw exception;
              */
         };
-    }
-
-    function initStatistics(players, statisticsService) {
-        // game statistics
-        statisticsService.initOverallStatistics();
-
-        // player statistics
-        players.forEach(function(player) {
-            statisticsService.initPlayerStatistics(player);
-        });
     }
 })();

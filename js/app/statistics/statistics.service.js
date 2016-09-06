@@ -32,9 +32,9 @@
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'statisticsProcessor', 'settingsService'];
+    statisticsService.$inject = ['$translate', 'dataService', 'statisticsProcessor', 'settingsService'];
 
-    function statisticsService($translate, statisticsProcessor, settingsService) {
+    function statisticsService($translate, dataService, statisticsProcessor, settingsService) {
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
@@ -43,13 +43,12 @@
             metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
             metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
         ];
-        var overallStatistics = {};
+        var overallStatistics = dataService.getOverallStatistics();
 
         var service = {
             getMetrics: getMetrics,
             getMetric: getMetric,
             getMetricByKey: getMetricByKey,
-            initOverallStatistics: initOverallStatistics,
             getOverallStatistics: getOverallStatistics,
             initPlayerStatistics: initPlayerStatistics,
             updateStatistics: updateStatistics
@@ -70,15 +69,15 @@
             return _.findWhere(metrics, {keyName: keyName});
         }
 
-        function initOverallStatistics() { // cached on statistics service
-            getMetrics().forEach(function(metric) {
-                if (metric.category === 'overall') {
-                    overallStatistics[metric.keyName] = 0; // TODO: fetch from DB
-                }
-            });
+        // function initOverallStatistics() { // cached on statistics service
+        //     getMetrics().forEach(function(metric) {
+        //         if (metric.category === 'overall') {
+        //             overallStatistics[metric.keyName] = 0; // TODO: fetch from DB
+        //         }
+        //     });
 
-            return overallStatistics;
-        }
+        //     return overallStatistics;
+        // }
 
         function getOverallStatistics() {
             return overallStatistics;
