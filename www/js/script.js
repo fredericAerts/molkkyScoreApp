@@ -5088,7 +5088,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        });
+        }).preferredLanguage('english'); // TODO: get from Database
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');
@@ -5103,7 +5103,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
-        loadingService.showIndefinite('loading application');
+        loadingService.showIndefinite('LOADING-APP');
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -5752,7 +5752,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return;
             }
 
-            loadingService.show('restarting game');
+            loadingService.show('RESTARTING-GAME');
 
             vm.participants = gameService.initParticipants();
             initScoreboard();
@@ -5764,7 +5764,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 addPlayersToGameModal.show();
             }
             else {
-                loadingService.show('starting new game');
+                loadingService.show('STARTING-NEW-GAME');
 
                 gameService.sortParticipantsOnScore(); // TODO: Implement this function
                 vm.participants = gameService.initParticipants();
@@ -6221,7 +6221,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             function startGame() {
                 gameService.setParticipants(modalScope.viewModel.participants.slice());
 
-                loadingService.show('starting game');
+                loadingService.show('STARTING-GAME');
 
                 addPlayersToGameModal.hide()
                 .then(function() {

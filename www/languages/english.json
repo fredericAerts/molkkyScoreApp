@@ -8,6 +8,12 @@
                 "YES": "Yes"
             }
         },
+        "LOADING": {
+            "STARTING-GAME": "starting game",
+            "RESTARTING-GAME": "restarting game",
+            "STARTING-NEW-GAME": "starting new game",
+            "LOADING-APP": "loading application"
+        },
         "VIEW-TITLE": "Home",
         "START": {
             "BUTTON-TITLE": "Start game",

@@ -135,7 +135,7 @@
             function startGame() {
                 gameService.setParticipants(modalScope.viewModel.participants.slice());
 
-                loadingService.show('starting game');
+                loadingService.show('STARTING-GAME');
 
                 addPlayersToGameModal.hide()
                 .then(function() {

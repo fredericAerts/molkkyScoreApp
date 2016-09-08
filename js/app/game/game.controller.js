@@ -200,7 +200,7 @@
                 return;
             }
 
-            loadingService.show('restarting game');
+            loadingService.show('RESTARTING-GAME');
 
             vm.participants = gameService.initParticipants();
             initScoreboard();
@@ -212,7 +212,7 @@
                 addPlayersToGameModal.show();
             }
             else {
-                loadingService.show('starting new game');
+                loadingService.show('STARTING-NEW-GAME');
 
                 gameService.sortParticipantsOnScore(); // TODO: Implement this function
                 vm.participants = gameService.initParticipants();

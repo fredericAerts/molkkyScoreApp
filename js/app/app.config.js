@@ -20,7 +20,7 @@
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        });
+        }).preferredLanguage('english'); // TODO: get from Database
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');
@@ -35,7 +35,7 @@
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
-        loadingService.showIndefinite('loading application');
+        loadingService.showIndefinite('LOADING-APP');
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
