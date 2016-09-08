@@ -5,9 +5,21 @@
         .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', 'statisticsService', '$ionicModal', 'toast'];
+    PlayerDetailCtrl.$inject = ['$scope',
+                                '$stateParams',
+                                'TEMPLATES_ROOT',
+                                'playersService',
+                                'statisticsService',
+                                '$ionicModal',
+                                'toast'];
 
-    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, statisticsService, $ionicModal, toast) {
+    function PlayerDetailCtrl($scope,
+                                $stateParams,
+                                TEMPLATES_ROOT,
+                                playersService,
+                                statisticsService,
+                                $ionicModal,
+                                toast) {
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
@@ -52,7 +64,7 @@
                 item('Last name', vm.player.lastName),
                 item('Tagline', vm.player.tagline)
             ];
-            var statisticsItems = [ // raw data
+            var statisticsItems = [// raw data
                 item('Games played', vm.player.statistics.rawData.gamesPlayed),
                 item('Games won', vm.player.statistics.rawData.gamesWon),
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),

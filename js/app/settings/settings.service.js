@@ -5,19 +5,12 @@
         .module('molkkyscore')
         .factory('settingsService', settingsService);
 
-    settingsService.$inject = ['$translate'];
+    settingsService.$inject = ['$translate', 'dataService'];
 
-    function settingsService($translate) {
+    function settingsService($translate, dataService) {
         var parameters = {
-            app: {
-                language: $translate.proposedLanguage()
-            },
-            game: {
-                isCustom: false,
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
-            }
+            app: dataService.getAppSettings(),
+            game: dataService.getGameSettings()
         };
 
         var service = {

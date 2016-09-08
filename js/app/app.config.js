@@ -9,6 +9,7 @@
                         'IMAGES_ROOT',
                         '$ionicPlatform',
                         'dataService',
+                        '$translate',
                         'statisticsService',
                         'loadingService'];
 
@@ -19,7 +20,7 @@
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        }).preferredLanguage('english'); // TODO: get from DB
+        });
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');
@@ -29,6 +30,7 @@
                         IMAGES_ROOT,
                         $ionicPlatform,
                         dataService,
+                        $translate,
                         statisticsService,
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
@@ -54,9 +56,13 @@
                         statisticsService.initPlayerStatistics(player);
                         $rootScope.$broadcast('playersInitialized');
                         loadingService.hide();
-                    })
+                    });
                 });
                 dataService.initOverallStatistics();
+                dataService.initGameSettings();
+                dataService.initAppSettings().then(function(appSettings) {
+                    $translate.use(appSettings.language);
+                });
             }
         });
     }

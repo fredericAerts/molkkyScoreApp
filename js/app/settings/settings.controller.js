@@ -5,9 +5,21 @@
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
+    SettingsCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            '$ionicPopup',
+                            '$translate',
+                            'settingsService',
+                            'dataService',
+                            'toast'];
 
-    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
+    function SettingsCtrl($scope,
+                            $rootScope,
+                            $ionicPopup,
+                            $translate,
+                            settingsService,
+                            dataService,
+                            toast) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -74,11 +86,13 @@
             if (!_.isEmpty(diffApp)) {
                 updatedKey = Object.keys(diffApp)[0];
                 settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+                dataService.updateAppSettings();
             }
 
             if (!_.isEmpty(diffGame)) {
                 updatedKey = Object.keys(diffGame)[0];
                 settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+                dataService.updateGameSettings();
             }
         }
 

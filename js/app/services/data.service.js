@@ -5,12 +5,14 @@
         .module('molkkyscore')
         .factory('dataService', dataService);
 
-    dataService.$inject = ['$ionicPlatform', '$cordovaSQLite'];
+    dataService.$inject = ['$cordovaSQLite'];
 
-    function dataService($ionicPlatform, $cordovaSQLite) {
+    function dataService($cordovaSQLite) {
         var database = {};
         var players = [];
         var overallStatistics = {};
+        var gameSettings = {};
+        var appSettings = {};
         // var players = [
         //     {
         //         id: 0,
@@ -39,9 +41,15 @@
             initDatabase: initDatabase,
             initPlayers: initPlayers,
             initOverallStatistics: initOverallStatistics,
+            initGameSettings: initGameSettings,
+            initAppSettings: initAppSettings,
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
-            updateOverallStatistics: updateOverallStatistics
+            getGameSettings: getGameSettings,
+            getAppSettings: getAppSettings,
+            updateOverallStatistics: updateOverallStatistics,
+            updateGameSettings: updateGameSettings,
+            updateAppSettings: updateAppSettings
         };
         return service;
 
@@ -84,7 +92,6 @@
                         }
                     });
                 }
-
                 return players;
             }, function (err) {
                 console.error(err.message);
@@ -104,6 +111,36 @@
             });
         }
 
+        function initGameSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectGameSettingsQuery = 'SELECT * FROM game_settings';
+            return $cordovaSQLite.execute(database, selectGameSettingsQuery).then(function(res) {
+                gameSettings.isCustom = res.rows.item(0).is_custom === 1 ? true : false;
+                gameSettings.winningScore = res.rows.item(0).winning_score;
+                gameSettings.winningScoreExceeded = res.rows.item(0).winning_score_exceeded;
+                gameSettings.threeMisses = res.rows.item(0).three_misses;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function initAppSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectAppSettingsQuery = 'SELECT * FROM app_settings';
+            return $cordovaSQLite.execute(database, selectAppSettingsQuery).then(function(res) {
+                appSettings.language = res.rows.item(0).language;
+                return appSettings;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
         function getAllPlayers() {
             return players;
         }
@@ -112,11 +149,51 @@
             return overallStatistics;
         }
 
+        function getGameSettings() {
+            return gameSettings;
+        }
+
+        function getAppSettings() {
+            return appSettings;
+        }
+
         function updateOverallStatistics() {
             var totalGamesPlayed = overallStatistics.totalGamesPlayed;
-            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=' + totalGamesPlayed + ' WHERE id=1';
-            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+            var updateOverallStatistics = 'UPDATE statistics_overall_metrics SET' +
+                                            ' total_games_played=' + totalGamesPlayed +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateOverallStatistics).then(function(res) {
                 // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateGameSettings() {
+            var isCustom = gameSettings.isCustom ? 1 : 0;
+            var winningScore = gameSettings.winningScore;
+            var winningScoreExceeded = gameSettings.winningScoreExceeded;
+            var threeMisses = gameSettings.threeMisses;
+            var updateGameSettings = 'UPDATE game_settings SET' +
+                                            ' is_custom=' + isCustom + ',' +
+                                            ' winning_score=' + winningScore + ',' +
+                                            ' winning_score_exceeded="' + winningScoreExceeded + '",' +
+                                            ' three_misses="' + threeMisses + '"' +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
+                // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateAppSettings() {
+            var language = appSettings.language;
+            var updateGameSettings = 'UPDATE app_settings SET' +
+                                            ' language="' + language + '"' +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
+                // app settings updated
             }, function (err) {
                 console.error(err.message);
             });
@@ -141,8 +218,8 @@
             var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
                 ' (id integer primary key auto_increment, total_games_played integer)';
             var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
-                ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
-                ' three_misses text)';
+                ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer,' +
+                ' winning_score_exceeded text, three_misses text)';
             var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
                 ' (id integer primary key auto_increment, language text)';
 
@@ -162,8 +239,34 @@
         }
 
         function testDatabase() {
-            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=1 WHERE id=1';
-            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+            var values = [0, 25, 'half of winning score', 'disqualified'];
+            // var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=1 WHERE id=1';
+            var insertOverallStatistics = 'INSERT INTO game_settings (is_custom, winning_score,' +
+                ' winning_score_exceeded, three_misses) VALUES (?,?,?,?)';
+            $cordovaSQLite.execute(database, insertOverallStatistics, values).then(function(res) {
+                console.log('INSERT -> ' + res);
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        /*  first time application use functions
+            ======================================================================================== */
+        function introGameSettings() {
+            var values = [0, 50, 'half of winning score', 'disqualified'];
+            var insertGameSettings = 'INSERT INTO game_settings (is_custom, winning_score,' +
+                ' winning_score_exceeded, three_misses) VALUES (?,?,?,?)';
+            $cordovaSQLite.execute(database, insertGameSettings, values).then(function(res) {
+                console.log('INSERT -> ' + res);
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function introAppSettings() {
+            var values = ['english'];
+            var insertAppSettings = 'INSERT INTO app_settings (language) VALUES (?)';
+            $cordovaSQLite.execute(database, insertAppSettings, values).then(function(res) {
                 console.log('INSERT -> ' + res);
             }, function (err) {
                 console.error(err.message);

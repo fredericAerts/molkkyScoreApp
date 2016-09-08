@@ -132,7 +132,9 @@
             }
 
             if (vm.activatedScore.value > -1) {
-                vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore.value, vm.activePlayer, settings);
+                var activatedScore = vm.activatedScore.value;
+                var avatarStatus = gameUtilities.getActivatedAvatarStatus(activatedScore, vm.activePlayer, settings);
+                vm.activePlayer.activatedAvatarStatus = avatarStatus;
             }
         }
 

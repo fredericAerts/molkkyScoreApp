@@ -117,8 +117,9 @@
             var minThrowsToWin = getMinThrowsToWin();
             var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
             var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
+            var throwsPerGameReachedMaxScore = throwsInGamesReachedMaxScore / gamesReachedMaxScore;
 
-            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
+            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / throwsPerGameReachedMaxScore) * 100);
 
             updatePlayerMetric('versatility', player);
         }

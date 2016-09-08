@@ -5077,6 +5077,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         'IMAGES_ROOT',
                         '$ionicPlatform',
                         'dataService',
+                        '$translate',
                         'statisticsService',
                         'loadingService'];
 
@@ -5087,7 +5088,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         $translateProvider.useStaticFilesLoader({
             prefix: LANGUAGES_ROOT + '/',
             suffix: '.json'
-        }).preferredLanguage('english'); // TODO: get from DB
+        });
 
         $ionicConfigProvider.tabs.style('standard');
         $ionicConfigProvider.tabs.position('bottom');
@@ -5097,6 +5098,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         IMAGES_ROOT,
                         $ionicPlatform,
                         dataService,
+                        $translate,
                         statisticsService,
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
@@ -5122,9 +5124,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         statisticsService.initPlayerStatistics(player);
                         $rootScope.$broadcast('playersInitialized');
                         loadingService.hide();
-                    })
+                    });
                 });
                 dataService.initOverallStatistics();
+                dataService.initGameSettings();
+                dataService.initAppSettings().then(function(appSettings) {
+                    $translate.use(appSettings.language);
+                });
             }
         });
     }
@@ -5678,7 +5684,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             if (vm.activatedScore.value > -1) {
-                vm.activePlayer.activatedAvatarStatus = gameUtilities.getActivatedAvatarStatus(vm.activatedScore.value, vm.activePlayer, settings);
+                var activatedScore = vm.activatedScore.value;
+                var avatarStatus = gameUtilities.getActivatedAvatarStatus(activatedScore, vm.activePlayer, settings);
+                vm.activePlayer.activatedAvatarStatus = avatarStatus;
             }
         }
 
@@ -6261,9 +6269,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
-    PlayerDetailCtrl.$inject = ['$scope', '$stateParams', 'TEMPLATES_ROOT', 'playersService', 'statisticsService', '$ionicModal', 'toast'];
+    PlayerDetailCtrl.$inject = ['$scope',
+                                '$stateParams',
+                                'TEMPLATES_ROOT',
+                                'playersService',
+                                'statisticsService',
+                                '$ionicModal',
+                                'toast'];
 
-    function PlayerDetailCtrl($scope, $stateParams, TEMPLATES_ROOT, playersService, statisticsService, $ionicModal, toast) {
+    function PlayerDetailCtrl($scope,
+                                $stateParams,
+                                TEMPLATES_ROOT,
+                                playersService,
+                                statisticsService,
+                                $ionicModal,
+                                toast) {
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
@@ -6308,7 +6328,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 item('Last name', vm.player.lastName),
                 item('Tagline', vm.player.tagline)
             ];
-            var statisticsItems = [ // raw data
+            var statisticsItems = [// raw data
                 item('Games played', vm.player.statistics.rawData.gamesPlayed),
                 item('Games won', vm.player.statistics.rawData.gamesWon),
                 item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
@@ -6572,12 +6592,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('dataService', dataService);
 
-    dataService.$inject = ['$ionicPlatform', '$cordovaSQLite'];
+    dataService.$inject = ['$cordovaSQLite'];
 
-    function dataService($ionicPlatform, $cordovaSQLite) {
+    function dataService($cordovaSQLite) {
         var database = {};
         var players = [];
         var overallStatistics = {};
+        var gameSettings = {};
+        var appSettings = {};
         // var players = [
         //     {
         //         id: 0,
@@ -6606,9 +6628,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initDatabase: initDatabase,
             initPlayers: initPlayers,
             initOverallStatistics: initOverallStatistics,
+            initGameSettings: initGameSettings,
+            initAppSettings: initAppSettings,
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
-            updateOverallStatistics: updateOverallStatistics
+            getGameSettings: getGameSettings,
+            getAppSettings: getAppSettings,
+            updateOverallStatistics: updateOverallStatistics,
+            updateGameSettings: updateGameSettings,
+            updateAppSettings: updateAppSettings
         };
         return service;
 
@@ -6651,7 +6679,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         }
                     });
                 }
-
                 return players;
             }, function (err) {
                 console.error(err.message);
@@ -6671,6 +6698,36 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function initGameSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectGameSettingsQuery = 'SELECT * FROM game_settings';
+            return $cordovaSQLite.execute(database, selectGameSettingsQuery).then(function(res) {
+                gameSettings.isCustom = res.rows.item(0).is_custom === 1 ? true : false;
+                gameSettings.winningScore = res.rows.item(0).winning_score;
+                gameSettings.winningScoreExceeded = res.rows.item(0).winning_score_exceeded;
+                gameSettings.threeMisses = res.rows.item(0).three_misses;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function initAppSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var selectAppSettingsQuery = 'SELECT * FROM app_settings';
+            return $cordovaSQLite.execute(database, selectAppSettingsQuery).then(function(res) {
+                appSettings.language = res.rows.item(0).language;
+                return appSettings;
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
         function getAllPlayers() {
             return players;
         }
@@ -6679,12 +6736,51 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return overallStatistics;
         }
 
+        function getGameSettings() {
+            return gameSettings;
+        }
+
+        function getAppSettings() {
+            return appSettings;
+        }
+
         function updateOverallStatistics() {
             var totalGamesPlayed = overallStatistics.totalGamesPlayed;
-            console.log(totalGamesPlayed);
-            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=' + totalGamesPlayed + ' WHERE id=1';
-            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+            var updateOverallStatistics = 'UPDATE statistics_overall_metrics SET' +
+                                            ' total_games_played=' + totalGamesPlayed +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateOverallStatistics).then(function(res) {
                 // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateGameSettings() {
+            var isCustom = gameSettings.isCustom ? 1 : 0;
+            var winningScore = gameSettings.winningScore;
+            var winningScoreExceeded = gameSettings.winningScoreExceeded;
+            var threeMisses = gameSettings.threeMisses;
+            var updateGameSettings = 'UPDATE game_settings SET' +
+                                            ' is_custom=' + isCustom + ',' +
+                                            ' winning_score=' + winningScore + ',' +
+                                            ' winning_score_exceeded="' + winningScoreExceeded + '",' +
+                                            ' three_misses="' + threeMisses + '"' +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
+                // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateAppSettings() {
+            var language = appSettings.language;
+            var updateGameSettings = 'UPDATE app_settings SET' +
+                                            ' language="' + language + '"' +
+                                            ' WHERE id=1';
+            $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
+                // app settings updated
             }, function (err) {
                 console.error(err.message);
             });
@@ -6709,8 +6805,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS statistics_overall_metrics' +
                 ' (id integer primary key auto_increment, total_games_played integer)';
             var addGameSettingsTable = 'CREATE TABLE IF NOT EXISTS game_settings' +
-                ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer, winning_score_exceeded text,' +
-                ' three_misses text)';
+                ' (id integer primary key auto_increment, is_custom tinyint(1), winning_score integer,' +
+                ' winning_score_exceeded text, three_misses text)';
             var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS app_settings' +
                 ' (id integer primary key auto_increment, language text)';
 
@@ -6730,8 +6826,34 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function testDatabase() {
-            var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=1 WHERE id=1';
-            $cordovaSQLite.execute(database, insertOverallStatistics, [0]).then(function(res) {
+            var values = [0, 25, 'half of winning score', 'disqualified'];
+            // var insertOverallStatistics = 'UPDATE statistics_overall_metrics SET total_games_played=1 WHERE id=1';
+            var insertOverallStatistics = 'INSERT INTO game_settings (is_custom, winning_score,' +
+                ' winning_score_exceeded, three_misses) VALUES (?,?,?,?)';
+            $cordovaSQLite.execute(database, insertOverallStatistics, values).then(function(res) {
+                console.log('INSERT -> ' + res);
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        /*  first time application use functions
+            ======================================================================================== */
+        function introGameSettings() {
+            var values = [0, 50, 'half of winning score', 'disqualified'];
+            var insertGameSettings = 'INSERT INTO game_settings (is_custom, winning_score,' +
+                ' winning_score_exceeded, three_misses) VALUES (?,?,?,?)';
+            $cordovaSQLite.execute(database, insertGameSettings, values).then(function(res) {
+                console.log('INSERT -> ' + res);
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function introAppSettings() {
+            var values = ['english'];
+            var insertAppSettings = 'INSERT INTO app_settings (language) VALUES (?)';
+            $cordovaSQLite.execute(database, insertAppSettings, values).then(function(res) {
                 console.log('INSERT -> ' + res);
             }, function (err) {
                 console.error(err.message);
@@ -6747,9 +6869,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .controller('SettingsCtrl', SettingsCtrl);
 
-    SettingsCtrl.$inject = ['$scope', '$rootScope', '$ionicPopup', '$translate', 'settingsService', 'toast'];
+    SettingsCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            '$ionicPopup',
+                            '$translate',
+                            'settingsService',
+                            'dataService',
+                            'toast'];
 
-    function SettingsCtrl($scope, $rootScope, $ionicPopup, $translate, settingsService, toast) {
+    function SettingsCtrl($scope,
+                            $rootScope,
+                            $ionicPopup,
+                            $translate,
+                            settingsService,
+                            dataService,
+                            toast) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -6816,11 +6950,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             if (!_.isEmpty(diffApp)) {
                 updatedKey = Object.keys(diffApp)[0];
                 settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+                dataService.updateAppSettings();
             }
 
             if (!_.isEmpty(diffGame)) {
                 updatedKey = Object.keys(diffGame)[0];
                 settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+                dataService.updateGameSettings();
             }
         }
 
@@ -6839,19 +6975,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('settingsService', settingsService);
 
-    settingsService.$inject = ['$translate'];
+    settingsService.$inject = ['$translate', 'dataService'];
 
-    function settingsService($translate) {
+    function settingsService($translate, dataService) {
         var parameters = {
-            app: {
-                language: $translate.proposedLanguage()
-            },
-            game: {
-                isCustom: false,
-                winningScore: 25,
-                winningScoreExceeded: 'halved',
-                threeMisses: 'disqualified'
-            }
+            app: dataService.getAppSettings(),
+            game: dataService.getGameSettings()
         };
 
         var service = {
@@ -6913,62 +7042,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function updateGameParameter(key, value) {
             parameters.game[key] = value;
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('toast', toast);
-
-    toast.$inject = ['$cordovaToast', '$translate'];
-
-    function toast($cordovaToast, $translate) {
-        var service = {
-            show: show,
-            getMessages: getMessages
-        };
-        return service;
-
-        ////////////////
-
-        function show(message) {
-            if (!window.cordova) {
-                return;
-            }
-
-            $cordovaToast.showWithOptions({
-                message: message,
-                duration: 'short',
-                position: 'bottom',
-                styling: {
-                    cornerRadius: 4
-                }
-            });
-        }
-
-        function getMessages() {
-            return {
-                start: {
-                    maxParticipants: $translate.instant('HOME.START.TOASTS.MAX-PARTICIPANTS')
-                },
-                game: {
-                    undoLast: $translate.instant('HOME.GAME.TOASTS.UNDO-LAST'),
-                    threeMisses: $translate.instant('HOME.GAME.TOASTS.THREE-MISSES'),
-                    maxScoreExceeded: $translate.instant('HOME.GAME.TOASTS.MAX-SCORE-EXCEEDED'),
-                    winner: $translate.instant('HOME.GAME.TOASTS.WINNER')
-                },
-                players: {
-                    addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
-                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
-                },
-                settings: {
-                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
-                }
-            };
         }
     }
 })();
@@ -7128,8 +7201,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var minThrowsToWin = getMinThrowsToWin();
             var throwsInGamesReachedMaxScore = player.statistics.rawData.throwsInGamesReachedMaxScore;
             var gamesReachedMaxScore = player.statistics.rawData.gamesReachedMaxScore;
+            var throwsPerGameReachedMaxScore = throwsInGamesReachedMaxScore / gamesReachedMaxScore;
 
-            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / (throwsInGamesReachedMaxScore / gamesReachedMaxScore)) * 100);
+            player.statistics.metrics.efficiency = Math.round((minThrowsToWin / throwsPerGameReachedMaxScore) * 100);
 
             updatePlayerMetric('versatility', player);
         }
@@ -7359,6 +7433,62 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processGameWon() {
 
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('toast', toast);
+
+    toast.$inject = ['$cordovaToast', '$translate'];
+
+    function toast($cordovaToast, $translate) {
+        var service = {
+            show: show,
+            getMessages: getMessages
+        };
+        return service;
+
+        ////////////////
+
+        function show(message) {
+            if (!window.cordova) {
+                return;
+            }
+
+            $cordovaToast.showWithOptions({
+                message: message,
+                duration: 'short',
+                position: 'bottom',
+                styling: {
+                    cornerRadius: 4
+                }
+            });
+        }
+
+        function getMessages() {
+            return {
+                start: {
+                    maxParticipants: $translate.instant('HOME.START.TOASTS.MAX-PARTICIPANTS')
+                },
+                game: {
+                    undoLast: $translate.instant('HOME.GAME.TOASTS.UNDO-LAST'),
+                    threeMisses: $translate.instant('HOME.GAME.TOASTS.THREE-MISSES'),
+                    maxScoreExceeded: $translate.instant('HOME.GAME.TOASTS.MAX-SCORE-EXCEEDED'),
+                    winner: $translate.instant('HOME.GAME.TOASTS.WINNER')
+                },
+                players: {
+                    addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
+                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                },
+                settings: {
+                    update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
+                }
+            };
         }
     }
 })();
