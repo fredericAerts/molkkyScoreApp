@@ -24,7 +24,7 @@
 
         /*  LISTENERS
             ======================================================================================== */
-        $scope.$on('playersInitialized', function () {
+        $scope.$on('appInitialized', function () {
             vm.addPlayersToGameModal.remove();
             initAddPlayersToGameModal();
         });

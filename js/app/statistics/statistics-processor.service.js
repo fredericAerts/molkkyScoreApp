@@ -25,6 +25,8 @@
                 case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
                 case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
             }
+
+            dataService.updatePlayerStatistics(player);
         }
 
         /*  Helper functions
@@ -38,7 +40,6 @@
 
             // non player specific updates
             overallStatistics.totalGamesPlayed += increment;
-            console.log(overallStatistics.totalGamesPlayed);
             dataService.updateOverallStatistics();
             participants.forEach(function(player) {
                 player.statistics.rawData.gamesPlayed += increment;

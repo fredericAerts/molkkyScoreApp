@@ -117,6 +117,7 @@
             }
 
             initProfileData();
+            playersService.updatePlayer(vm.player);
             toast.show('Update to player profile saved');
 
             vm.editPlayerModal.hide();

@@ -98,7 +98,7 @@
 
             getMetrics().forEach(function(metric) {
                 if (metric.category === 'players') {
-                    player.statistics.metrics[metric.keyName] = 0; // TODO: fetch from DB
+                    player.statistics.metrics[metric.keyName] = 0;
                 }
             });
 

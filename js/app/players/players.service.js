@@ -39,8 +39,7 @@
         }
 
         function updatePlayer(updatedPlayer) {
-            var player = get(updatedPlayer.id);
-            player = updatedPlayer;
+            dataService.updatePlayerProfile(updatedPlayer);
         }
 
         /*  Helper functions

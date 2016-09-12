@@ -50,18 +50,22 @@
             }
 
             if (window.cordova) {
-                dataService.initDatabase();
-                dataService.initPlayers().then(function(players) {
-                    players.forEach(function(player) {
-                        statisticsService.initPlayerStatistics(player);
-                        $rootScope.$broadcast('playersInitialized');
+                dataService.initDatabase().then(function() {
+                    dataService.initPlayers().then(function(players) {
+                        players.forEach(function(player) {
+                            dataService.initPlayerStatistics(player);
+                        });
+                    });
+                    dataService.initOverallStatistics();
+                    dataService.initGameSettings();
+                    dataService.initAppSettings().then(function(appSettings) {
+                        $translate.use(appSettings.language);
+                        $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
                         loadingService.hide();
                     });
-                });
-                dataService.initOverallStatistics();
-                dataService.initGameSettings();
-                dataService.initAppSettings().then(function(appSettings) {
-                    $translate.use(appSettings.language);
+
+                }, function(err) {
+                    console.log(err.message);
                 });
             }
         });

@@ -9,6 +9,7 @@
                             '$rootScope',
                             'playersService',
                             'statisticsService',
+                            'dataService',
                             'TEMPLATES_ROOT',
                             '$ionicPopup',
                             '$ionicModal',
@@ -20,6 +21,7 @@
                             $rootScope,
                             playersService,
                             statisticsService,
+                            dataService,
                             TEMPLATES_ROOT,
                             $ionicPopup,
                             $ionicModal,
@@ -96,6 +98,8 @@
 
             vm.players.push(addPlayerModalScope.viewModel.player);
             $ionicHistory.clearCache();
+
+            dataService.addPlayer(addPlayerModalScope.viewModel.player);
             toast.show(addPlayerModalScope.viewModel.player.firstName + ' ' + toastMessages.addPlayer);
 
             vm.addPlayerModal.hide();
@@ -112,6 +116,9 @@
             .then(function(confirmed) {
                 if (confirmed) {
                     playersService.remove(player);
+                    $ionicHistory.clearCache();
+
+                    dataService.removePlayer(player);
                     toast.show(player.firstName + ' ' + toastMessages.removePlayer);
                 }
                 vm.removeVisible = false;
@@ -122,7 +129,7 @@
             ======================================================================================== */
         function getNewPlayerTemplate() {
             var playerId = _.max(vm.players, function(player) { return player.id; }).id + 1;
-            var player = {
+            var player = { // id is added when written to Database
                 id: playerId,
                 firstName: '',
                 lastName: '',
@@ -138,7 +145,6 @@
                 player.tagline = 'No tagline provided';
             }
             statisticsService.initPlayerStatistics(player);
-            console.log(player);
 
             return player;
         }

@@ -68,10 +68,14 @@
             switch (key) {
                 case 'language': $translate.use(value); break;
             }
+
+            dataService.updateAppSettings();
         }
 
         function updateGameParameter(key, value) {
             parameters.game[key] = value;
+
+            dataService.updateGameSettings();
         }
     }
 })();
