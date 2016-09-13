@@ -10,6 +10,7 @@
                         '$ionicPlatform',
                         'dataService',
                         '$translate',
+                        '$q',
                         'statisticsService',
                         'loadingService'];
 
@@ -31,6 +32,7 @@
                         $ionicPlatform,
                         dataService,
                         $translate,
+                        $q,
                         statisticsService,
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
@@ -51,17 +53,20 @@
 
             if (window.cordova) {
                 dataService.initDatabase().then(function() {
+                    var playerStatisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
                         players.forEach(function(player) {
-                            dataService.initPlayerStatistics(player);
+                            playerStatisticsPromises.push(dataService.initPlayerStatistics(player));
+                        });
+                        $q.all([playerStatisticsPromises]).then(function() {
+                            $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
+                            loadingService.hide();
                         });
                     });
                     dataService.initOverallStatistics();
                     dataService.initGameSettings();
                     dataService.initAppSettings().then(function(appSettings) {
                         $translate.use(appSettings.language);
-                        $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
-                        loadingService.hide();
                     });
 
                 }, function(err) {
