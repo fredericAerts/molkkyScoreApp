@@ -48,8 +48,8 @@
         </div>
     </ion-content>
     <ion-footer-bar>
-        <button class="button button-outline button-dark" ng-click="game.showExitGamePopup()">Exit</button>
-        <button class="button button-outline button-dark" ng-click="game.showNewGamePopup()">New game</button>
-        <button class="button button-positive pull-right" ng-disabled="game.gameEnded" ng-click="game.scoreDetailsModal.hide()">Continue</button>
+        <button class="button button-outline button-dark" ng-click="game.showExitGamePopup()">{{ 'HOME.GAME.SCORE-DETAILS-MODAL.BUTTONS.EXIT' | translate }}</button>
+        <button class="button button-outline button-dark" ng-click="game.showNewGamePopup()">{{ 'HOME.GAME.SCORE-DETAILS-MODAL.BUTTONS.NEW-GAME' | translate }}</button>
+        <button class="button button-positive pull-right" ng-disabled="game.gameEnded" ng-click="game.scoreDetailsModal.hide()">{{ 'HOME.GAME.SCORE-DETAILS-MODAL.BUTTONS.CONTINUE' | translate }}</button>
     </ion-footer-bar>
 </ion-modal-view>

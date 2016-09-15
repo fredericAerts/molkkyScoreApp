@@ -8,6 +8,7 @@
     GameCtrl.$inject = ['$scope',
                             '$rootScope',
                             '$state',
+                            '$translate',
                             'gameService',
                             'gameUtilities',
                             'settingsService',
@@ -20,6 +21,7 @@
     function GameCtrl($scope,
                         $rootScope,
                         $state,
+                        $translate,
                         gameService,
                         gameUtilities,
                         settingsService,
@@ -31,8 +33,8 @@
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
-        var settings = settingsService.getParameters().game;
-        var actionSheetActions = getActionSheetActions();
+        var settings = {};
+        var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
 
         vm.participants = [];
@@ -40,6 +42,8 @@
         vm.activatedScore = {};
         vm.activePlayer = {};
         vm.gameEnded = false;
+        vm.gameRulesModal = {};
+        vm.gameRulesModalVariables = {};
         vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
@@ -62,7 +66,9 @@
             initGame();
 
             initScoreDetailsModal();
+            initGameRulesModal();
             initAddPlayersToGameModal();
+            initActionSheetActions();
         }
 
         /*  LISTENERS
@@ -89,6 +95,7 @@
         }
 
         function initGame() {
+            settings = settingsService.getParameters().game;
             vm.gameEnded = false;
             resetActivatedScore();
             vm.activePlayer = vm.participants[0];
@@ -98,6 +105,14 @@
             return modalsService.initScoreDetailsModal($scope).then(function(modal) {
                 vm.scoreDetailsModal = modal;
                 return vm.scoreDetailsModal;
+            });
+        }
+
+        function initGameRulesModal() {
+            initGameRulesModalVariables();
+            return modalsService.initGameRulesModal($scope).then(function(modal) {
+                vm.gameRulesModal = modal;
+                return vm.gameRulesModal;
             });
         }
 
@@ -178,13 +193,14 @@
 
         /*  ACTION SHEET FUNCTIONS
             ====================================================================================== */
-        function getActionSheetActions() {
-            return {
-                restart: restartGame,
-                new: newGame,
-                undo: undoLast,
-                exit: exitGame
-            };
+        function initActionSheetActions() {
+            actionSheetActions.showSettingsModal = showSettingsModal;
+            actionSheetActions.restart = restartGame;
+            actionSheetActions.new = newGame;
+            actionSheetActions.undo = undoLast;
+            actionSheetActions.exit = exitGame;
+
+            return actionSheetActions;
         }
 
         function showActionSheet() {
@@ -193,6 +209,10 @@
 
             vm.settingsAnimation = true;
             gameActionSheetService.showActionSheet(actionSheetActions, isGameStarted, isGameEnded, vm);
+        }
+
+        function showSettingsModal() {
+            vm.gameRulesModal.show();
         }
 
         function restartGame() {
@@ -348,6 +368,20 @@
             vm.activatedScore.singlePin = false;
 
             return vm.activatedScore;
+        }
+
+        function initGameRulesModalVariables() {
+            var settingsOptions = settingsService.getOptions().game;
+            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(settings.winningScoreExceeded) + 1;
+            var winningScoreExceeded = $translate.instant('HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' +
+                                        indexWinningScoreExceeded);
+            var indexThreeMisses = settingsOptions.threeMisses.indexOf(settings.threeMisses) + 1;
+            var threeMisses = $translate.instant('HOME.SETTINGS.TABS.GAME.THREE-MISSES.OPTION-' + indexThreeMisses);
+
+            vm.gameRulesModalVariables.isCustom = settings.isCustom;
+            vm.gameRulesModalVariables.winningScore = settings.winningScore;
+            vm.gameRulesModalVariables.winningScoreExceeded = winningScoreExceeded;
+            vm.gameRulesModalVariables.threeMisses = threeMisses;
         }
     }
 })();

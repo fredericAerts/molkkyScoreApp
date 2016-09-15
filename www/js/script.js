@@ -5296,6 +5296,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.GAME-RULES.BUTTON')
+                    },
+                    {
                         text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.BUTTON'),
                         className: isGameStarted ? '' : 'disabled'
                     },
@@ -5319,10 +5322,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     gameViewModel.settingsAnimation = false;
 
                     switch (index) {
-                        case 0: showRestartPopup(actions.restart, isGameEnded); break; // restart game
-                        case 1: showNewPopup(actions.new); break; // new game
-                        case 2: actions.undo(); break; // undo last
-                        case 3: showExitPopup(actions.exit, isGameEnded); break; // exit game
+                        case 0: actions.showSettingsModal(); break; // show game rules modal
+                        case 1: showRestartPopup(actions.restart, isGameEnded); break; // restart game
+                        case 2: showNewPopup(actions.new); break; // new game
+                        case 3: actions.undo(); break; // undo last
+                        case 4: showExitPopup(actions.exit, isGameEnded); break; // exit game
                     }
                     return true;
                 }
@@ -5573,6 +5577,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     GameCtrl.$inject = ['$scope',
                             '$rootScope',
                             '$state',
+                            '$translate',
                             'gameService',
                             'gameUtilities',
                             'settingsService',
@@ -5585,6 +5590,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     function GameCtrl($scope,
                         $rootScope,
                         $state,
+                        $translate,
                         gameService,
                         gameUtilities,
                         settingsService,
@@ -5596,8 +5602,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
-        var settings = settingsService.getParameters().game;
-        var actionSheetActions = getActionSheetActions();
+        var settings = {};
+        var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
 
         vm.participants = [];
@@ -5605,6 +5611,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.activatedScore = {};
         vm.activePlayer = {};
         vm.gameEnded = false;
+        vm.gameRulesModal = {};
+        vm.gameRulesModalVariables = {};
         vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
@@ -5627,7 +5635,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initGame();
 
             initScoreDetailsModal();
+            initGameRulesModal();
             initAddPlayersToGameModal();
+            initActionSheetActions();
         }
 
         /*  LISTENERS
@@ -5654,6 +5664,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initGame() {
+            settings = settingsService.getParameters().game;
             vm.gameEnded = false;
             resetActivatedScore();
             vm.activePlayer = vm.participants[0];
@@ -5663,6 +5674,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return modalsService.initScoreDetailsModal($scope).then(function(modal) {
                 vm.scoreDetailsModal = modal;
                 return vm.scoreDetailsModal;
+            });
+        }
+
+        function initGameRulesModal() {
+            initGameRulesModalVariables();
+            return modalsService.initGameRulesModal($scope).then(function(modal) {
+                vm.gameRulesModal = modal;
+                return vm.gameRulesModal;
             });
         }
 
@@ -5743,13 +5762,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         /*  ACTION SHEET FUNCTIONS
             ====================================================================================== */
-        function getActionSheetActions() {
-            return {
-                restart: restartGame,
-                new: newGame,
-                undo: undoLast,
-                exit: exitGame
-            };
+        function initActionSheetActions() {
+            actionSheetActions.showSettingsModal = showSettingsModal;
+            actionSheetActions.restart = restartGame;
+            actionSheetActions.new = newGame;
+            actionSheetActions.undo = undoLast;
+            actionSheetActions.exit = exitGame;
+
+            return actionSheetActions;
         }
 
         function showActionSheet() {
@@ -5758,6 +5778,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             vm.settingsAnimation = true;
             gameActionSheetService.showActionSheet(actionSheetActions, isGameStarted, isGameEnded, vm);
+        }
+
+        function showSettingsModal() {
+            vm.gameRulesModal.show();
         }
 
         function restartGame() {
@@ -5913,6 +5937,20 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.activatedScore.singlePin = false;
 
             return vm.activatedScore;
+        }
+
+        function initGameRulesModalVariables() {
+            var settingsOptions = settingsService.getOptions().game;
+            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(settings.winningScoreExceeded) + 1;
+            var winningScoreExceeded = $translate.instant('HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' +
+                                        indexWinningScoreExceeded);
+            var indexThreeMisses = settingsOptions.threeMisses.indexOf(settings.threeMisses) + 1;
+            var threeMisses = $translate.instant('HOME.SETTINGS.TABS.GAME.THREE-MISSES.OPTION-' + indexThreeMisses);
+
+            vm.gameRulesModalVariables.isCustom = settings.isCustom;
+            vm.gameRulesModalVariables.winningScore = settings.winningScore;
+            vm.gameRulesModalVariables.winningScoreExceeded = winningScoreExceeded;
+            vm.gameRulesModalVariables.threeMisses = threeMisses;
         }
     }
 })();
@@ -6126,7 +6164,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal,
-            initScoreDetailsModal: initScoreDetailsModal
+            initScoreDetailsModal: initScoreDetailsModal,
+            initGameRulesModal: initGameRulesModal
         };
 
         /*  LISTENERS
@@ -6265,6 +6304,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initScoreDetailsModal($scope) {
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            });
+        }
+
+        function initGameRulesModal($scope) {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-game-rules.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
             });
@@ -7057,6 +7103,183 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
+        .controller('SettingsCtrl', SettingsCtrl);
+
+    SettingsCtrl.$inject = ['$scope',
+                            '$rootScope',
+                            '$ionicPopup',
+                            '$translate',
+                            'settingsService',
+                            'toast'];
+
+    function SettingsCtrl($scope,
+                            $rootScope,
+                            $ionicPopup,
+                            $translate,
+                            settingsService,
+                            toast) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        var toastMessages = toast.getMessages().settings;
+
+        vm.activeTabIndex = 0;
+
+        vm.options = settingsService.getOptions();
+        vm.parameters = settingsService.getParameters();
+
+        activate();
+
+        ////////////////
+
+        /*  Listeners
+            ======================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function() {
+            toastMessages = toast.getMessages().settings;
+        });
+
+        $scope.$watch(
+            function watchCustomSetting() {
+                return vm.parameters.game.isCustom;
+            },
+            function handleCustomSettingChange(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    showAlert();
+                }
+            }
+        );
+
+        $scope.$watch(
+            function watchParameters() {
+                return vm.parameters;
+            },
+            function handleParametersChange(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                    updateParameters(newValue, oldValue);
+                    toast.show(toastMessages.update);
+                }
+            }, true
+        );
+
+        function activate() {
+        }
+
+        /*  Helper functions
+            ======================================================================== */
+        function showAlert() {
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function updateParameters(newParameters, oldParameters) {
+            var updatedKey = '';
+            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
+            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
+
+            if (!_.isEmpty(diffApp)) {
+                updatedKey = Object.keys(diffApp)[0];
+                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+            }
+
+            if (!_.isEmpty(diffGame)) {
+                updatedKey = Object.keys(diffGame)[0];
+                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+            }
+        }
+
+        function isPropertySameIn(otherObject) {
+            return function(value, key) {
+                return otherObject[key] === value;
+            };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('settingsService', settingsService);
+
+    settingsService.$inject = ['$translate', 'dataService'];
+
+    function settingsService($translate, dataService) {
+        var parameters = {};
+
+        var service = {
+            getOptions: getOptions,
+            getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
+            updateAppParameter: updateAppParameter
+        };
+        return service;
+
+        ////////////////
+
+        function getOptions() {
+            return {
+                app: {
+                    language: [
+                        {
+                            value: 'English',
+                            key: 'english'
+                        },
+                        {
+                            value: 'Français',
+                            key: 'french'
+                        },
+                        {
+                            value: 'Finnish',
+                            key: 'finnish'
+                        }
+                    ]
+                },
+                game: {
+                    winningScore: [25, 50, 100],
+                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
+                    threeMisses: ['to zero', 'halved', 'disqualified']
+                }
+            };
+        }
+
+        function getParameters() {
+            if (_.isEmpty(parameters)) {
+                parameters.app = dataService.getAppSettings();
+                parameters.game = dataService.getGameSettings();
+            }
+
+            return parameters;
+        }
+
+        function updateAppParameter(key, value) {
+            parameters.app[key] = value;
+
+            switch (key) {
+                case 'language': $translate.use(value); break;
+            }
+
+            dataService.updateAppSettings();
+        }
+
+        function updateGameParameter(key, value) {
+            parameters.game[key] = value;
+
+            dataService.updateGameSettings();
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
         .controller('StatisticsListingCtrl', StatisticsListing);
 
     StatisticsListing.$inject = ['$stateParams', 'statisticsService', 'playersService'];
@@ -7446,183 +7669,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function processGameWon() {
 
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('SettingsCtrl', SettingsCtrl);
-
-    SettingsCtrl.$inject = ['$scope',
-                            '$rootScope',
-                            '$ionicPopup',
-                            '$translate',
-                            'settingsService',
-                            'toast'];
-
-    function SettingsCtrl($scope,
-                            $rootScope,
-                            $ionicPopup,
-                            $translate,
-                            settingsService,
-                            toast) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        var toastMessages = toast.getMessages().settings;
-
-        vm.activeTabIndex = 0;
-
-        vm.options = settingsService.getOptions();
-        vm.parameters = settingsService.getParameters();
-
-        activate();
-
-        ////////////////
-
-        /*  Listeners
-            ======================================================================== */
-        $rootScope.$on('$translateChangeSuccess', function() {
-            toastMessages = toast.getMessages().settings;
-        });
-
-        $scope.$watch(
-            function watchCustomSetting() {
-                return vm.parameters.game.isCustom;
-            },
-            function handleCustomSettingChange(newValue, oldValue) {
-                if (newValue !== oldValue && newValue) {
-                    showAlert();
-                }
-            }
-        );
-
-        $scope.$watch(
-            function watchParameters() {
-                return vm.parameters;
-            },
-            function handleParametersChange(newValue, oldValue) {
-                if (!_.isEqual(newValue, oldValue)) {
-                    updateParameters(newValue, oldValue);
-                    toast.show(toastMessages.update);
-                }
-            }, true
-        );
-
-        function activate() {
-        }
-
-        /*  Helper functions
-            ======================================================================== */
-        function showAlert() {
-            var alertPopup = $ionicPopup.alert({
-                title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
-            });
-
-            alertPopup.then(function(res) {
-            });
-        }
-
-        function updateParameters(newParameters, oldParameters) {
-            var updatedKey = '';
-            var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
-            var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
-
-            if (!_.isEmpty(diffApp)) {
-                updatedKey = Object.keys(diffApp)[0];
-                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
-            }
-
-            if (!_.isEmpty(diffGame)) {
-                updatedKey = Object.keys(diffGame)[0];
-                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
-            }
-        }
-
-        function isPropertySameIn(otherObject) {
-            return function(value, key) {
-                return otherObject[key] === value;
-            };
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('settingsService', settingsService);
-
-    settingsService.$inject = ['$translate', 'dataService'];
-
-    function settingsService($translate, dataService) {
-        var parameters = {};
-
-        var service = {
-            getOptions: getOptions,
-            getParameters: getParameters,
-            updateGameParameter: updateGameParameter,
-            updateAppParameter: updateAppParameter
-        };
-        return service;
-
-        ////////////////
-
-        function getOptions() {
-            return {
-                app: {
-                    language: [
-                        {
-                            value: 'English',
-                            key: 'english'
-                        },
-                        {
-                            value: 'Français',
-                            key: 'french'
-                        },
-                        {
-                            value: 'Finnish',
-                            key: 'finnish'
-                        }
-                    ]
-                },
-                game: {
-                    winningScore: [25, 50, 100],
-                    winningScoreExceeded: ['to zero', 'halved', 'half of winning score'],
-                    threeMisses: ['to zero', 'halved', 'disqualified']
-                }
-            };
-        }
-
-        function getParameters() {
-            if (_.isEmpty(parameters)) {
-                parameters.app = dataService.getAppSettings();
-                parameters.game = dataService.getGameSettings();
-            }
-
-            return parameters;
-        }
-
-        function updateAppParameter(key, value) {
-            parameters.app[key] = value;
-
-            switch (key) {
-                case 'language': $translate.use(value); break;
-            }
-
-            dataService.updateAppSettings();
-        }
-
-        function updateGameParameter(key, value) {
-            parameters.game[key] = value;
-
-            dataService.updateGameSettings();
         }
     }
 })();

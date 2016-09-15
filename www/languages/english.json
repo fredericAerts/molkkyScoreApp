@@ -45,10 +45,36 @@
                     "DETAILS": {
                         "TITLE": "Score Details"
                     }
+                },
+                "BUTTONS": {
+                    "EXIT": "Exit",
+                    "NEW-GAME": "New game",
+                    "CONTINUE": "Continue"
+                }
+            },
+            "RULES-MODAL": {
+                "TITLE": "Game rules",
+                "BODY": {
+                    "SETUP": {
+                        "TITLE": "Setup",
+                        "TEXT": "The players use a wooden pin to try to knock over wooden pins of almost similar dimensions with the throwing pin, which are marked with numbers from 1 to 12. The pins are initially placed in a tight group in an upright position 3–4 metres away from the throwing place, with the pins organized as follows: 1st row, 1/2; 2nd row, 3/10/4; 3rd row, 5/11/12/6; 4th row, 7/9/8."
+                    },
+                    "RULES": {
+                        "TITLE": "Rules",
+                        "TEXT": "Knocking over one pin scores the amount of points marked on the pin. Knocking 2 or more pins scores the number of pins knocked over (e.g., knocking over 3 pins scores 3 points). A pin does not count if it is leaning on the mölkky or one of the numbered pins (it must be parallel to the ground to count). After each throw, the pins are stood up again in the exact location where they landed."
+                    },
+                    "SETTINGS": {
+                        "TITLE": "Settings",
+                        "CUSTOMIZED": "customized",
+                        "TEXT": "The first one to reach exactly {{ winningScore }} points wins the game. If a player scores more than {{ winningScore }} points, the player's {{ winningScoreExceeded }}. If a player misses all of the target pins three times in a row, the {{ threeMisses }}."
+                    }
                 }
             },
             "ACTION-SHEET": {
                 "TITLE": "Options",
+                "GAME-RULES": {
+                    "BUTTON": "Game rules"
+                },
                 "RESTART": {
                     "BUTTON": "Restart game",
                     "CONFIRM": {

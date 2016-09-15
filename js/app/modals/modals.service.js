@@ -26,7 +26,8 @@
 
         var service = {
             getAddPlayersToGameModal: getAddPlayersToGameModal,
-            initScoreDetailsModal: initScoreDetailsModal
+            initScoreDetailsModal: initScoreDetailsModal,
+            initGameRulesModal: initGameRulesModal
         };
 
         /*  LISTENERS
@@ -165,6 +166,13 @@
 
         function initScoreDetailsModal($scope) {
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
+                scope: $scope,
+                animation: 'slide-in-up'
+            });
+        }
+
+        function initGameRulesModal($scope) {
+            return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-game-rules.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
             });

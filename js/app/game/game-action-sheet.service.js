@@ -26,6 +26,9 @@
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     {
+                        text: $translate.instant('HOME.GAME.ACTION-SHEET.GAME-RULES.BUTTON')
+                    },
+                    {
                         text: $translate.instant('HOME.GAME.ACTION-SHEET.RESTART.BUTTON'),
                         className: isGameStarted ? '' : 'disabled'
                     },
@@ -49,10 +52,11 @@
                     gameViewModel.settingsAnimation = false;
 
                     switch (index) {
-                        case 0: showRestartPopup(actions.restart, isGameEnded); break; // restart game
-                        case 1: showNewPopup(actions.new); break; // new game
-                        case 2: actions.undo(); break; // undo last
-                        case 3: showExitPopup(actions.exit, isGameEnded); break; // exit game
+                        case 0: actions.showSettingsModal(); break; // show game rules modal
+                        case 1: showRestartPopup(actions.restart, isGameEnded); break; // restart game
+                        case 2: showNewPopup(actions.new); break; // new game
+                        case 3: actions.undo(); break; // undo last
+                        case 4: showExitPopup(actions.exit, isGameEnded); break; // exit game
                     }
                     return true;
                 }
