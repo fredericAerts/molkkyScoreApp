@@ -12,8 +12,7 @@
     <ion-content class="has-tabs-top">
         <div ng-show="settings.activeTabIndex === 0">
             <ion-toggle ng-model="settings.parameters.game.isCustom">
-                <span ng-show="settings.parameters.game.isCustom">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.ON' | translate }}</span>
-                <span ng-show="!settings.parameters.game.isCustom">{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.OFF' | translate }}</span>
+                <span>{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.LABEL' | translate }}</span>
             </ion-toggle>
             <!-- winning score question -->
             <div class="list card" ng-class="{'disabled': !settings.parameters.game.isCustom}">

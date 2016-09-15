@@ -7,11 +7,12 @@
 
     StatisticsCtrl.$inject = ['$scope',
                                 'statisticsService',
+                                'settingsService',
                                 'TEMPLATES_ROOT',
                                 '$ionicPopover',
                                 '$ionicModal'];
 
-    function StatisticsCtrl($scope, statisticsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
+    function StatisticsCtrl($scope, statisticsService, settingsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
         var statisticsInfoModalScope = $scope.$new(true);
@@ -19,6 +20,7 @@
 
         vm.metrics = statisticsService.getMetrics();
         vm.overallStatistics = statisticsService.getOverallStatistics();
+        vm.customGameSettings = settingsService.getParameters().game.isCustom;
         vm.statisticsInfoModal = {};
         vm.statsItemsInfoPopover = {};
         vm.showItemInfo = showItemInfo;

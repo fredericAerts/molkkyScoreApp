@@ -12,7 +12,6 @@
 
         var service = {
             getOptions: getOptions,
-            isCustomSetting: isCustomSetting,
             getParameters: getParameters,
             updateGameParameter: updateGameParameter,
             updateAppParameter: updateAppParameter
@@ -45,14 +44,6 @@
                     threeMisses: ['to zero', 'halved', 'disqualified']
                 }
             };
-        }
-
-        function isCustomSetting(isCustom) {
-            if (isCustom !== undefined) {
-                parameters.game.isCustom = isCustom;
-            }
-
-            return parameters.game.isCustom; // TODO: get from database
         }
 
         function getParameters() {

@@ -91,11 +91,10 @@
                 "GAME": {
                     "TITLE": "Game",
                     "CUSTOM-TOGGLE": {
-                        "ON": "Disable custom game rules",
-                        "OFF": "Enable custom game rules",
+                        "LABEL": "Custom game settings",
                         "POPUP": {
                             "TITLE": "Warning",
-                            "TEXT": "Player statistics are not recorded when game rules are customized"
+                            "TEXT": "Statistics are not recorded when custom game settings are enabled"
                         }
                     },
                     "WINNING-SCORE": {
@@ -179,6 +178,9 @@
                         }
                     }
                 }
+            },
+            "INFO-BLOCK": {
+                "TEXT": "Since you have enabled custom game settings, no statistics are currently being recorded"
             },
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
