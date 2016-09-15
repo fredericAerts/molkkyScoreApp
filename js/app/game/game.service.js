@@ -8,8 +8,7 @@
     gameService.$inject = ['playersService'];
 
     function gameService(playersService) {
-        // var participants = [];
-        var participants = playersService.all();
+        var participants = [];
 
         var service = {
             setParticipants: setParticipants,

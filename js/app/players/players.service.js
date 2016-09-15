@@ -9,7 +9,7 @@
 
     function playersService(dataService) {
         // Some fake testing data
-        var players = dataService.getAllPlayers();
+        var players = {};
 
         var service = {
             all: all,
@@ -22,6 +22,10 @@
         ////////////////
 
         function all() {
+            if (_.isEmpty(players)) {
+                players = dataService.getAllPlayers();
+            }
+
             return players;
         }
 

@@ -15,6 +15,7 @@
         var appSettings = {};
 
         var service = {
+            initBrowserDev: initBrowserDev,
             initDatabase: initDatabase,
             initPlayers: initPlayers,
             initPlayerStatistics: initPlayerStatistics,
@@ -36,6 +37,59 @@
         return service;
 
         ////////////////
+
+        function initBrowserDev() {
+            players = [
+                {
+                    id: 0,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    tagline: 'Hi, I\'m John',
+                    face: 'img/ben.png',
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 1,
+                    firstName: 'Jane',
+                    lastName: 'Doe',
+                    tagline: 'Hi, I\'m Jane',
+                    face: 'img/mike.png',
+                    statistics: getDefaultStatistics()
+                }
+            ];
+            overallStatistics = {
+                totalGamesPlayed: 0
+            };
+            gameSettings = {
+                isCustom: true, // disable statistics
+                winningScore: 50,
+                winningScoreExceeded: 'half of winning score',
+                threeMisses: 'disqualified'
+            };
+            appSettings = {
+                language: 'english'
+            };
+
+            function getDefaultStatistics() {
+                return {
+                    rawData: {
+                        throws: 0,
+                        throwsSinglePin: 0,
+                        throwsInGamesReachedMaxScore: 0,
+                        gamesPlayed: 0,
+                        gamesReachedMaxScore: 0,
+                        gamesWon: 0
+                    },
+                    metrics: {
+                        totalWins: 0,
+                        versatility: 0,
+                        winningRatio: 0,
+                        accuracy: 0,
+                        efficiency: 0
+                    }
+                };
+            }
+        }
 
         function initDatabase() { // called from app.config.js
             if (!window.cordova) {

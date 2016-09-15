@@ -8,10 +8,7 @@
     settingsService.$inject = ['$translate', 'dataService'];
 
     function settingsService($translate, dataService) {
-        var parameters = {
-            app: dataService.getAppSettings(),
-            game: dataService.getGameSettings()
-        };
+        var parameters = {};
 
         var service = {
             getOptions: getOptions,
@@ -59,6 +56,11 @@
         }
 
         function getParameters() {
+            if (_.isEmpty(parameters)) {
+                parameters.app = dataService.getAppSettings();
+                parameters.game = dataService.getGameSettings();
+            }
+
             return parameters;
         }
 

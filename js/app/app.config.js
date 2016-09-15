@@ -37,7 +37,6 @@
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
-        loadingService.showIndefinite('LOADING-APP');
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -52,6 +51,7 @@
             }
 
             if (window.cordova) {
+                loadingService.showIndefinite('LOADING-APP');
                 dataService.initDatabase().then(function() {
                     var playerStatisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
@@ -72,6 +72,10 @@
                 }, function(err) {
                     console.log(err.message);
                 });
+            }
+            else { // browser version
+                dataService.initBrowserDev();
+                // $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
             }
         });
     }

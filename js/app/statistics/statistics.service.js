@@ -43,7 +43,7 @@
             metric(4, 'accuracy', 'players', 'PLAYERS.ACCURACY', '%'),
             metric(5, 'efficiency', 'players', 'PLAYERS.EFFICIENCY', '%')
         ];
-        var overallStatistics = dataService.getOverallStatistics();
+        var overallStatistics = {};
 
         var service = {
             getMetrics: getMetrics,
@@ -80,6 +80,10 @@
         // }
 
         function getOverallStatistics() {
+            if (_.isEmpty(overallStatistics)) {
+                overallStatistics = dataService.getOverallStatistics();
+            }
+
             return overallStatistics;
         }
 
