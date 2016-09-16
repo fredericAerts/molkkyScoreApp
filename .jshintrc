@@ -86,6 +86,7 @@
     "globals"       : {
         "angular": false,
         "cordova": false,
+        "Camera": false,
         "sinon": false,
         "assert": false,
         "expect": false,

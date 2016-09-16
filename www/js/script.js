@@ -6468,7 +6468,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             };
 
             $cordovaCamera.getPicture(options).then(function(imageURI) {
-                addPlayerModalScope.viewModel.player.face = imageURI;
+                editPlayerModalScope.viewModel.player.face = imageURI;
             }, function(err) {
                 console.log(err.message);
             });
@@ -6482,10 +6482,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 template: 'Are you sure you want to remove this picture from your profile?',
                 buttons: [
                     {
-                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
                     },
                     {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
                         type: 'button-positive',
                         onTap: function(event) {
                             return true;
@@ -6496,10 +6496,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             $ionicPopup.confirm(popupOptions)
             .then(function(res) {
-                if(res) {
+                if (res) {
                     editPlayerModalScope.viewModel.player.face = '';
-                } else {
-                    // cancel
                 }
             });
         }
@@ -6643,10 +6641,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 template: 'Are you sure you want to remove this picture from your profile?',
                 buttons: [
                     {
-                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
                     },
                     {
-                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
                         type: 'button-positive',
                         onTap: function(event) {
                             return true;
@@ -6657,10 +6655,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             $ionicPopup.confirm(popupOptions)
             .then(function(res) {
-                if(res) {
+                if (res) {
                     addPlayerModalScope.viewModel.player.face = '';
-                } else {
-                    // cancel
                 }
             });
         }
