@@ -137,7 +137,7 @@
             };
 
             $cordovaCamera.getPicture(options).then(function(imageURI) {
-                addPlayerModalScope.viewModel.player.face = imageURI;
+                editPlayerModalScope.viewModel.player.face = imageURI;
             }, function(err) {
                 console.log(err.message);
             });
