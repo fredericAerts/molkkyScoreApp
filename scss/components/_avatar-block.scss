@@ -28,10 +28,25 @@
     }
 
     color: $light;
+}
+
+.avatar-block__avatar {
+    position: relative;
+
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+
+    overflow: hidden;
 
     & > img {
-        width: 150px;
-        height: 150px;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+
+        width: 100%;
         border-radius: 50%;
     }
 }

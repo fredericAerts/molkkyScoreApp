@@ -5,7 +5,9 @@
     </span>
     <ion-list class="list--numbered-avatar">
         <ion-item class="item-avatar item-icon-right numbered" ng-repeat="player in listing.players | filter: listing.minGamesFilter | orderBy: ['-statistics.metrics.' + listing.metric.keyName, 'firstName']">
-            <img ng-if="player.face" ng-src="{{player.face}}">
+            <div ng-if="player.face" class="item-avatar__avatar">
+                <img ng-src="{{player.face}}">
+            </div>
             <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
             <h2>{{player.firstName}} {{player.lastName}}</h2>
             <p>{{player.tagline}}</p>

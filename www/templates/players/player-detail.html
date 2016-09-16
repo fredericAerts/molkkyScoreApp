@@ -11,7 +11,9 @@
     <ion-content>
         <div class="avatar-block-wrapper">
             <div class="avatar-block">
-                <img ng-if="playerDetail.player.face" ng-src="{{playerDetail.player.face}}">
+                <div class="avatar-block__avatar" ng-if="playerDetail.player.face">
+                    <img ng-src="{{playerDetail.player.face}}">
+                </div>
                 <div ng-if="!playerDetail.player.face" class="avatar-block__face-placeholder">
                     <i class="icon ion-help"></i>
                 </div>

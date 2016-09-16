@@ -9,7 +9,9 @@
     <ion-list show-delete="players.removeVisible">
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players | orderBy: 'name'" type="item-text-wrap" href="#/tab/players/{{player.id}}">
         <ion-delete-button class="ion-minus-circled" ng-click="players.showRemoveConfirmPopup(player)"></ion-delete-button>
-        <img ng-if="player.face" ng-src="{{player.face}}">
+        <div ng-if="player.face" class="item-avatar__avatar">
+            <img ng-src="{{player.face}}">
+        </div>
         <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
         <h2>{{player.firstName}} {{player.lastName}}</h2>
         <p>{{player.tagline}}</p>

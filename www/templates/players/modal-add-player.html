@@ -6,7 +6,9 @@
         </ion-header-bar>
         <ion-content>
             <div class="add-avatar-block">
-                <img ng-if="viewModel.player.face" ng-src="{{viewModel.player.face}}">
+                <div class="avatar-block__avatar" ng-if="viewModel.player.face">
+                    <img ng-src="{{viewModel.player.face}}">
+                </div>
                 <div ng-if="!viewModel.player.face" class="row add-avatar-block__placeholder">
                     <div class="col col-center">
                         {{ 'HOME.PLAYERS.ADD-PLAYER-MODAL.AVATAR-PLACEHOLDER' | translate }}

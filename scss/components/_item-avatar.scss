@@ -1,5 +1,27 @@
 .item-avatar {
 
+    & .item-avatar__avatar:first-child {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+
+        overflow: hidden;
+
+        & > img {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+
     &--small {
         min-height: 52px;
         padding-left: 52px;
@@ -9,21 +31,30 @@
             padding-left: 50px;
             padding-right: 16px;
 
-            & > img:first-child {
+            & > .item-avatar__avatar:first-child {
                 top: 10px;
                 left: 10px;
 
-                max-width: 30px;
-                max-height: 30px;
+                width: 30px;
+                height: 30px;
             }
         }
 
-        & > img:first-child {
+        & .item-avatar__avatar:first-child {
             top: 10px;
             left: 10px;
 
-            max-width: 30px;
-            max-height: 30px;
+            width: 30px;
+            height: 30px;
+
+            & > img {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+
+                width: 100%;
+            }
         }
 
         & h2 {

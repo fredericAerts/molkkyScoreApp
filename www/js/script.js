@@ -6890,7 +6890,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 winningScore: 50,
                 winningScoreExceeded: 'half of winning score',
                 threeMisses: 'disqualified'
-            }
+            };
         }
 
         function getAppSettings() {

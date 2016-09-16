@@ -19,7 +19,9 @@
             </ion-toggle>
             <ion-list>
                 <ion-item class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants | orderBy: game.scoreListSortPredicate">
-                    <img ng-if="participant.face" ng-src="{{participant.face}}">
+                    <div ng-if="participant.face" class="item-avatar__avatar">
+                        <img ng-src="{{participant.face}}">
+                    </div>
                     <div ng-if="!participant.face" class="item-avatar__face-placeholder {{participant.guestColor}}"></div>
                     <h2>{{participant.firstName}} {{participant.lastName}}</h2>
                     <p>{{participant.tagline}}</p>
@@ -34,8 +36,9 @@
                 <table class="scoreboard-details">
                     <tr>
                         <th width="{{100/game.participants.length}}%" ng-repeat="participant in game.participants">
-                            <img ng-if="participant.face" ng-src="{{participant.face}}">
-                            <div ng-if="!participant.face" class="scoreboard-details__face-placeholder {{participant.guestColor}}"></div>
+                            <div class="scoreboard-details__face-placeholder {{participant.guestColor}}">
+                                <img ng-if="participant.face" ng-src="{{participant.face}}">
+                            </div>
                         </th>
                     </tr>
                     <tr ng-repeat="i in game.getScoreboardDetailsRowIterator() track by $index">

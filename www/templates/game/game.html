@@ -34,7 +34,9 @@
             <div class="col col-66">
                 <div class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore.value > -1}" ng-click="game.processThrow();">
                     <ion-item class="item-avatar item-icon-right" type="item-text-wrap" ng-class="game.activePlayer.activatedAvatarStatus">
-                        <img ng-if="game.activePlayer.face"  ng-src="{{game.activePlayer.face}}">
+                        <div ng-if="game.activePlayer.face" class="item-avatar__avatar">
+                            <img ng-src="{{game.activePlayer.face}}">
+                        </div>
                         <div ng-if="!game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
                         <h2>{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>
                         <p>

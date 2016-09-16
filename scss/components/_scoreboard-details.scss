@@ -11,8 +11,9 @@
 
         font-size: 0;
 
-        & img,
         & .scoreboard-details__face-placeholder {
+            position: relative;
+
             width: 100%;
             margin: auto;
             border-radius: 4px;
@@ -20,10 +21,17 @@
             font-size: inherit;
 
             background: $avatar-placeholder;
-        }
 
-        & img {
+            overflow: hidden;
 
+            & > img {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+
+                width: 100%;
+            }
         }
 
         & .scoreboard-details__face-placeholder {
