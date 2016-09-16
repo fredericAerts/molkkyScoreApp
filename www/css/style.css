@@ -9743,16 +9743,26 @@ a.button {
 .add-avatar-block {
   width: 150px;
   margin: 30px auto 10px; }
+  .add-avatar-block > .avatar-block__avatar {
+    position: relative; }
 
-.add-avatar-block__buttons > .button:last-child {
-  float: right; }
+.add-avatar-block__buttons {
+  text-align: center; }
+  .add-avatar-block__buttons > .button:first-child {
+    position: relative;
+    left: -10px;
+    float: left; }
+  .add-avatar-block__buttons > .button:last-child {
+    position: relative;
+    right: -10px;
+    float: right; }
 
 .add-avatar-block__placeholder {
   height: 150px;
   padding: 0;
   border-radius: 50%;
   text-align: center;
-  background: #bdbdbd; }
+  background: #efefef; }
 
 .list--numbered-avatar .list {
   counter-reset: countNum; }

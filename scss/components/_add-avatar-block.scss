@@ -1,11 +1,26 @@
 .add-avatar-block {
     width: 150px;
     margin: 30px auto 10px;
+
+    & > .avatar-block__avatar {
+        position: relative;
+    }
 }
 
 .add-avatar-block__buttons {
+    text-align: center;
+
+    & > .button:first-child {
+        position: relative;
+        left: -10px;
+
+        float: left;
+    }
 
     & > .button:last-child {
+        position: relative;
+        right: -10px;
+
         float: right;
     }
 }
@@ -17,5 +32,5 @@
 
     text-align: center;
 
-    background: $avatar-placeholder;
+    background: $avatar-placeholder-light;
 }

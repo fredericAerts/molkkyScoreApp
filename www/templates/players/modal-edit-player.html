@@ -13,9 +13,10 @@
                         {{ 'HOME.PLAYERS.EDIT-PLAYER-MODAL.AVATAR-PLACEHOLDER' | translate }}
                     </div>
                 </div>
-                <div class="add-avatar-block__buttons">
-                    <button class="button button-icon icon ion-images" ng-click=""></button>
-                    <button class="button button-icon icon ion-camera" ng-click=""></button>
+                <div class="add-avatar-block__buttons clearfix">
+                    <button class="button button-icon icon ion-images" ng-click="viewModel.takePicture(true)"></button>
+                    <button ng-if="viewModel.player.face" class="button button-icon icon ion-trash-a" ng-click="viewModel.removeAvatar()"></button>
+                    <button class="button button-icon icon ion-camera" ng-click="viewModel.takePicture(false)"></button>
                 </div>
             </div>
             <div class="list">

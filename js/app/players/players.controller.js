@@ -15,6 +15,7 @@
                             '$ionicModal',
                             '$translate',
                             '$ionicHistory',
+                            '$cordovaCamera',
                             'toast'];
 
     function PlayersCtrl($scope,
@@ -27,6 +28,7 @@
                             $ionicModal,
                             $translate,
                             $ionicHistory,
+                            $cordovaCamera,
                             toast) {
         /* jshint validthis: true */
         var vm = this;
@@ -74,6 +76,8 @@
                 ================================================================== */
                 addPlayerModalScope.viewModel = {
                     player: {},
+                    takePicture: takePicture,
+                    removeAvatar: removeAvatar,
                     cancelPlayer: cancelPlayer,
                     confirmPlayer: confirmPlayer
 
@@ -85,6 +89,60 @@
             addPlayerModalScope.viewModel.player = getNewPlayerTemplate();
 
             vm.addPlayerModal.show();
+        }
+
+        function takePicture(fromGallery) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
+            var options = {
+                quality : 75,
+                destinationType : Camera.DestinationType.FILE_URI,
+                sourceType : sourceType,
+                allowEdit : false,
+                encodingType: Camera.EncodingType.JPEG,
+                targetWidth: 150,
+                targetHeight: 150,
+                saveToPhotoAlbum: false
+            };
+
+            $cordovaCamera.getPicture(options).then(function(imageURI) {
+                addPlayerModalScope.viewModel.player.face = imageURI;
+            }, function(err) {
+                console.log(err.message);
+            });
+
+            $cordovaCamera.cleanup();
+        }
+
+        function removeAvatar() {
+            var popupOptions = {
+                title: 'Remove avatar',
+                template: 'Are you sure you want to remove this picture from your profile?',
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+
+            $ionicPopup.confirm(popupOptions)
+            .then(function(res) {
+                if(res) {
+                    addPlayerModalScope.viewModel.player.face = '';
+                } else {
+                    // cancel
+                }
+            });
         }
 
         function cancelPlayer() {

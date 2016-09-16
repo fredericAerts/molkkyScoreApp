@@ -62,7 +62,7 @@
                 totalGamesPlayed: 0
             };
             gameSettings = {
-                isCustom: true, // disable statistics
+                isCustom: false,
                 winningScore: 50,
                 winningScoreExceeded: 'half of winning score',
                 threeMisses: 'disqualified'

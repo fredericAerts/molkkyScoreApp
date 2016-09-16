@@ -6342,6 +6342,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                                 'playersService',
                                 'statisticsService',
                                 '$ionicModal',
+                                '$ionicPopup',
+                                '$translate',
+                                '$cordovaCamera',
                                 'toast'];
 
     function PlayerDetailCtrl($scope,
@@ -6350,6 +6353,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                                 playersService,
                                 statisticsService,
                                 $ionicModal,
+                                $ionicPopup,
+                                $translate,
+                                $cordovaCamera,
                                 toast) {
         /* jshint validthis: true */
         var vm = this;
@@ -6432,6 +6438,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ================================================================== */
                 editPlayerModalScope.viewModel = {
                     player: {},
+                    takePicture: takePicture,
+                    removeAvatar: removeAvatar,
                     confirmPlayer: confirmPlayer
                 };
             });
@@ -6440,6 +6448,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function showPlayerModal(player) {
             editPlayerModalScope.viewModel.player = player;
             vm.editPlayerModal.show();
+        }
+
+        function takePicture(fromGallery) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
+            var options = {
+                quality : 75,
+                destinationType : Camera.DestinationType.FILE_URI,
+                sourceType : sourceType,
+                allowEdit : false,
+                encodingType: Camera.EncodingType.JPEG,
+                targetWidth: 150,
+                targetHeight: 150,
+                saveToPhotoAlbum: false
+            };
+
+            $cordovaCamera.getPicture(options).then(function(imageURI) {
+                addPlayerModalScope.viewModel.player.face = imageURI;
+            }, function(err) {
+                console.log(err.message);
+            });
+
+            $cordovaCamera.cleanup();
+        }
+
+        function removeAvatar() {
+            var popupOptions = {
+                title: 'Remove avatar',
+                template: 'Are you sure you want to remove this picture from your profile?',
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+
+            $ionicPopup.confirm(popupOptions)
+            .then(function(res) {
+                if(res) {
+                    editPlayerModalScope.viewModel.player.face = '';
+                } else {
+                    // cancel
+                }
+            });
         }
 
         function confirmPlayer() {
@@ -6473,6 +6535,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             '$ionicModal',
                             '$translate',
                             '$ionicHistory',
+                            '$cordovaCamera',
                             'toast'];
 
     function PlayersCtrl($scope,
@@ -6485,6 +6548,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             $ionicModal,
                             $translate,
                             $ionicHistory,
+                            $cordovaCamera,
                             toast) {
         /* jshint validthis: true */
         var vm = this;
@@ -6532,6 +6596,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ================================================================== */
                 addPlayerModalScope.viewModel = {
                     player: {},
+                    takePicture: takePicture,
+                    removeAvatar: removeAvatar,
                     cancelPlayer: cancelPlayer,
                     confirmPlayer: confirmPlayer
 
@@ -6543,6 +6609,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             addPlayerModalScope.viewModel.player = getNewPlayerTemplate();
 
             vm.addPlayerModal.show();
+        }
+
+        function takePicture(fromGallery) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
+            var options = {
+                quality : 75,
+                destinationType : Camera.DestinationType.FILE_URI,
+                sourceType : sourceType,
+                allowEdit : false,
+                encodingType: Camera.EncodingType.JPEG,
+                targetWidth: 150,
+                targetHeight: 150,
+                saveToPhotoAlbum: false
+            };
+
+            $cordovaCamera.getPicture(options).then(function(imageURI) {
+                addPlayerModalScope.viewModel.player.face = imageURI;
+            }, function(err) {
+                console.log(err.message);
+            });
+
+            $cordovaCamera.cleanup();
+        }
+
+        function removeAvatar() {
+            var popupOptions = {
+                title: 'Remove avatar',
+                template: 'Are you sure you want to remove this picture from your profile?',
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.CANCEL')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.OK') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+
+            $ionicPopup.confirm(popupOptions)
+            .then(function(res) {
+                if(res) {
+                    addPlayerModalScope.viewModel.player.face = '';
+                } else {
+                    // cancel
+                }
+            });
         }
 
         function cancelPlayer() {
@@ -6726,7 +6846,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 totalGamesPlayed: 0
             };
             gameSettings = {
-                isCustom: true, // disable statistics
+                isCustom: false,
                 winningScore: 50,
                 winningScoreExceeded: 'half of winning score',
                 threeMisses: 'disqualified'
