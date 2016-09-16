@@ -5632,6 +5632,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function activate() {
             initParticipants();
             initScoreboard();
+            initGameSettings();
             initGame();
 
             initScoreDetailsModal();
@@ -5664,10 +5665,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initGame() {
-            settings = settingsService.getParameters().game;
             vm.gameEnded = false;
             resetActivatedScore();
             vm.activePlayer = vm.participants[0];
+        }
+
+        function initGameSettings() {
+            settings = _.clone(settingsService.getParameters().game);
+            if (!settings.isCustom) {
+                settingsService.assignDefaultGameParameters(settings);
+            }
         }
 
         function initScoreDetailsModal() {
@@ -6682,6 +6689,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
+            getDefaultGameSettings: getDefaultGameSettings,
             getAppSettings: getAppSettings,
             updatePlayerStatistics: updatePlayerStatistics,
             updateOverallStatistics: updateOverallStatistics,
@@ -6877,16 +6885,32 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return gameSettings;
         }
 
+        function getDefaultGameSettings() {
+            return {
+                winningScore: 50,
+                winningScoreExceeded: 'half of winning score',
+                threeMisses: 'disqualified'
+            }
+        }
+
         function getAppSettings() {
             return appSettings;
         }
 
         function updatePlayerStatistics(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             updateRawData(player);
             updateMetrics(player);
         }
 
         function updateOverallStatistics() {
+            if (!window.cordova) {
+                return;
+            }
+
             var totalGamesPlayed = overallStatistics.totalGamesPlayed;
             var updateOverallStatistics = 'UPDATE STATISTICS_OVERALL_METRICS SET' +
                                             ' TOTAL_GAMES_PLAYED=' + totalGamesPlayed;
@@ -6898,6 +6922,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateGameSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
             var isCustom = gameSettings.isCustom ? 1 : 0;
             var winningScore = gameSettings.winningScore;
             var winningScoreExceeded = gameSettings.winningScoreExceeded;
@@ -6915,6 +6943,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateAppSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
             var language = appSettings.language;
             var updateGameSettings = 'UPDATE APP_SETTINGS SET' +
                                         ' LANGUAGE="' + language + '"';
@@ -6926,6 +6958,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updatePlayerProfile(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var updatePlayer = 'UPDATE PLAYERS SET' +
                                 ' FIRSTNAME="' + player.firstName + '",' +
                                 ' LASTNAME="' + player.lastName + '",' +
@@ -6940,6 +6976,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function addPlayer(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var playerValues = [
                 player.id,
                 player.firstName,
@@ -6955,6 +6995,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function removePlayer(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var deletePlayer = 'DELETE FROM PLAYERS WHERE ID=' + player.id;
             var deletePlayerRawData = 'DELETE FROM STATISTICS_PLAYER_RAW_DATA WHERE PLAYER_ID=' + player.id;
             var deletePlayerMetrics = 'DELETE FROM STATISTICS_PLAYER_METRICS WHERE PLAYER_ID=' + player.id;
@@ -7082,7 +7126,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function introGameSettings() {
-            var values = [0, 50, 'half of winning score', 'disqualified'];
+            var defaultSettings = getDefaultGameSettings();
+            var winningScore = defaultSettings.winningScore;
+            var winningScoreExceeded = defaultSettings.winningScoreExceeded;
+            var threeMisses = defaultSettings.threeMisses;
+
+            var values = [0, winningScore, winningScoreExceeded, threeMisses];
             var insertGameSettings = 'INSERT INTO GAME_SETTINGS (IS_CUSTOM, WINNING_SCORE,' +
                 ' WINNING_SCORE_EXCEEDED, THREE_MISSES) VALUES (?,?,?,?)';
 
@@ -7187,8 +7236,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             if (!_.isEmpty(diffGame)) {
-                updatedKey = Object.keys(diffGame)[0];
-                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+                settingsService.updateGameParameter();
             }
         }
 
@@ -7215,8 +7263,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var service = {
             getOptions: getOptions,
             getParameters: getParameters,
-            updateGameParameter: updateGameParameter,
-            updateAppParameter: updateAppParameter
+            updateGameParameter: updateAppParameter,
+            assignDefaultGameParameters: assignDefaultGameParameters
         };
         return service;
 
@@ -7267,10 +7315,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             dataService.updateAppSettings();
         }
 
-        function updateGameParameter(key, value) {
-            parameters.game[key] = value;
-
+        function updateGameParameter() {
             dataService.updateGameSettings();
+        }
+
+        function assignDefaultGameParameters(settings) {
+            _.extendOwn(settings, dataService.getDefaultGameSettings());
         }
     }
 })();
@@ -7474,7 +7524,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         vm.metrics = statisticsService.getMetrics();
         vm.overallStatistics = statisticsService.getOverallStatistics();
-        vm.customGameSettings = settingsService.getParameters().game.isCustom;
+        vm.gameSettings = settingsService.getParameters().game;
         vm.statisticsInfoModal = {};
         vm.statsItemsInfoPopover = {};
         vm.showItemInfo = showItemInfo;

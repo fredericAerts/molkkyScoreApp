@@ -20,7 +20,7 @@
 
         vm.metrics = statisticsService.getMetrics();
         vm.overallStatistics = statisticsService.getOverallStatistics();
-        vm.customGameSettings = settingsService.getParameters().game.isCustom;
+        vm.gameSettings = settingsService.getParameters().game;
         vm.statisticsInfoModal = {};
         vm.statsItemsInfoPopover = {};
         vm.showItemInfo = showItemInfo;

@@ -87,8 +87,7 @@
             }
 
             if (!_.isEmpty(diffGame)) {
-                updatedKey = Object.keys(diffGame)[0];
-                settingsService.updateGameParameter(diffGame[0], vm.parameters.game[updatedKey]);
+                settingsService.updateGameParameter();
             }
         }
 

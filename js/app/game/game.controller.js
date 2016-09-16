@@ -63,6 +63,7 @@
         function activate() {
             initParticipants();
             initScoreboard();
+            initGameSettings();
             initGame();
 
             initScoreDetailsModal();
@@ -95,10 +96,16 @@
         }
 
         function initGame() {
-            settings = settingsService.getParameters().game;
             vm.gameEnded = false;
             resetActivatedScore();
             vm.activePlayer = vm.participants[0];
+        }
+
+        function initGameSettings() {
+            settings = _.clone(settingsService.getParameters().game);
+            if (!settings.isCustom) {
+                settingsService.assignDefaultGameParameters(settings);
+            }
         }
 
         function initScoreDetailsModal() {

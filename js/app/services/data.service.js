@@ -25,6 +25,7 @@
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
+            getDefaultGameSettings: getDefaultGameSettings,
             getAppSettings: getAppSettings,
             updatePlayerStatistics: updatePlayerStatistics,
             updateOverallStatistics: updateOverallStatistics,
@@ -220,16 +221,32 @@
             return gameSettings;
         }
 
+        function getDefaultGameSettings() {
+            return {
+                winningScore: 50,
+                winningScoreExceeded: 'half of winning score',
+                threeMisses: 'disqualified'
+            };
+        }
+
         function getAppSettings() {
             return appSettings;
         }
 
         function updatePlayerStatistics(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             updateRawData(player);
             updateMetrics(player);
         }
 
         function updateOverallStatistics() {
+            if (!window.cordova) {
+                return;
+            }
+
             var totalGamesPlayed = overallStatistics.totalGamesPlayed;
             var updateOverallStatistics = 'UPDATE STATISTICS_OVERALL_METRICS SET' +
                                             ' TOTAL_GAMES_PLAYED=' + totalGamesPlayed;
@@ -241,6 +258,10 @@
         }
 
         function updateGameSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
             var isCustom = gameSettings.isCustom ? 1 : 0;
             var winningScore = gameSettings.winningScore;
             var winningScoreExceeded = gameSettings.winningScoreExceeded;
@@ -258,6 +279,10 @@
         }
 
         function updateAppSettings() {
+            if (!window.cordova) {
+                return;
+            }
+
             var language = appSettings.language;
             var updateGameSettings = 'UPDATE APP_SETTINGS SET' +
                                         ' LANGUAGE="' + language + '"';
@@ -269,6 +294,10 @@
         }
 
         function updatePlayerProfile(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var updatePlayer = 'UPDATE PLAYERS SET' +
                                 ' FIRSTNAME="' + player.firstName + '",' +
                                 ' LASTNAME="' + player.lastName + '",' +
@@ -283,6 +312,10 @@
         }
 
         function addPlayer(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var playerValues = [
                 player.id,
                 player.firstName,
@@ -298,6 +331,10 @@
         }
 
         function removePlayer(player) {
+            if (!window.cordova) {
+                return;
+            }
+
             var deletePlayer = 'DELETE FROM PLAYERS WHERE ID=' + player.id;
             var deletePlayerRawData = 'DELETE FROM STATISTICS_PLAYER_RAW_DATA WHERE PLAYER_ID=' + player.id;
             var deletePlayerMetrics = 'DELETE FROM STATISTICS_PLAYER_METRICS WHERE PLAYER_ID=' + player.id;
@@ -425,7 +462,12 @@
         }
 
         function introGameSettings() {
-            var values = [0, 50, 'half of winning score', 'disqualified'];
+            var defaultSettings = getDefaultGameSettings();
+            var winningScore = defaultSettings.winningScore;
+            var winningScoreExceeded = defaultSettings.winningScoreExceeded;
+            var threeMisses = defaultSettings.threeMisses;
+
+            var values = [0, winningScore, winningScoreExceeded, threeMisses];
             var insertGameSettings = 'INSERT INTO GAME_SETTINGS (IS_CUSTOM, WINNING_SCORE,' +
                 ' WINNING_SCORE_EXCEEDED, THREE_MISSES) VALUES (?,?,?,?)';
 

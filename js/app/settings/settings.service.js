@@ -13,8 +13,8 @@
         var service = {
             getOptions: getOptions,
             getParameters: getParameters,
-            updateGameParameter: updateGameParameter,
-            updateAppParameter: updateAppParameter
+            updateGameParameter: updateAppParameter,
+            assignDefaultGameParameters: assignDefaultGameParameters
         };
         return service;
 
@@ -65,10 +65,12 @@
             dataService.updateAppSettings();
         }
 
-        function updateGameParameter(key, value) {
-            parameters.game[key] = value;
-
+        function updateGameParameter() {
             dataService.updateGameSettings();
+        }
+
+        function assignDefaultGameParameters(settings) {
+            _.extendOwn(settings, dataService.getDefaultGameSettings());
         }
     }
 })();
