@@ -115,7 +115,7 @@
                 return;
             }
 
-            statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
+            statisticsProcessor.update(event, activePlayer, undo);
         }
 
         /*  Helper functions

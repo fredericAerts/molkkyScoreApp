@@ -16,11 +16,11 @@
 
         ////////////////
 
-        function update(event, player, overallStatistics, undo) {
+        function update(event, player, undo) {
             var throws = player.scoreHistory.length;
 
             switch (event) {
-                case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
+                case 'playerWonGame': updatePlayerWonGame(player, dataService.getOverallStatistics(), undo); break;
                 case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
                 case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
                 case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
@@ -42,7 +42,9 @@
             overallStatistics.totalGamesPlayed += increment;
             dataService.updateOverallStatistics();
             participants.forEach(function(player) {
-                player.statistics.rawData.gamesPlayed += increment;
+                if (player.statistics) {
+                    player.statistics.rawData.gamesPlayed += increment;
+                }
             });
 
             updatePlayerMetric('totalWins', player);
@@ -96,12 +98,14 @@
         function updatePlayerMetricWinningRatio(participants) {
             var gamesWon, gamesPlayed;
             participants.forEach(function(player) {
-                gamesWon = player.statistics.rawData.gamesWon;
-                gamesPlayed = player.statistics.rawData.gamesPlayed;
+                if (player.statistics) {
+                    gamesWon = player.statistics.rawData.gamesWon;
+                    gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                    player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
-                updatePlayerMetric('versatility', player);
+                    updatePlayerMetric('versatility', player);
+                }
             });
         }
 

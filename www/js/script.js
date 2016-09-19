@@ -5268,60 +5268,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .constant('IMAGES_ROOT', '/img');
 })();
 
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($rootScope, $scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        $scope.$on('appInitialized', function () {
-            if (!_.isEmpty(vm.addPlayersToGameModal)) {
-                vm.addPlayersToGameModal.remove();
-            }
-            initAddPlayersToGameModal();
-        });
-
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
-        }
-    }
-})();
-
 (function() {
     'use strict';
 
@@ -6095,6 +6041,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             return scoreboard;
+        }
+    }
+})();
+
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $scope.$on('appInitialized', function () {
+            if (!_.isEmpty(vm.addPlayersToGameModal)) {
+                vm.addPlayersToGameModal.remove();
+            }
+            initAddPlayersToGameModal();
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
         }
     }
 })();
@@ -7495,11 +7495,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         ////////////////
 
-        function update(event, player, overallStatistics, undo) {
+        function update(event, player, undo) {
             var throws = player.scoreHistory.length;
 
             switch (event) {
-                case 'playerWonGame': updatePlayerWonGame(player, overallStatistics, undo); break;
+                case 'playerWonGame': updatePlayerWonGame(player, dataService.getOverallStatistics(), undo); break;
                 case 'playerReachedMaxScore': updatePlayerReachedMaxScore(player, throws, undo); break;
                 case 'playerThrowsSinglePin': updatePlayerThrowsSinglePin(player, undo); break;
                 case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
@@ -7521,7 +7521,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             overallStatistics.totalGamesPlayed += increment;
             dataService.updateOverallStatistics();
             participants.forEach(function(player) {
-                player.statistics.rawData.gamesPlayed += increment;
+                if (player.statistics) {
+                    player.statistics.rawData.gamesPlayed += increment;
+                }
             });
 
             updatePlayerMetric('totalWins', player);
@@ -7575,12 +7577,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function updatePlayerMetricWinningRatio(participants) {
             var gamesWon, gamesPlayed;
             participants.forEach(function(player) {
-                gamesWon = player.statistics.rawData.gamesWon;
-                gamesPlayed = player.statistics.rawData.gamesPlayed;
+                if (player.statistics) {
+                    gamesWon = player.statistics.rawData.gamesWon;
+                    gamesPlayed = player.statistics.rawData.gamesPlayed;
 
-                player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
+                    player.statistics.metrics.winningRatio = Math.round((gamesWon / gamesPlayed) * 100);
 
-                updatePlayerMetric('versatility', player);
+                    updatePlayerMetric('versatility', player);
+                }
             });
         }
 
@@ -7817,7 +7821,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 return;
             }
 
-            statisticsProcessor.update(event, activePlayer, overallStatistics, undo);
+            statisticsProcessor.update(event, activePlayer, undo);
         }
 
         /*  Helper functions

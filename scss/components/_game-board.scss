@@ -50,6 +50,9 @@
                     border: none;
 
                     color: $light;
+                    font-size: 22px;
+                    font-weight: bold;
+                    white-space: nowrap;
 
                     background: $avatar-placeholder;
 
@@ -130,7 +133,7 @@
                             width: 100%;
                             height: 100%;
 
-                            background: rgba(#000, .5);
+                            background: rgba(#000, .6);
 
                             content: "";
                         }
@@ -207,13 +210,17 @@
     }
 
     &--settings {
-        background: $stable;
+        background: $light;
+
+        // border: none;
 
         & .button {
-            color: $dark;
+            // color: $light;
 
             &:before {
                 margin-top: 1px;
+
+                font-size: 40px;
                 height: 47px;
                 line-height: 47px;
             }
@@ -221,7 +228,10 @@
     }
 
     &--player {
+        background: $light;
+
         text-align: left;
+        transition: background .3s ease;
 
         &.active {
             background: $positive;
@@ -257,6 +267,11 @@
     }
 
     &--score {
+        font-size: 40px;
+        font-weight: 100;
+
+        background: $light;
+        transition: background .3s ease;
 
         &.active {
             color: $light;

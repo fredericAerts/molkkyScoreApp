@@ -68,7 +68,6 @@
     padding: 0 5px;
     border-radius: 4px;
 
-    font-weight: bold;
     text-align: right;
 
     background: rgba(#fff, .8);
@@ -80,11 +79,12 @@
 
     font-size: 16px;
     line-height: 20px;
+    font-weight: bold;
 }
 
 .home-cta__cta-info__image {
     position: relative;
-    top: -2px;
+    top: -3px;
     float: right;
 
     height: 20px;
