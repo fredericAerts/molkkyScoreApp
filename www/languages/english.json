@@ -16,7 +16,7 @@
         },
         "VIEW-TITLE": "Home",
         "START": {
-            "BUTTON-TITLE": "Start game",
+            "BUTTON-TITLE": "Play a game",
             "START-PLAYERS-MODAL": {
                 "TITLE": "Add players to game",
                 "BUTTON-CANCEL": "Cancel",
@@ -31,7 +31,7 @@
             }
         },
         "GAME": {
-            "VIEW-TITLE": "Game",
+            "VIEW-TITLE": "Let's play!",
             "ACTIVE-PLAYER-CELL": {
                 "SCORE-HISTORY-PLACEHOLDER": "Score history..."
             },

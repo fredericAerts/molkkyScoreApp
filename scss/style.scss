@@ -10,7 +10,8 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
         "general/helper-classes",
         "general/animations";
 
-@import "components/avatar-block",
+@import "components/home-cta",
+        "components/avatar-block",
         "components/add-avatar-block",
         "components/list",
         "components/info-block",

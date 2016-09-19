@@ -9675,6 +9675,42 @@ a.button {
     -webkit-transform: rotate(359deg);
     transform: rotate(359deg); } }
 
+.home-cta {
+  position: relative;
+  z-index: 9;
+  padding: 25px 10px 0;
+  background: #387ef5; }
+
+.home-cta__header {
+  margin: 0 auto 15px;
+  max-width: 90%;
+  background: #387ef5; }
+  .home-cta__header .home-cta__title {
+    margin: 0 auto 5px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold; }
+  .home-cta__header .home-cta__subtitle {
+    margin: 0;
+    color: #fff;
+    font-size: 20px;
+    line-height: 24px; }
+
+.home-cta__cta-wrapper {
+  position: relative;
+  z-index: 1;
+  height: 26px;
+  text-align: center;
+  background: #387ef5; }
+  .home-cta__cta-wrapper > .button {
+    float: right;
+    height: 52px;
+    width: 52px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    color: #387ef5; }
+
 .avatar-block-wrapper {
   text-align: center;
   background: #387ef5;
