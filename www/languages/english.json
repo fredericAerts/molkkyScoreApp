@@ -16,7 +16,7 @@
         },
         "VIEW-TITLE": "Home",
         "START": {
-            "BUTTON-TITLE": "Play a game",
+            "BUTTON-TITLE": "Play game",
             "START-PLAYERS-MODAL": {
                 "TITLE": "Add players to game",
                 "BUTTON-CANCEL": "Cancel",

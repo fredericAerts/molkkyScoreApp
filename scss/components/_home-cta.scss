@@ -18,6 +18,8 @@
         color: $light;
         font-size: 40px;
         font-weight: bold;
+
+        white-space: nowrap;
     }
 
     & .home-cta__subtitle {
@@ -26,6 +28,8 @@
         color: $light;
         font-size: 20px;
         line-height: 24px;
+
+        white-space: nowrap;
     }
 }
 
@@ -50,4 +54,38 @@
 
         color: $positive;
     }
+}
+
+/*  Call to action text
+    ============================== */
+.home-cta__cta-info {
+    position: absolute;
+    top: 50px;
+    right: 45px;
+    z-index: 9;
+
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 4px;
+
+    font-weight: bold;
+    text-align: right;
+
+    background: rgba(#fff, .8);
+}
+
+.home-cta__cta-info__text {
+    display: inline-block;
+    padding-right: 5px;
+
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.home-cta__cta-info__image {
+    position: relative;
+    top: -2px;
+    float: right;
+
+    height: 20px;
 }

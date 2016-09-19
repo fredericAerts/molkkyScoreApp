@@ -10,13 +10,17 @@
         </p>
       </div>
       <div class="home-cta__cta-wrapper">
-        <button class="button icon ion-ios-cart"></button>
+        <button class="button button-light icon ion-ios-cart"></button>
+        <div class="home-cta__cta-info">
+          <span class="home-cta__cta-info__text">Visit our store</span>
+          <img class="home-cta__cta-info__image" src="/img/cta-arrow.png">
+        </div>
       </div>
     </div>
-    <div class="padding" style="position: absolute; width: 100%;left: 0; top: 53%;transform:translateY(-50%)">
-      <img src="https://cdn-az.allevents.in/banners/3ec3796cd90f71f61849e55770fb1041" style="display:block;max-width:80%;margin: auto;">
+    <div class="home-hero">
+      <img class="home-hero__image" src="/img/hero.jpeg">
     </div>
-    <div class="padding" style="position: absolute; width: 100%;left: 0; bottom: 0;">
+    <div class="home-buttons">
       <button class="button button-block button-positive" ng-click="home.addPlayersToGameModal.show()">
         {{ 'HOME.START.BUTTON-TITLE' | translate }}
       </button>

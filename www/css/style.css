@@ -9689,12 +9689,14 @@ a.button {
     margin: 0 auto 5px;
     color: #fff;
     font-size: 40px;
-    font-weight: bold; }
+    font-weight: bold;
+    white-space: nowrap; }
   .home-cta__header .home-cta__subtitle {
     margin: 0;
     color: #fff;
     font-size: 20px;
-    line-height: 24px; }
+    line-height: 24px;
+    white-space: nowrap; }
 
 .home-cta__cta-wrapper {
   position: relative;
@@ -9710,6 +9712,54 @@ a.button {
     border-radius: 50%;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
     color: #387ef5; }
+
+/*  Call to action text
+    ============================== */
+.home-cta__cta-info {
+  position: absolute;
+  top: 50px;
+  right: 45px;
+  z-index: 9;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: right;
+  background: rgba(255, 255, 255, 0.8); }
+
+.home-cta__cta-info__text {
+  display: inline-block;
+  padding-right: 5px;
+  font-size: 16px;
+  line-height: 20px; }
+
+.home-cta__cta-info__image {
+  position: relative;
+  top: -2px;
+  float: right;
+  height: 20px; }
+
+.home-hero {
+  position: absolute;
+  top: 55%;
+  left: 0;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  width: 100%; }
+
+/*  Hero image
+    ============================== */
+.home-hero__image {
+  display: block;
+  max-width: 90%;
+  margin: auto; }
+
+.home-buttons {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 10px 0; }
 
 .avatar-block-wrapper {
   text-align: center;
