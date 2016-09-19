@@ -8,6 +8,10 @@
                 "YES": "Yes"
             }
         },
+        "SPLASH": {
+            "SUBTITLE": "Bringing world class quality<br>to the game",
+            "CTA": "Visit our store"
+        },
         "LOADING": {
             "STARTING-GAME": "starting game",
             "RESTARTING-GAME": "restarting game",
