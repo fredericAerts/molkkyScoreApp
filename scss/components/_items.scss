@@ -1,3 +1,18 @@
+.item-divider {
+    font-size: 13px;
+}
+
+.item {
+
+    & h2 {
+        font-size: 14px;
+    }
+
+    & p {
+        font-size: 12px;
+    }
+}
+
 // Item Left Edit Button
 // -------------------------------
 .item-left-edit {

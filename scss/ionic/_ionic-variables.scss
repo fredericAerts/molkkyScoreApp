@@ -16,9 +16,9 @@ $dark:                            #444 !default;
 // Base
 // -------------------------------
 
-$font-family-sans-serif:           '-apple-system', "Helvetica Neue", "Roboto", "Segoe UI", sans-serif !default;
+$font-family-sans-serif:          'Champion-regular', Arial, Helvetica, sans-serif !default;
 
-$font-family-light-sans-serif:    '-apple-system', "HelveticaNeue-Light", "Roboto-Light", "Segoe UI-Light", sans-serif-light !default;
+$font-family-light-sans-serif:    'Champion-regular', Arial, Helvetica, sans-serif !default;
 $font-family-serif:               serif !default;
 $font-family-monospace:           monospace !default;
 
@@ -73,7 +73,7 @@ $button-clear-padding:            6px !default;
 $button-border-radius:            4px !default;
 $button-border-width:             1px !default;
 
-$button-font-size:                16px !default;
+$button-font-size:                15px !default;
 $button-height:                   42px !default;
 $button-padding:                  12px !default;
 $button-icon-size:                24px !default;
@@ -161,7 +161,7 @@ $button-default-active-border:    $button-stable-active-border !default;
 // -------------------------------
 
 $bar-height:                      44px !default;
-$bar-title-font-size:             17px !default;
+$bar-title-font-size:             15px !default;
 $bar-padding-portrait:            5px !default;
 $bar-padding-landscape:           5px !default;
 $bar-transparency:                1 !default;
@@ -236,7 +236,7 @@ $bar-default-active-border:       $bar-light-active-border !default;
 
 $tabs-height:                     49px !default;
 $tabs-text-font-size:             14px !default;
-$tabs-text-font-size-side-icon:   10px !default;
+$tabs-text-font-size-side-icon:   9px !default;
 $tabs-icon-size:                  32px !default;
 $tabs-badge-padding:              1px 6px !default;
 $tabs-badge-font-size:            12px !default;
@@ -292,7 +292,7 @@ $tabs-striped-border-width:       2px !default;
 // Items
 // -------------------------------
 
-$item-font-size:                  16px !default;
+$item-font-size:                  14px !default;
 $item-border-width:               1px !default;
 $item-padding:                    16px !default;
 
@@ -649,7 +649,7 @@ $loading-backdrop-bg-color:       rgba(0,0,0,0.4) !default;
 // Badges
 // -------------------------------
 
-$badge-font-size:                 14px !default;
+$badge-font-size:                 12px !default;
 $badge-line-height:               16px !default;
 $badge-font-weight:               bold !default;
 $badge-border-radius:             10px !default;

@@ -1,4 +1,4 @@
-
+margin-bottom: 10px;
 // Colors
 // -------------------------------
 
@@ -23,9 +23,9 @@ $font-family-serif:               serif !default;
 $font-family-monospace:           monospace !default;
 
 $font-family-base:                $font-family-sans-serif !default;
-$font-size-base:                  14px !default;
-$font-size-large:                 18px !default;
-$font-size-small:                 11px !default;
+$font-size-base:                  12px !default;
+$font-size-large:                 16px !default;
+$font-size-small:                 10px !default;
 
 $line-height-base:                1.428571429 !default; // 20/14
 $line-height-computed:            floor($font-size-base * $line-height-base) !default; // ~20px
@@ -236,7 +236,7 @@ $bar-default-active-border:       $bar-light-active-border !default;
 
 $tabs-height:                     49px !default;
 $tabs-text-font-size:             14px !default;
-$tabs-text-font-size-side-icon:   10px !default;
+$tabs-text-font-size-side-icon:   8px !default;
 $tabs-icon-size:                  32px !default;
 $tabs-badge-padding:              1px 6px !default;
 $tabs-badge-font-size:            12px !default;

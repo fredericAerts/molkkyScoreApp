@@ -1,5 +1,7 @@
 .popover {
 
+    font-size: 12px;
+
     & i {
         font-style: italic;
     }
@@ -7,4 +9,7 @@
 
 .popover__content-title {
     margin-bottom: 0;
+
+    font-family: $font-family-bold;
+    font-size: 12px;
 }

@@ -7,18 +7,17 @@
 }
 
 .home-cta__header {
-    margin: 0 auto 15px;
+    margin: 0 auto 5px;
     max-width: 90%;
 
     background: $positive;
 
     & .home-cta__title {
-        margin: 0 auto 5px;
+        margin: 0 auto 10px;
 
         color: $light;
-        font-size: 40px;
-        font-weight: bold;
-
+        font-family: $font-family-bold;
+        font-size: 36px;
         white-space: nowrap;
     }
 
@@ -26,8 +25,8 @@
         margin: 0;
 
         color: $light;
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 16px;
+        line-height: 20px;
 
         white-space: nowrap;
     }
@@ -77,14 +76,13 @@
     display: inline-block;
     padding-right: 5px;
 
-    font-size: 16px;
-    line-height: 20px;
-    font-weight: bold;
+    font-size: 10px;
+    line-height: 14px;
 }
 
 .home-cta__cta-info__image {
     position: relative;
-    top: -3px;
+    top: -1px;
     float: right;
 
     height: 20px;

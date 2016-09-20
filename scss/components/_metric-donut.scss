@@ -6,7 +6,6 @@
     width: 60px;
 
     color: $light;
-    font-weight: 500;
 }
 
 .metric-donut__title {
@@ -17,8 +16,8 @@
     background: transparent;
 
     color: $light;
-    font-size: 12px;
-    line-height: 16px;
+    font-size: 9px;
+    line-height: 14px;
     text-align: center;
 
     &:before { // arrow above title
@@ -70,7 +69,7 @@
     left: 52%;
     @include transform(translateX(-50%) translateY(-50%));
 
-    font-size: 15px;
+    font-size: 12px;
 }
 
 .metric-donut__circle__bg-fill {

@@ -2,13 +2,15 @@
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
-@import "ionic/ionic",
-        "ionic/items";
+@import "ionic/ionic";
 
 @import "general/variables",
         "general/layout",
         "general/helper-classes",
-        "general/animations";
+        "general/animations",
+        "general/base";
+
+@import "fonts/national-champion";
 
 @import "components/home-cta",
         "components/home-hero",
@@ -17,15 +19,16 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
         "components/add-avatar-block",
         "components/list",
         "components/info-block",
+        "components/modals",
         "components/footnote",
         "components/metric-donut",
         "components/bar-footer",
         "components/popup",
         "components/popover",
         "components/action-sheet",
-        "components/statistics-title-listing",
         "components/game-board",
         "components/scoreboard-details",
+        "components/items",
         "components/item-input",
         "components/item-avatar",
         "components/loading";

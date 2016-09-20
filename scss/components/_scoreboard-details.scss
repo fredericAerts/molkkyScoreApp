@@ -15,7 +15,7 @@
             position: relative;
 
             width: 100%;
-            margin: auto;
+            margin: 0 auto 15px;
             border-radius: 4px;
 
             font-size: inherit;
@@ -82,11 +82,11 @@
     }
 
     & td {
-        padding-bottom: 5px;
+        padding-bottom: 10px;
         border-right: 1px solid $avatar-placeholder;
         border-left: 1px solid $avatar-placeholder;
 
-        font-size: 18px;
+        font-size: 20px;
         vertical-align: middle;
     }
 }

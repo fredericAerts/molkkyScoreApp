@@ -50,8 +50,7 @@
                     border: none;
 
                     color: $light;
-                    font-size: 22px;
-                    font-weight: bold;
+                    font-size: 18px;
                     white-space: nowrap;
 
                     background: $avatar-placeholder;
@@ -247,9 +246,14 @@
 
             background: transparent;
 
+            & h2 {
+                // font-size: 18px;
+            }
+
             & p {
                 direction: rtl;
                 width: 100%;
+                font-size: 10px;
 
                 & .placeholder {
                     display: block;
@@ -267,8 +271,7 @@
     }
 
     &--score {
-        font-size: 40px;
-        font-weight: 100;
+        font-size: 30px;
 
         background: $light;
         transition: background .3s ease;

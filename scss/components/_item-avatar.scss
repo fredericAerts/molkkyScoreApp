@@ -58,7 +58,7 @@
         }
 
         & h2 {
-            font-size: 14px;
+            font-size: 13px;
         }
 
         & .item-avatar__face-placeholder {
@@ -163,9 +163,9 @@
     &.numbered {
 
         &:after {
-            font-size: 20px;
+            font-family: $font-family-bold;
+            font-size: 18px;
             line-height: 40px;
-
 
             content: counter(slideNum); // see components/_list.scss
         }

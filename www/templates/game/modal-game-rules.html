@@ -3,19 +3,19 @@
         <h1 class="title">{{ 'HOME.GAME.RULES-MODAL.TITLE' | translate }}</h1>
     </ion-header-bar>
     <ion-content class="padding">
-        <h4>
+        <h4 class="modal-title">
             {{ 'HOME.GAME.RULES-MODAL.BODY.SETUP.TITLE' | translate }}
         </h4>
         <p>
             {{ 'HOME.GAME.RULES-MODAL.BODY.SETUP.TEXT' | translate }}
         </p>
-        <h4>
+        <h4 class="modal-title">
             {{ 'HOME.GAME.RULES-MODAL.BODY.RULES.TITLE' | translate }}
         </h4>
         <p>
             {{ 'HOME.GAME.RULES-MODAL.BODY.RULES.TEXT' | translate }}
         </p>
-        <h4>
+        <h4 class="modal-title">
             {{ 'HOME.GAME.RULES-MODAL.BODY.SETTINGS.TITLE' | translate }}
             <span ng-if="game.gameRulesModalVariables.isCustom" class="footnote">
                 ({{ 'HOME.GAME.RULES-MODAL.BODY.SETTINGS.CUSTOMIZED' | translate }})
@@ -24,6 +24,7 @@
         <p>
             {{ 'HOME.GAME.RULES-MODAL.BODY.SETTINGS.TEXT' | translate: game.gameRulesModalVariables }}
         </p>
+        <br>
     </ion-content>
     <ion-footer-bar>
         <button class="button button-positive pull-right" ng-click="game.gameRulesModal.hide()">Close</button>

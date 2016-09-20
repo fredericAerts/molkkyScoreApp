@@ -1,0 +1,11 @@
+/* .ttf is best choice for offline apps  */
+@font-face {
+    font-family: 'Champion-medium';
+    src: local('Champion-medium'),
+         url('../../lib/ionic/fonts/national-champion/nationalchampion-medium-webfont.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Champion-regular';
+    src: local('Champion-regular'),
+         url('../../lib/ionic/fonts/national-champion/nationalchampion-regular-webfont.ttf') format('truetype');
+}
