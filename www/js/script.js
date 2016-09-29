@@ -5268,60 +5268,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .constant('IMAGES_ROOT', '/img');
 })();
 
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($rootScope, $scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        $scope.$on('appInitialized', function () {
-            if (!_.isEmpty(vm.addPlayersToGameModal)) {
-                vm.addPlayersToGameModal.remove();
-            }
-            initAddPlayersToGameModal();
-        });
-
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
-        }
-    }
-})();
-
 (function() {
     'use strict';
 
@@ -5641,7 +5587,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             'gameActionSheetService',
                             'loadingService',
                             'toast',
-                            '$ionicPopup'];
+                            '$ionicPopup',
+                            'tutorialService'];
 
     function GameCtrl($scope,
                         $rootScope,
@@ -5656,7 +5603,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         gameActionSheetService,
                         loadingService,
                         toast,
-                        $ionicPopup) {
+                        $ionicPopup,
+                        tutorialService) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -5675,7 +5623,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
+        vm.tutorialOngoing = false;
         vm.tutorialNeverAskAgain = false;
+        vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -5768,7 +5718,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
         }
 
-        function activateScore(score) { // user touched a number
+        function activateScore($event, score) { // user touched a number
             if (score === 0 || score === 1) {
                 vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
             }
@@ -5789,9 +5739,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 var avatarStatus = gameUtilities.getActivatedAvatarStatus(activatedScore, vm.activePlayer, settings);
                 vm.activePlayer.activatedAvatarStatus = avatarStatus;
             }
+
+            if (vm.tutorialOngoing) {
+                tutorialService.proceedTutorial($event);
+            }
         }
 
-        function processThrow() {
+        function processThrow($event) {
             if (vm.activatedScore.value < 0) {
                 return;
             }
@@ -5805,6 +5759,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             else {
                 vm.gameEnded = true;
                 vm.scoreDetailsModal.show();
+            }
+
+            if (vm.tutorialOngoing) {
+                tutorialService.proceedTutorial($event);
             }
         }
 
@@ -6048,7 +6006,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             $ionicPopup.show(options)
             .then(function(confirmed) {
                 if (confirmed) {
-                    // callback();
+                    vm.tutorialOngoing = true;
+                    tutorialService.startTutorial($scope.$new(true));
                 }
             });
         }
@@ -6134,6 +6093,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             return scoreboard;
+        }
+    }
+})();
+
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $scope.$on('appInitialized', function () {
+            if (!_.isEmpty(vm.addPlayersToGameModal)) {
+                vm.addPlayersToGameModal.remove();
+            }
+            initAddPlayersToGameModal();
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
         }
     }
 })();
@@ -7934,6 +7947,94 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')
                 }
             };
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('tutorialService', tutorialService);
+
+    tutorialService.$inject = ['dataService', 'TEMPLATES_ROOT', '$ionicPopover', '$timeout'];
+
+    function tutorialService(dataService, TEMPLATES_ROOT, $ionicPopover,  $timeout) {
+        var popoverObject = {};
+        var popoverScope = {};
+
+        var service = {
+            startTutorial: startTutorial,
+            proceedTutorial: proceedTutorial
+        };
+        return service;
+
+        ////////////////
+
+        function startTutorial(newScope) {
+            popoverScope = newScope;
+
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/tutorial/popover.html', {
+                scope: popoverScope
+            }).then(function(popover) {
+                popoverObject = popover;
+                triggerProceed(1);
+            });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                ================================================================== */
+            popoverScope.viewModel = {
+                progressStep: 0,
+                progressSteps: 5,
+                triggerProceed: triggerProceed
+            };
+
+            function triggerProceed(step) {
+                var targetElement = getTargetElement(step);
+                $timeout(function() {
+                    targetElement.triggerHandler('click');
+                });
+            }
+        }
+
+        function proceedTutorial($event) {
+            // TODO: trigger from all target clickhandlers in game controller
+            var preventDefault = false;
+            popoverScope.viewModel.progressStep++;
+
+            return popoverObject.hide().then(function() {
+                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE'
+                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT'
+
+                // switch (popoverScope.viewModel.progressStep) {
+                //     case 2: preventDefault = step2(); break;
+                //     case 3: preventDefault = step3(); break;
+                //     case 4: preventDefault = step4(); break;
+                //     case 5: preventDefault = step5(); break;
+                // }
+
+                popoverObject.show($event);
+
+                return preventDefault;
+            });
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
+        function getTargetElement(step) {
+            var targetId = '';
+            switch (step) {
+                case 1: targetId = 'score-12'; break;
+                case 2: targetId = 'score-12'; break;
+                case 3: targetId = 'player-cell'; break;
+                case 4: targetId = 'scoreboard'; break;
+                case 5: targetId = 'settings'; break;
+            }
+
+            console.log(targetId);
+            return angular.element(document.getElementById(targetId));
         }
     }
 })();

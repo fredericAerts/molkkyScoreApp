@@ -3,7 +3,7 @@
     <div class="game-board">
         <div class="row">
             <div class="col col-66">
-                <div class="game-board-cell game-board-cell--scoreboard" ng-click="game.scoreDetailsModal.show()">
+                <div id="scoreboard" class="game-board-cell game-board-cell--scoreboard" ng-click="game.scoreDetailsModal.show()">
                     <div class="row">
                         <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowOne">
                             <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face, 'active': player === game.activePlayer, 'winner': player.endPosition === 1, 'finished': player.endPosition > 1, 'disqualified': player.disqualified}">
@@ -25,14 +25,14 @@
                 </div>
             </div>
             <div class="col col-33">
-                <div class="game-board-cell game-board-cell--settings" ng-click="game.showActionSheet()">
+                <div id="settings" class="game-board-cell game-board-cell--settings" ng-click="game.showActionSheet()">
                     <button class="button button-icon icon ion-ios-gear-outline" ng-class="{'animate-spin': game.settingsAnimation}"></button>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col col-66">
-                <div class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore.value > -1}" ng-click="game.processThrow();">
+                <div id="player-cell" class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore.value > -1}" ng-click="game.processThrow($event);">
                     <ion-item class="item-avatar item-icon-right" type="item-text-wrap" ng-class="game.activePlayer.activatedAvatarStatus">
                         <div ng-if="game.activePlayer.face" class="item-avatar__avatar">
                             <img ng-src="{{game.activePlayer.face}}">
@@ -65,7 +65,7 @@
         <!-- buttons 1 - 12 -->
         <div class="row" ng-repeat="i in [0, 1, 2, 3] track by $index">
             <div class="col col-33" ng-repeat="j in [1, 2, 3] track by $index">
-                <div class="game-board-cell game-board-cell--score" ng-class="{'active': game.activatedScore.value === i*3 + j, 'single-pin': game.activatedScore.singlePin || i*3 + j === 1}" ng-click="game.activateScore(i*3 + j)">
+                <div id="score-{{i*3 + j}}" class="game-board-cell game-board-cell--score" ng-class="{'active': game.activatedScore.value === i*3 + j, 'single-pin': game.activatedScore.singlePin || i*3 + j === 1}" ng-click="game.activateScore($event, i*3 + j)">
                     {{i*3 + j}}
                 </div>
             </div>

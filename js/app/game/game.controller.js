@@ -18,7 +18,8 @@
                             'gameActionSheetService',
                             'loadingService',
                             'toast',
-                            '$ionicPopup'];
+                            '$ionicPopup',
+                            'tutorialService'];
 
     function GameCtrl($scope,
                         $rootScope,
@@ -33,7 +34,8 @@
                         gameActionSheetService,
                         loadingService,
                         toast,
-                        $ionicPopup) {
+                        $ionicPopup,
+                        tutorialService) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -52,7 +54,9 @@
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
+        vm.tutorialOngoing = false;
         vm.tutorialNeverAskAgain = false;
+        vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -145,7 +149,7 @@
             }
         }
 
-        function activateScore(score) { // user touched a number
+        function activateScore($event, score) { // user touched a number
             if (score === 0 || score === 1) {
                 vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
             }
@@ -166,9 +170,13 @@
                 var avatarStatus = gameUtilities.getActivatedAvatarStatus(activatedScore, vm.activePlayer, settings);
                 vm.activePlayer.activatedAvatarStatus = avatarStatus;
             }
+
+            if (vm.tutorialOngoing) {
+                tutorialService.proceedTutorial($event);
+            }
         }
 
-        function processThrow() {
+        function processThrow($event) {
             if (vm.activatedScore.value < 0) {
                 return;
             }
@@ -182,6 +190,10 @@
             else {
                 vm.gameEnded = true;
                 vm.scoreDetailsModal.show();
+            }
+
+            if (vm.tutorialOngoing) {
+                tutorialService.proceedTutorial($event);
             }
         }
 
@@ -425,7 +437,8 @@
             $ionicPopup.show(options)
             .then(function(confirmed) {
                 if (confirmed) {
-                    // callback();
+                    vm.tutorialOngoing = true;
+                    tutorialService.startTutorial($scope.$new(true));
                 }
             });
         }

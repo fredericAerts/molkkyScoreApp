@@ -37,8 +37,30 @@
         "TUTORIAL": {
             "INVITE-POPUP": {
                 "TITLE": "Take a tour",
-                "TEXT": "<p>Incorrect usage of the score dial pad can skew player statistics. If you are a first time user, we really recommend you taking a quick tour here.</p><p>Would you like us to guide you through the score dial pad via a 4-step tutorial?</p>",
+                "TEXT": "<p>Incorrect usage of the score dial pad can skew player statistics. If you are a first time user, we really recommend you taking a quick tour here.</p><p>Would you like us to guide you through the score dial pad via a 5-step tutorial?</p>",
                 "ASK-AGAIN": "Don't ask again"
+            },
+            "INFO-POPOVER": {
+                "STEP-1": {
+                    "TITLE": "Step 1",
+                    "TEXT": "Step 1 text"
+                },
+                "STEP-2": {
+                    "TITLE": "Step 2",
+                    "TEXT": "Step 2 text"
+                },
+                "STEP-3": {
+                    "TITLE": "Step 3",
+                    "TEXT": "Step 3 text"
+                },
+                "STEP-4": {
+                    "TITLE": "Step 4",
+                    "TEXT": "Step 4 text"
+                },
+                "STEP-5": {
+                    "TITLE": "Step 5",
+                    "TEXT": "Step 5 text"
+                }
             }
         },
         "GAME": {
