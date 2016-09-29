@@ -45,16 +45,16 @@
                     id: 0,
                     firstName: 'John',
                     lastName: 'Doe',
-                    tagline: 'Hi, I\'m John',
-                    face: 'img/ben.png',
+                    tagline: 'Look at my tagline',
+                    face: 'img/dummy-man.jpg',
                     statistics: getDefaultStatistics()
                 },
                 {
                     id: 1,
                     firstName: 'Jane',
                     lastName: 'Doe',
-                    tagline: 'Hi, I\'m Jane',
-                    face: 'img/mike.png',
+                    tagline: 'Hey, it\'s me!',
+                    face: 'img/dummy-woman.jpg',
                     statistics: getDefaultStatistics()
                 }
             ];
@@ -423,8 +423,8 @@
         /*  Functions for populating database for first time app users
             ======================================================================================== */
         function introPlayers() {
-            var playerOneValues = ['1', 'John', 'Doe', 'Hello John', 'img/ben.png'];
-            var playerTwoValues = ['2', 'Jane', 'Doe', 'Hello Jane', ''];
+            var playerOneValues = ['1', 'John', 'Doe', 'Look at my tagline', 'img/dummy-man.jpg'];
+            var playerTwoValues = ['2', 'Jane', 'Doe', 'Hey, it\'s me!', 'img/dummy-woman.jpg'];
             var insertPlayers = 'INSERT INTO PLAYERS (ID, FIRSTNAME, LASTNAME,' +
                 ' TAGLINE, FACE) VALUES (?,?,?,?,?)';
             return $q.all([

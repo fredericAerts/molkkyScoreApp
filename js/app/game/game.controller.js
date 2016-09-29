@@ -9,6 +9,7 @@
                             '$rootScope',
                             '$state',
                             '$translate',
+                            'TEMPLATES_ROOT',
                             'gameService',
                             'gameUtilities',
                             'settingsService',
@@ -16,12 +17,14 @@
                             'modalsService',
                             'gameActionSheetService',
                             'loadingService',
-                            'toast'];
+                            'toast',
+                            '$ionicPopup'];
 
     function GameCtrl($scope,
                         $rootScope,
                         $state,
                         $translate,
+                        TEMPLATES_ROOT,
                         gameService,
                         gameUtilities,
                         settingsService,
@@ -29,7 +32,8 @@
                         modalsService,
                         gameActionSheetService,
                         loadingService,
-                        toast) {
+                        toast,
+                        $ionicPopup) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -48,6 +52,7 @@
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
+        vm.tutorialNeverAskAgain = false;
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -55,6 +60,7 @@
         vm.showActionSheet = showActionSheet;
         vm.showExitGamePopup = showExitGamePopup;
         vm.showNewGamePopup = showNewGamePopup;
+        vm.updateTutorialInvite = updateTutorialInvite;
 
         activate();
 
@@ -70,6 +76,8 @@
             initGameRulesModal();
             initAddPlayersToGameModal();
             initActionSheetActions();
+
+            showTutorialInvite();
         }
 
         /*  LISTENERS
@@ -196,6 +204,11 @@
 
         function showNewGamePopup() {
             gameActionSheetService.showNewPopup(newGame);
+        }
+
+        function updateTutorialInvite() {
+            console.log('update tutorial invite');
+            // TODO: write to DB
         }
 
         /*  ACTION SHEET FUNCTIONS
@@ -389,6 +402,32 @@
             vm.gameRulesModalVariables.winningScore = settings.winningScore;
             vm.gameRulesModalVariables.winningScoreExceeded = winningScoreExceeded;
             vm.gameRulesModalVariables.threeMisses = threeMisses;
+        }
+
+        function showTutorialInvite() {
+            var options = {
+                title: $translate.instant('HOME.TUTORIAL.INVITE-POPUP.TITLE'),
+                templateUrl: TEMPLATES_ROOT + '/game/popup-tutorial.html',
+                scope: $scope,
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+            $ionicPopup.show(options)
+            .then(function(confirmed) {
+                if (confirmed) {
+                    // callback();
+                }
+            });
         }
     }
 })();

@@ -5268,6 +5268,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .constant('IMAGES_ROOT', '/img');
 })();
 
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $scope.$on('appInitialized', function () {
+            if (!_.isEmpty(vm.addPlayersToGameModal)) {
+                vm.addPlayersToGameModal.remove();
+            }
+            initAddPlayersToGameModal();
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
+})();
+
 (function() {
     'use strict';
 
@@ -5578,6 +5632,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             '$rootScope',
                             '$state',
                             '$translate',
+                            'TEMPLATES_ROOT',
                             'gameService',
                             'gameUtilities',
                             'settingsService',
@@ -5585,12 +5640,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             'modalsService',
                             'gameActionSheetService',
                             'loadingService',
-                            'toast'];
+                            'toast',
+                            '$ionicPopup'];
 
     function GameCtrl($scope,
                         $rootScope,
                         $state,
                         $translate,
+                        TEMPLATES_ROOT,
                         gameService,
                         gameUtilities,
                         settingsService,
@@ -5598,7 +5655,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         modalsService,
                         gameActionSheetService,
                         loadingService,
-                        toast) {
+                        toast,
+                        $ionicPopup) {
         /* jshint validthis: true */
         var vm = this;
         var addPlayersToGameModal = {}; // opened from actionSheet
@@ -5617,6 +5675,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
+        vm.tutorialNeverAskAgain = false;
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -5624,6 +5683,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.showActionSheet = showActionSheet;
         vm.showExitGamePopup = showExitGamePopup;
         vm.showNewGamePopup = showNewGamePopup;
+        vm.updateTutorialInvite = updateTutorialInvite;
 
         activate();
 
@@ -5639,6 +5699,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initGameRulesModal();
             initAddPlayersToGameModal();
             initActionSheetActions();
+
+            showTutorialInvite();
         }
 
         /*  LISTENERS
@@ -5765,6 +5827,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function showNewGamePopup() {
             gameActionSheetService.showNewPopup(newGame);
+        }
+
+        function updateTutorialInvite() {
+            console.log('update tutorial invite');
+            // TODO: write to DB
         }
 
         /*  ACTION SHEET FUNCTIONS
@@ -5959,6 +6026,32 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.gameRulesModalVariables.winningScoreExceeded = winningScoreExceeded;
             vm.gameRulesModalVariables.threeMisses = threeMisses;
         }
+
+        function showTutorialInvite() {
+            var options = {
+                title: $translate.instant('HOME.TUTORIAL.INVITE-POPUP.TITLE'),
+                templateUrl: TEMPLATES_ROOT + '/game/popup-tutorial.html',
+                scope: $scope,
+                buttons: [
+                    {
+                        text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
+                    },
+                    {
+                        text: '<b>' + $translate.instant('HOME.GENERAL.CONFIRM.YES') + '</b>',
+                        type: 'button-positive',
+                        onTap: function(event) {
+                            return true;
+                        }
+                    }
+                ]
+            };
+            $ionicPopup.show(options)
+            .then(function(confirmed) {
+                if (confirmed) {
+                    // callback();
+                }
+            });
+        }
     }
 })();
 
@@ -6041,60 +6134,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             return scoreboard;
-        }
-    }
-})();
-
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
-
-    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
-
-    function HomeCtrl($rootScope, $scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
-
-        ////////////////
-
-        function activate() {
-            initAddPlayersToGameModal();
-        }
-
-        /*  LISTENERS
-            ======================================================================================== */
-        $scope.$on('appInitialized', function () {
-            if (!_.isEmpty(vm.addPlayersToGameModal)) {
-                vm.addPlayersToGameModal.remove();
-            }
-            initAddPlayersToGameModal();
-        });
-
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
-            });
-
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
         }
     }
 })();
@@ -6825,16 +6864,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     id: 0,
                     firstName: 'John',
                     lastName: 'Doe',
-                    tagline: 'Hi, I\'m John',
-                    face: 'img/ben.png',
+                    tagline: 'Look at my tagline',
+                    face: 'img/dummy-man.jpg',
                     statistics: getDefaultStatistics()
                 },
                 {
                     id: 1,
                     firstName: 'Jane',
                     lastName: 'Doe',
-                    tagline: 'Hi, I\'m Jane',
-                    face: 'img/mike.png',
+                    tagline: 'Hey, it\'s me!',
+                    face: 'img/dummy-woman.jpg',
                     statistics: getDefaultStatistics()
                 }
             ];
@@ -7203,8 +7242,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  Functions for populating database for first time app users
             ======================================================================================== */
         function introPlayers() {
-            var playerOneValues = ['1', 'John', 'Doe', 'Hello John', 'img/ben.png'];
-            var playerTwoValues = ['2', 'Jane', 'Doe', 'Hello Jane', ''];
+            var playerOneValues = ['1', 'John', 'Doe', 'Look at my tagline', 'img/dummy-man.jpg'];
+            var playerTwoValues = ['2', 'Jane', 'Doe', 'Hey, it\'s me!', 'img/dummy-woman.jpg'];
             var insertPlayers = 'INSERT INTO PLAYERS (ID, FIRSTNAME, LASTNAME,' +
                 ' TAGLINE, FACE) VALUES (?,?,?,?,?)';
             return $q.all([

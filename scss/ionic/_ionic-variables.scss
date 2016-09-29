@@ -620,7 +620,7 @@ $sheet-options-border-color:      #d1d3d6 !default;
 // Popups
 // -------------------------------
 
-$popup-width:                     250px !default;
+$popup-width:                     280px !default;
 $popup-enter-animation:           superScaleIn !default;
 $popup-enter-animation-duration:  0.2s !default;
 $popup-leave-animation-duration:  0.1s !default;
@@ -751,10 +751,10 @@ $z-index-popover:                 10 !default;
 $z-index-action-sheet:            11 !default;
 $z-index-menu-bar-header:         11 !default;
 $z-index-scroll-content-false:    11 !default;
-$z-index-loading:                 12 !default;
 $z-index-modal:                   13 !default;
 $z-index-backdrop:                14 !default;
 $z-index-popup:                   14 !default;
+$z-index-loading:                 15 !default;
 $z-index-scroll-bar:              9999 !default;
 $z-index-click-block:             99999 !default;
 

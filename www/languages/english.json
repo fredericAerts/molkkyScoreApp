@@ -34,6 +34,13 @@
                 "MAX-PARTICIPANTS": "Max participants reached"
             }
         },
+        "TUTORIAL": {
+            "INVITE-POPUP": {
+                "TITLE": "Take a tour",
+                "TEXT": "<p>Incorrect usage of the score dial pad can skew player statistics. If you are a first time user, we really recommend you taking a quick tour here.</p><p>Would you like us to guide you through the score dial pad via a 4-step tutorial?</p>",
+                "ASK-AGAIN": "Don't ask again"
+            }
+        },
         "GAME": {
             "VIEW-TITLE": "Let's play!",
             "ACTIVE-PLAYER-CELL": {
