@@ -5611,6 +5611,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var settings = {};
         var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
+        var scoreDetailsModal = {};
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -5619,17 +5620,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.gameEnded = false;
         vm.gameRulesModal = {};
         vm.gameRulesModalVariables = {};
-        vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
-        vm.tutorialOngoing = false;
         vm.tutorialNeverAskAgain = false;
         vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
         vm.getScoreboardDetailsRowIterator = getScoreboardDetailsRowIterator;
+        vm.showScoreDetailsModal = showScoreDetailsModal;
         vm.showActionSheet = showActionSheet;
         vm.showExitGamePopup = showExitGamePopup;
         vm.showNewGamePopup = showNewGamePopup;
@@ -5660,10 +5660,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             toastMessages = toast.getMessages().game;
         });
 
+        $scope.$on('tutorial:finished', function(event) {
+            activateScore(12); // untap number 12
+            event.stopPropagation();
+        });
+
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             addPlayersToGameModal.remove();
-            vm.scoreDetailsModal.remove();
+            scoreDetailsModal.remove();
         });
 
         /*  FUNCTIONS
@@ -5691,8 +5696,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initScoreDetailsModal() {
             return modalsService.initScoreDetailsModal($scope).then(function(modal) {
-                vm.scoreDetailsModal = modal;
-                return vm.scoreDetailsModal;
+                scoreDetailsModal = modal;
+                return scoreDetailsModal;
             });
         }
 
@@ -5719,6 +5724,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function activateScore($event, score) { // user touched a number
+            if (tutorialCheckPoint($event)) {
+                return;
+            };
+
             if (score === 0 || score === 1) {
                 vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
             }
@@ -5739,16 +5748,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 var avatarStatus = gameUtilities.getActivatedAvatarStatus(activatedScore, vm.activePlayer, settings);
                 vm.activePlayer.activatedAvatarStatus = avatarStatus;
             }
-
-            if (vm.tutorialOngoing) {
-                tutorialService.proceedTutorial($event);
-            }
         }
 
         function processThrow($event) {
-            if (vm.activatedScore.value < 0) {
+            if (tutorialCheckPoint($event) || vm.activatedScore.value < 0) {
                 return;
-            }
+            };
 
             vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
@@ -5758,11 +5763,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
             else {
                 vm.gameEnded = true;
-                vm.scoreDetailsModal.show();
-            }
-
-            if (vm.tutorialOngoing) {
-                tutorialService.proceedTutorial($event);
+                scoreDetailsModal.show();
             }
         }
 
@@ -5777,6 +5778,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             else {
                 return [];
             }
+        }
+
+        function showScoreDetailsModal($event) {
+            if (tutorialCheckPoint($event)) {
+                return;
+            };
+
+            scoreDetailsModal.show();
         }
 
         function showExitGamePopup() {
@@ -5804,7 +5813,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return actionSheetActions;
         }
 
-        function showActionSheet() {
+        function showActionSheet($event) {
+            if (tutorialCheckPoint($event)) {
+                return;
+            };
+
             var isGameStarted = gameUtilities.isGameStarted(vm.participants);
             var isGameEnded = gameUtilities.isGameEnded(vm.participants);
 
@@ -5841,7 +5854,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 initGame();
             }
 
-            vm.scoreDetailsModal.hide();
+            scoreDetailsModal.hide();
         }
 
         function undoLast() {
@@ -5887,7 +5900,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer, false);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
-                    vm.scoreDetailsModal.show();
+                    scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
@@ -6006,10 +6019,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             $ionicPopup.show(options)
             .then(function(confirmed) {
                 if (confirmed) {
-                    vm.tutorialOngoing = true;
                     tutorialService.startTutorial($scope.$new(true));
                 }
             });
+        }
+
+        function tutorialCheckPoint($event) {
+            if (tutorialService.isTutorialOngoing()) {
+                tutorialService.proceedTutorial($event);
+
+                if (tutorialService.isPreventClickHandler()) {
+                    return true;
+                }
+            }
         }
     }
 })();
@@ -6147,50 +6169,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             function addPlayersToGameModalConfirmFunction() {
                 $state.go('game');
             }
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('loadingService', loadingService);
-
-    loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
-
-    function loadingService($rootScope, TEMPLATES_ROOT, $ionicLoading) {
-        var service = {
-            show: show,
-            showIndefinite: showIndefinite,
-            hide: hide
-        };
-        return service;
-
-        ////////////////
-
-        function show (message) {
-            $rootScope.loadingMessage = message;
-
-            $ionicLoading.show({
-                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
-                noBackdrop: true,
-                duration: 1000
-            });
-        }
-
-        function showIndefinite(message) {
-            $rootScope.loadingMessage = message;
-
-            $ionicLoading.show({
-                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
-                noBackdrop: true
-            });
-        }
-
-        function hide() {
-            $ionicLoading.hide();
         }
     }
 })();
@@ -6377,6 +6355,50 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function getGuestColors() {
             return ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
+        }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .factory('loadingService', loadingService);
+
+    loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
+
+    function loadingService($rootScope, TEMPLATES_ROOT, $ionicLoading) {
+        var service = {
+            show: show,
+            showIndefinite: showIndefinite,
+            hide: hide
+        };
+        return service;
+
+        ////////////////
+
+        function show (message) {
+            $rootScope.loadingMessage = message;
+
+            $ionicLoading.show({
+                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
+                noBackdrop: true,
+                duration: 1000
+            });
+        }
+
+        function showIndefinite(message) {
+            $rootScope.loadingMessage = message;
+
+            $ionicLoading.show({
+                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
+                noBackdrop: true
+            });
+        }
+
+        function hide() {
+            $ionicLoading.hide();
         }
     }
 })();
@@ -7963,10 +7985,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     function tutorialService(dataService, TEMPLATES_ROOT, $ionicPopover,  $timeout) {
         var popoverObject = {};
         var popoverScope = {};
+        var totalProgressSteps = 5;
+        var tutorialOngoing = false;
+        var preventClickHandler = false;
 
         var service = {
             startTutorial: startTutorial,
-            proceedTutorial: proceedTutorial
+            proceedTutorial: proceedTutorial,
+            isPreventClickHandler: isPreventClickHandler,
+            isTutorialOngoing: isTutorialOngoing
         };
         return service;
 
@@ -7976,7 +8003,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             popoverScope = newScope;
 
             $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/tutorial/popover.html', {
-                scope: popoverScope
+                scope: popoverScope,
+                backdropClickToClose: false,
+                hardwareBackButtonClose: false
             }).then(function(popover) {
                 popoverObject = popover;
                 triggerProceed(1);
@@ -7987,38 +8016,53 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ================================================================== */
             popoverScope.viewModel = {
                 progressStep: 0,
-                progressSteps: 5,
+                progressSteps: totalProgressSteps,
                 triggerProceed: triggerProceed
             };
 
             function triggerProceed(step) {
-                var targetElement = getTargetElement(step);
+                if (step > totalProgressSteps) {
+                    popoverScope.$emit('tutorial:finished'); // notify game controller
+                    popoverObject.remove();
+                    return;
+                }
+
                 $timeout(function() {
-                    targetElement.triggerHandler('click');
+                    getTargetElement(step).triggerHandler('click');
                 });
             }
         }
 
         function proceedTutorial($event) {
             // TODO: trigger from all target clickhandlers in game controller
-            var preventDefault = false;
-            popoverScope.viewModel.progressStep++;
+            popoverScope.viewModel.progressStep = popoverScope.viewModel.progressStep + 1;
+
+            switch (popoverScope.viewModel.progressStep) {
+                case 2: preventClickHandler = false; break; // tap number 2nd time
+                case 3: preventClickHandler = true; break; // tap player cell
+                case 4: preventClickHandler = true; break; // tap scoreboard
+                case 5: preventClickHandler = true; break; // tap settings
+            }
 
             return popoverObject.hide().then(function() {
-                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE'
-                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT'
-
-                // switch (popoverScope.viewModel.progressStep) {
-                //     case 2: preventDefault = step2(); break;
-                //     case 3: preventDefault = step3(); break;
-                //     case 4: preventDefault = step4(); break;
-                //     case 5: preventDefault = step5(); break;
-                // }
+                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE';
+                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT';
 
                 popoverObject.show($event);
-
-                return preventDefault;
             });
+        }
+
+        function isPreventClickHandler() {
+            return preventClickHandler;
+        }
+
+        function isTutorialOngoing() {
+            if (!popoverObject || _.isEmpty(popoverObject)) {
+                return false;
+            }
+
+            tutorialOngoing = popoverScope.viewModel.progressStep < totalProgressSteps;
+            return tutorialOngoing;
         }
 
         /*  Helper functions
@@ -8033,7 +8077,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 case 5: targetId = 'settings'; break;
             }
 
-            console.log(targetId);
             return angular.element(document.getElementById(targetId));
         }
     }

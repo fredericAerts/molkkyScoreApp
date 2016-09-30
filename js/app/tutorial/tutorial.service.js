@@ -10,10 +10,15 @@
     function tutorialService(dataService, TEMPLATES_ROOT, $ionicPopover,  $timeout) {
         var popoverObject = {};
         var popoverScope = {};
+        var totalProgressSteps = 5;
+        var tutorialOngoing = false;
+        var preventClickHandler = false;
 
         var service = {
             startTutorial: startTutorial,
-            proceedTutorial: proceedTutorial
+            proceedTutorial: proceedTutorial,
+            isPreventClickHandler: isPreventClickHandler,
+            isTutorialOngoing: isTutorialOngoing
         };
         return service;
 
@@ -23,7 +28,9 @@
             popoverScope = newScope;
 
             $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/tutorial/popover.html', {
-                scope: popoverScope
+                scope: popoverScope,
+                backdropClickToClose: false,
+                hardwareBackButtonClose: false
             }).then(function(popover) {
                 popoverObject = popover;
                 triggerProceed(1);
@@ -34,38 +41,53 @@
                 ================================================================== */
             popoverScope.viewModel = {
                 progressStep: 0,
-                progressSteps: 5,
+                progressSteps: totalProgressSteps,
                 triggerProceed: triggerProceed
             };
 
             function triggerProceed(step) {
-                var targetElement = getTargetElement(step);
+                if (step > totalProgressSteps) {
+                    popoverScope.$emit('tutorial:finished'); // notify game controller
+                    popoverObject.remove();
+                    return;
+                }
+
                 $timeout(function() {
-                    targetElement.triggerHandler('click');
+                    getTargetElement(step).triggerHandler('click');
                 });
             }
         }
 
         function proceedTutorial($event) {
             // TODO: trigger from all target clickhandlers in game controller
-            var preventDefault = false;
-            popoverScope.viewModel.progressStep++;
+            popoverScope.viewModel.progressStep = popoverScope.viewModel.progressStep + 1;
+
+            switch (popoverScope.viewModel.progressStep) {
+                case 2: preventClickHandler = false; break; // tap number 2nd time
+                case 3: preventClickHandler = true; break; // tap player cell
+                case 4: preventClickHandler = true; break; // tap scoreboard
+                case 5: preventClickHandler = true; break; // tap settings
+            }
 
             return popoverObject.hide().then(function() {
-                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE'
-                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT'
-
-                // switch (popoverScope.viewModel.progressStep) {
-                //     case 2: preventDefault = step2(); break;
-                //     case 3: preventDefault = step3(); break;
-                //     case 4: preventDefault = step4(); break;
-                //     case 5: preventDefault = step5(); break;
-                // }
+                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE';
+                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT';
 
                 popoverObject.show($event);
-
-                return preventDefault;
             });
+        }
+
+        function isPreventClickHandler() {
+            return preventClickHandler;
+        }
+
+        function isTutorialOngoing() {
+            if (!popoverObject || _.isEmpty(popoverObject)) {
+                return false;
+            }
+
+            tutorialOngoing = popoverScope.viewModel.progressStep < totalProgressSteps;
+            return tutorialOngoing;
         }
 
         /*  Helper functions
@@ -80,7 +102,6 @@
                 case 5: targetId = 'settings'; break;
             }
 
-            console.log(targetId);
             return angular.element(document.getElementById(targetId));
         }
     }
