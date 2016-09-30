@@ -5136,6 +5136,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     dataService.initAppSettings().then(function(appSettings) {
                         $translate.use(appSettings.language);
                     });
+                    dataService.initGameTutorial();
 
                 }, function(err) {
                     console.log(err.message);
@@ -5266,6 +5267,60 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .constant('TEMPLATES_ROOT', '/templates')
         .constant('LANGUAGES_ROOT', '/languages')
         .constant('IMAGES_ROOT', '/img');
+})();
+
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('HomeCtrl', HomeCtrl);
+
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+
+    function HomeCtrl($rootScope, $scope, $state, modalsService) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.addPlayersToGameModal = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initAddPlayersToGameModal();
+        }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $scope.$on('appInitialized', function () {
+            if (!_.isEmpty(vm.addPlayersToGameModal)) {
+                vm.addPlayersToGameModal.remove();
+            }
+            initAddPlayersToGameModal();
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.addPlayersToGameModal.remove();
+        });
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initAddPlayersToGameModal() {
+            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
+            .then(function(modal) {
+                vm.addPlayersToGameModal = modal;
+                return vm.addPlayersToGameModal;
+            });
+
+            function addPlayersToGameModalConfirmFunction() {
+                $state.go('game');
+            }
+        }
+    }
 })();
 
 (function() {
@@ -5611,7 +5666,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var settings = {};
         var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
-        var scoreDetailsModal = {};
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -5620,11 +5674,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.gameEnded = false;
         vm.gameRulesModal = {};
         vm.gameRulesModalVariables = {};
+        vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
-        vm.tutorialNeverAskAgain = false;
-        vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -5633,7 +5686,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         vm.showActionSheet = showActionSheet;
         vm.showExitGamePopup = showExitGamePopup;
         vm.showNewGamePopup = showNewGamePopup;
-        vm.updateTutorialInvite = updateTutorialInvite;
 
         activate();
 
@@ -5650,7 +5702,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initAddPlayersToGameModal();
             initActionSheetActions();
 
-            showTutorialInvite();
+            if (gameService.getTutorial().showInvite) {
+                showTutorialInvite();
+            }
         }
 
         /*  LISTENERS
@@ -5661,14 +5715,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         });
 
         $scope.$on('tutorial:finished', function(event) {
-            activateScore(12); // untap number 12
+            resetActivatedScore(); // untap number
             event.stopPropagation();
         });
 
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             addPlayersToGameModal.remove();
-            scoreDetailsModal.remove();
+            vm.scoreDetailsModal.remove();
         });
 
         /*  FUNCTIONS
@@ -5696,8 +5750,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initScoreDetailsModal() {
             return modalsService.initScoreDetailsModal($scope).then(function(modal) {
-                scoreDetailsModal = modal;
-                return scoreDetailsModal;
+                vm.scoreDetailsModal = modal;
+                return vm.scoreDetailsModal;
             });
         }
 
@@ -5726,7 +5780,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function activateScore($event, score) { // user touched a number
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
             if (score === 0 || score === 1) {
                 vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
@@ -5753,7 +5807,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function processThrow($event) {
             if (tutorialCheckPoint($event) || vm.activatedScore.value < 0) {
                 return;
-            };
+            }
 
             vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
@@ -5763,7 +5817,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
             else {
                 vm.gameEnded = true;
-                scoreDetailsModal.show();
+                vm.scoreDetailsModal.show();
             }
         }
 
@@ -5783,9 +5837,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function showScoreDetailsModal($event) {
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
-            scoreDetailsModal.show();
+            vm.scoreDetailsModal.show();
         }
 
         function showExitGamePopup() {
@@ -5794,11 +5848,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function showNewGamePopup() {
             gameActionSheetService.showNewPopup(newGame);
-        }
-
-        function updateTutorialInvite() {
-            console.log('update tutorial invite');
-            // TODO: write to DB
         }
 
         /*  ACTION SHEET FUNCTIONS
@@ -5816,7 +5865,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function showActionSheet($event) {
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
             var isGameStarted = gameUtilities.isGameStarted(vm.participants);
             var isGameEnded = gameUtilities.isGameEnded(vm.participants);
@@ -5854,7 +5903,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 initGame();
             }
 
-            scoreDetailsModal.hide();
+            vm.scoreDetailsModal.hide();
         }
 
         function undoLast() {
@@ -5900,7 +5949,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer, false);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
-                    scoreDetailsModal.show();
+                    vm.scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
@@ -5999,6 +6048,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function showTutorialInvite() {
+            // variables only used in popop template
+            vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
+            vm.tutorialNeverAskAgain = false;
+
             var options = {
                 title: $translate.instant('HOME.TUTORIAL.INVITE-POPUP.TITLE'),
                 templateUrl: TEMPLATES_ROOT + '/game/popup-tutorial.html',
@@ -6016,10 +6069,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     }
                 ]
             };
+
             $ionicPopup.show(options)
             .then(function(confirmed) {
                 if (confirmed) {
                     tutorialService.startTutorial($scope.$new(true));
+                }
+                if (vm.tutorialNeverAskAgain) {
+                    gameService.getTutorial().showInvite = false;
+                    gameService.updateTutorial();
                 }
             });
         }
@@ -6043,17 +6101,20 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('gameService', gameService);
 
-    gameService.$inject = ['playersService'];
+    gameService.$inject = ['playersService', 'dataService'];
 
-    function gameService(playersService) {
+    function gameService(playersService, dataService) {
         var participants = [];
+        var tutorial = {};
 
         var service = {
             setParticipants: setParticipants,
             getParticipants: getParticipants,
             initParticipants: initParticipants,
             sortParticipantsOnScore: sortParticipantsOnScore,
-            initScoreboard: initScoreboard
+            initScoreboard: initScoreboard,
+            getTutorial: getTutorial,
+            updateTutorial: updateTutorial
         };
         return service;
 
@@ -6116,59 +6177,61 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             return scoreboard;
         }
+
+        function getTutorial() {
+            if (_.isEmpty(tutorial)) {
+                tutorial = dataService.getGameTutorial();
+            }
+
+            return tutorial;
+        }
+
+        function updateTutorial() {
+            dataService.updateGameTutorial();
+        }
     }
 })();
-
 
 (function() {
     'use strict';
 
     angular
         .module('molkkyscore')
-        .controller('HomeCtrl', HomeCtrl);
+        .factory('loadingService', loadingService);
 
-    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+    loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
 
-    function HomeCtrl($rootScope, $scope, $state, modalsService) {
-        /* jshint validthis: true */
-        var vm = this;
-
-        vm.addPlayersToGameModal = {};
-
-        activate();
+    function loadingService($rootScope, TEMPLATES_ROOT, $ionicLoading) {
+        var service = {
+            show: show,
+            showIndefinite: showIndefinite,
+            hide: hide
+        };
+        return service;
 
         ////////////////
 
-        function activate() {
-            initAddPlayersToGameModal();
+        function show (message) {
+            $rootScope.loadingMessage = message;
+
+            $ionicLoading.show({
+                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
+                noBackdrop: true,
+                duration: 1000
+            });
         }
 
-        /*  LISTENERS
-            ======================================================================================== */
-        $scope.$on('appInitialized', function () {
-            if (!_.isEmpty(vm.addPlayersToGameModal)) {
-                vm.addPlayersToGameModal.remove();
-            }
-            initAddPlayersToGameModal();
-        });
+        function showIndefinite(message) {
+            $rootScope.loadingMessage = message;
 
-        // Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function() {
-            vm.addPlayersToGameModal.remove();
-        });
-
-        /*  FUNCTIONS
-            ======================================================================================== */
-        function initAddPlayersToGameModal() {
-            return modalsService.getAddPlayersToGameModal($scope, addPlayersToGameModalConfirmFunction)
-            .then(function(modal) {
-                vm.addPlayersToGameModal = modal;
-                return vm.addPlayersToGameModal;
+            $ionicLoading.show({
+                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
+                noBackdrop: true
             });
+        }
 
-            function addPlayersToGameModalConfirmFunction() {
-                $state.go('game');
-            }
+        function hide() {
+            $ionicLoading.hide();
         }
     }
 })();
@@ -6355,50 +6418,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function getGuestColors() {
             return ['blonde', 'orange', 'pink', 'white', 'brown', 'blue', 'green', 'purple'];
-        }
-    }
-})();
-
-(function() {
-    'use strict';
-
-    angular
-        .module('molkkyscore')
-        .factory('loadingService', loadingService);
-
-    loadingService.$inject = ['$rootScope', 'TEMPLATES_ROOT', '$ionicLoading'];
-
-    function loadingService($rootScope, TEMPLATES_ROOT, $ionicLoading) {
-        var service = {
-            show: show,
-            showIndefinite: showIndefinite,
-            hide: hide
-        };
-        return service;
-
-        ////////////////
-
-        function show (message) {
-            $rootScope.loadingMessage = message;
-
-            $ionicLoading.show({
-                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
-                noBackdrop: true,
-                duration: 1000
-            });
-        }
-
-        function showIndefinite(message) {
-            $rootScope.loadingMessage = message;
-
-            $ionicLoading.show({
-                templateUrl: TEMPLATES_ROOT + '/loading/loading.html',
-                noBackdrop: true
-            });
-        }
-
-        function hide() {
-            $ionicLoading.hide();
         }
     }
 })();
@@ -6867,6 +6886,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var overallStatistics = {};
         var gameSettings = {};
         var appSettings = {};
+        var gameTutorial = {};
 
         var service = {
             initBrowserDev: initBrowserDev,
@@ -6876,15 +6896,18 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initOverallStatistics: initOverallStatistics,
             initGameSettings: initGameSettings,
             initAppSettings: initAppSettings,
+            initGameTutorial: initGameTutorial,
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
             getDefaultGameSettings: getDefaultGameSettings,
             getAppSettings: getAppSettings,
+            getGameTutorial: getGameTutorial,
             updatePlayerStatistics: updatePlayerStatistics,
             updateOverallStatistics: updateOverallStatistics,
             updateGameSettings: updateGameSettings,
             updateAppSettings: updateAppSettings,
+            updateGameTutorial: updateGameTutorial,
             updatePlayerProfile: updatePlayerProfile,
             addPlayer: addPlayer,
             removePlayer: removePlayer
@@ -6923,6 +6946,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             };
             appSettings = {
                 language: 'english'
+            };
+            gameTutorial = {
+                showInvite: true
             };
 
             function getDefaultStatistics() {
@@ -7063,6 +7089,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function initGameTutorial() {
+            var selectGameTutorialQuery = 'SELECT * FROM GAME_TUTORIAL' + ' LIMIT 1';
+            return $cordovaSQLite.execute(database, selectGameTutorialQuery).then(function(res) {
+                if (res.rows.length) {
+                    gameTutorial.showInvite = res.rows.item(0).SHOW_INVITE === 1 ? true : false;
+                    return gameTutorial;
+                }
+                else {
+                    return;
+                }
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
         function getAllPlayers() {
             return players;
         }
@@ -7085,6 +7126,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function getAppSettings() {
             return appSettings;
+        }
+
+        function getGameTutorial() {
+            return gameTutorial;
         }
 
         function updatePlayerStatistics(player) {
@@ -7142,6 +7187,21 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                                         ' LANGUAGE="' + language + '"';
             $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
                 // app settings updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateGameTutorial() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var showInvite = gameTutorial.showInvite ? 1 : 0;
+            var updateGameTutorial = 'UPDATE GAME_TUTORIAL SET' +
+                                        ' SHOW_INVITE="' + showInvite + '"';
+            $cordovaSQLite.execute(database, updateGameTutorial).then(function(res) {
+                // game tutorial updated
             }, function (err) {
                 console.error(err.message);
             });
@@ -7218,6 +7278,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 ' WINNING_SCORE_EXCEEDED text, THREE_MISSES text)';
             var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS APP_SETTINGS' +
                 ' (LANGUAGE text)';
+            var addGameTutorialTable = 'CREATE TABLE IF NOT EXISTS GAME_TUTORIAL' +
+                ' (SHOW_INVITE tinyint(1))';
 
             // Init players & their statistics
             return $q.all([
@@ -7226,7 +7288,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 $cordovaSQLite.execute(database, addStatisticsPlayerMetricsTable),
                 $cordovaSQLite.execute(database, addStatisticsOverallMetricsTable),
                 $cordovaSQLite.execute(database, addGameSettingsTable),
-                $cordovaSQLite.execute(database, addAppSettingsTable)
+                $cordovaSQLite.execute(database, addAppSettingsTable),
+                $cordovaSQLite.execute(database, addGameTutorialTable)
             ]).then(function(results) {
                 return initOverallStatistics().then(function(overallStatistics) {
                     if (!overallStatistics) { // first time user
@@ -7234,7 +7297,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                             introPlayers(),
                             introOverallStatistics(),
                             introGameSettings(),
-                            introAppSettings()
+                            introAppSettings(),
+                            introGameTutorial()
                         ]);
                     }
                 });
@@ -7333,6 +7397,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var insertAppSettings = 'INSERT INTO APP_SETTINGS (LANGUAGE) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertAppSettings, values);
+        }
+
+        function introGameTutorial() {
+            var values = [1];
+            var insertGameTutorial = 'INSERT INTO GAME_TUTORIAL (SHOW_INVITE) VALUES (?)';
+
+            return $cordovaSQLite.execute(database, insertGameTutorial, values);
         }
     }
 })();
@@ -7453,6 +7524,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var service = {
             getOptions: getOptions,
             getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
             updateGameParameter: updateAppParameter,
             assignDefaultGameParameters: assignDefaultGameParameters
         };

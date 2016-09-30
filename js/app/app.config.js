@@ -68,6 +68,7 @@
                     dataService.initAppSettings().then(function(appSettings) {
                         $translate.use(appSettings.language);
                     });
+                    dataService.initGameTutorial();
 
                 }, function(err) {
                     console.log(err.message);

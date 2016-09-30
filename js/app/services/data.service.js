@@ -13,6 +13,7 @@
         var overallStatistics = {};
         var gameSettings = {};
         var appSettings = {};
+        var gameTutorial = {};
 
         var service = {
             initBrowserDev: initBrowserDev,
@@ -22,15 +23,18 @@
             initOverallStatistics: initOverallStatistics,
             initGameSettings: initGameSettings,
             initAppSettings: initAppSettings,
+            initGameTutorial: initGameTutorial,
             getAllPlayers: getAllPlayers,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
             getDefaultGameSettings: getDefaultGameSettings,
             getAppSettings: getAppSettings,
+            getGameTutorial: getGameTutorial,
             updatePlayerStatistics: updatePlayerStatistics,
             updateOverallStatistics: updateOverallStatistics,
             updateGameSettings: updateGameSettings,
             updateAppSettings: updateAppSettings,
+            updateGameTutorial: updateGameTutorial,
             updatePlayerProfile: updatePlayerProfile,
             addPlayer: addPlayer,
             removePlayer: removePlayer
@@ -69,6 +73,9 @@
             };
             appSettings = {
                 language: 'english'
+            };
+            gameTutorial = {
+                showInvite: true
             };
 
             function getDefaultStatistics() {
@@ -209,6 +216,21 @@
             });
         }
 
+        function initGameTutorial() {
+            var selectGameTutorialQuery = 'SELECT * FROM GAME_TUTORIAL' + ' LIMIT 1';
+            return $cordovaSQLite.execute(database, selectGameTutorialQuery).then(function(res) {
+                if (res.rows.length) {
+                    gameTutorial.showInvite = res.rows.item(0).SHOW_INVITE === 1 ? true : false;
+                    return gameTutorial;
+                }
+                else {
+                    return;
+                }
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
         function getAllPlayers() {
             return players;
         }
@@ -231,6 +253,10 @@
 
         function getAppSettings() {
             return appSettings;
+        }
+
+        function getGameTutorial() {
+            return gameTutorial;
         }
 
         function updatePlayerStatistics(player) {
@@ -288,6 +314,21 @@
                                         ' LANGUAGE="' + language + '"';
             $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
                 // app settings updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateGameTutorial() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var showInvite = gameTutorial.showInvite ? 1 : 0;
+            var updateGameTutorial = 'UPDATE GAME_TUTORIAL SET' +
+                                        ' SHOW_INVITE="' + showInvite + '"';
+            $cordovaSQLite.execute(database, updateGameTutorial).then(function(res) {
+                // game tutorial updated
             }, function (err) {
                 console.error(err.message);
             });
@@ -364,6 +405,8 @@
                 ' WINNING_SCORE_EXCEEDED text, THREE_MISSES text)';
             var addAppSettingsTable = 'CREATE TABLE IF NOT EXISTS APP_SETTINGS' +
                 ' (LANGUAGE text)';
+            var addGameTutorialTable = 'CREATE TABLE IF NOT EXISTS GAME_TUTORIAL' +
+                ' (SHOW_INVITE tinyint(1))';
 
             // Init players & their statistics
             return $q.all([
@@ -372,7 +415,8 @@
                 $cordovaSQLite.execute(database, addStatisticsPlayerMetricsTable),
                 $cordovaSQLite.execute(database, addStatisticsOverallMetricsTable),
                 $cordovaSQLite.execute(database, addGameSettingsTable),
-                $cordovaSQLite.execute(database, addAppSettingsTable)
+                $cordovaSQLite.execute(database, addAppSettingsTable),
+                $cordovaSQLite.execute(database, addGameTutorialTable)
             ]).then(function(results) {
                 return initOverallStatistics().then(function(overallStatistics) {
                     if (!overallStatistics) { // first time user
@@ -380,7 +424,8 @@
                             introPlayers(),
                             introOverallStatistics(),
                             introGameSettings(),
-                            introAppSettings()
+                            introAppSettings(),
+                            introGameTutorial()
                         ]);
                     }
                 });
@@ -479,6 +524,13 @@
             var insertAppSettings = 'INSERT INTO APP_SETTINGS (LANGUAGE) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertAppSettings, values);
+        }
+
+        function introGameTutorial() {
+            var values = [1];
+            var insertGameTutorial = 'INSERT INTO GAME_TUTORIAL (SHOW_INVITE) VALUES (?)';
+
+            return $cordovaSQLite.execute(database, insertGameTutorial, values);
         }
     }
 })();

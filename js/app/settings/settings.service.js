@@ -13,6 +13,7 @@
         var service = {
             getOptions: getOptions,
             getParameters: getParameters,
+            updateGameParameter: updateGameParameter,
             updateGameParameter: updateAppParameter,
             assignDefaultGameParameters: assignDefaultGameParameters
         };

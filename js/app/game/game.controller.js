@@ -42,7 +42,6 @@
         var settings = {};
         var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
-        var scoreDetailsModal = {};
 
         vm.participants = [];
         vm.scoreboard = {};
@@ -51,11 +50,10 @@
         vm.gameEnded = false;
         vm.gameRulesModal = {};
         vm.gameRulesModalVariables = {};
+        vm.scoreDetailsModal = {};
         vm.scoreDetailsModalActiveTabIndex = 0;
         vm.isDetailsScoreListSorted = false;
         vm.scoreListSortPredicate = '';
-        vm.tutorialNeverAskAgain = false;
-        vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
         vm.toggleScoreListSortPredicate = toggleScoreListSortPredicate;
         vm.activateScore = activateScore;
         vm.processThrow = processThrow;
@@ -64,7 +62,6 @@
         vm.showActionSheet = showActionSheet;
         vm.showExitGamePopup = showExitGamePopup;
         vm.showNewGamePopup = showNewGamePopup;
-        vm.updateTutorialInvite = updateTutorialInvite;
 
         activate();
 
@@ -81,7 +78,9 @@
             initAddPlayersToGameModal();
             initActionSheetActions();
 
-            showTutorialInvite();
+            if (gameService.getTutorial().showInvite) {
+                showTutorialInvite();
+            }
         }
 
         /*  LISTENERS
@@ -92,14 +91,14 @@
         });
 
         $scope.$on('tutorial:finished', function(event) {
-            activateScore(12); // untap number 12
+            resetActivatedScore(); // untap number
             event.stopPropagation();
         });
 
         // Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function() {
             addPlayersToGameModal.remove();
-            scoreDetailsModal.remove();
+            vm.scoreDetailsModal.remove();
         });
 
         /*  FUNCTIONS
@@ -127,8 +126,8 @@
 
         function initScoreDetailsModal() {
             return modalsService.initScoreDetailsModal($scope).then(function(modal) {
-                scoreDetailsModal = modal;
-                return scoreDetailsModal;
+                vm.scoreDetailsModal = modal;
+                return vm.scoreDetailsModal;
             });
         }
 
@@ -157,7 +156,7 @@
         function activateScore($event, score) { // user touched a number
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
             if (score === 0 || score === 1) {
                 vm.activatedScore.value = vm.activatedScore.value === score ? resetActivatedScore().value : score;
@@ -184,7 +183,7 @@
         function processThrow($event) {
             if (tutorialCheckPoint($event) || vm.activatedScore.value < 0) {
                 return;
-            };
+            }
 
             vm.activePlayer.activatedAvatarStatus = ''; // reset
             processScore();
@@ -194,7 +193,7 @@
             }
             else {
                 vm.gameEnded = true;
-                scoreDetailsModal.show();
+                vm.scoreDetailsModal.show();
             }
         }
 
@@ -214,9 +213,9 @@
         function showScoreDetailsModal($event) {
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
-            scoreDetailsModal.show();
+            vm.scoreDetailsModal.show();
         }
 
         function showExitGamePopup() {
@@ -225,11 +224,6 @@
 
         function showNewGamePopup() {
             gameActionSheetService.showNewPopup(newGame);
-        }
-
-        function updateTutorialInvite() {
-            console.log('update tutorial invite');
-            // TODO: write to DB
         }
 
         /*  ACTION SHEET FUNCTIONS
@@ -247,7 +241,7 @@
         function showActionSheet($event) {
             if (tutorialCheckPoint($event)) {
                 return;
-            };
+            }
 
             var isGameStarted = gameUtilities.isGameStarted(vm.participants);
             var isGameEnded = gameUtilities.isGameEnded(vm.participants);
@@ -285,7 +279,7 @@
                 initGame();
             }
 
-            scoreDetailsModal.hide();
+            vm.scoreDetailsModal.hide();
         }
 
         function undoLast() {
@@ -331,7 +325,7 @@
                 statisticsService.updateStatistics('playerReachedMaxScore', vm.activePlayer, false);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
-                    scoreDetailsModal.show();
+                    vm.scoreDetailsModal.show();
                     toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
@@ -430,6 +424,10 @@
         }
 
         function showTutorialInvite() {
+            // variables only used in popop template
+            vm.tutorialTranslationId = 'HOME.TUTORIAL.INVITE-POPUP.TEXT';
+            vm.tutorialNeverAskAgain = false;
+
             var options = {
                 title: $translate.instant('HOME.TUTORIAL.INVITE-POPUP.TITLE'),
                 templateUrl: TEMPLATES_ROOT + '/game/popup-tutorial.html',
@@ -447,10 +445,15 @@
                     }
                 ]
             };
+
             $ionicPopup.show(options)
             .then(function(confirmed) {
                 if (confirmed) {
                     tutorialService.startTutorial($scope.$new(true));
+                }
+                if (vm.tutorialNeverAskAgain) {
+                    gameService.getTutorial().showInvite = false;
+                    gameService.updateTutorial();
                 }
             });
         }

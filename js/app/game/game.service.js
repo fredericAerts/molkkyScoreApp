@@ -5,17 +5,20 @@
         .module('molkkyscore')
         .factory('gameService', gameService);
 
-    gameService.$inject = ['playersService'];
+    gameService.$inject = ['playersService', 'dataService'];
 
-    function gameService(playersService) {
+    function gameService(playersService, dataService) {
         var participants = [];
+        var tutorial = {};
 
         var service = {
             setParticipants: setParticipants,
             getParticipants: getParticipants,
             initParticipants: initParticipants,
             sortParticipantsOnScore: sortParticipantsOnScore,
-            initScoreboard: initScoreboard
+            initScoreboard: initScoreboard,
+            getTutorial: getTutorial,
+            updateTutorial: updateTutorial
         };
         return service;
 
@@ -77,6 +80,18 @@
             }
 
             return scoreboard;
+        }
+
+        function getTutorial() {
+            if (_.isEmpty(tutorial)) {
+                tutorial = dataService.getGameTutorial();
+            }
+
+            return tutorial;
+        }
+
+        function updateTutorial() {
+            dataService.updateGameTutorial();
         }
     }
 })();
