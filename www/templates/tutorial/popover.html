@@ -1,18 +1,17 @@
 <ion-popover-view>
     <ion-header-bar>
-        <h1 class="title" translate="{{viewModel.titleTranslationId}}"></h1>
+        <h1 class="title" translate="{{viewModel.titleTranslationId}}" translate-values="{progressStep: viewModel.progressStep, progressSteps: viewModel.progressSteps}"></h1>
     </ion-header-bar>
     <ion-content class="padding">
-        <h5 class="popover__content-title">
-            subtitle
-        </h5>
         <p translate="{{viewModel.textTranslationId}}"></p>
-        <span>
-            {{viewModel.progressStep}}/{{viewModel.progressSteps}}
-        </span>
-        <button ng-click="viewModel.triggerProceed(viewModel.progressStep + 1)" class="button button-positive">
-          next
-        </button>
         <br>
     </ion-content>
+    <ion-footer-bar>
+        <div class="buttons pull-right">
+            <button class="button" ng-click="viewModel.triggerProceed(viewModel.progressStep + 1)">
+              <span ng-if="viewModel.progressStep < viewModel.progressSteps">NEXT</span>
+              <span ng-if="viewModel.progressStep === viewModel.progressSteps">Let's play!</span>
+            </button>
+        </div>
+    </ion-footer-bar>
 </ion-popover-view>

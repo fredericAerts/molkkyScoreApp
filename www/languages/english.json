@@ -42,24 +42,24 @@
             },
             "INFO-POPOVER": {
                 "STEP-1": {
-                    "TITLE": "Step 1",
-                    "TEXT": "Step 1 text"
+                    "TITLE": "Score input ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "The score obtained in each throw can be assigned to the respective player by tapping the appropriate number on the dial pad.<br><br>When tapping the number once, it turns green. This indicates knocking over one pin marked with this number (eg. in this case it indicates knocking over the pin marked with number 12)."
                 },
                 "STEP-2": {
-                    "TITLE": "Step 2",
-                    "TEXT": "Step 2 text"
+                    "TITLE": "Score input ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "When tapping the number twice, it turns blue. This indicates knocking over the number of pins you tapped on the dial pad (eg. in this case it indicates knocking over all 12 pins).<br><br>note: when missing all target pins, you’ll have to tap the number 0 on the dial pad"
                 },
                 "STEP-3": {
-                    "TITLE": "Step 3",
-                    "TEXT": "Step 3 text"
+                    "TITLE": "Score input ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Once you have activated the appropriate score on the dial pad, you can assign this score to the respective player by tapping the player on the dial pad."
                 },
                 "STEP-4": {
-                    "TITLE": "Step 4",
-                    "TEXT": "Step 4 text"
+                    "TITLE": "Scoreboard ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Player scores can be consulted throughout the game on the scoreboard. You can tap the scoreboard at any time for a more detailed score overview."
                 },
                 "STEP-5": {
-                    "TITLE": "Step 5",
-                    "TEXT": "Step 5 text"
+                    "TITLE": "Options ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "You can at any given time consult the game rules, undo the last throw, exit the game etc… via the options button."
                 }
             }
         },
