@@ -70,8 +70,12 @@
             }
 
             return popoverObject.hide().then(function() {
-                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE';
-                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT';
+                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' +
+                                                                popoverScope.viewModel.progressStep +
+                                                                '.TITLE';
+                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' +
+                                                                popoverScope.viewModel.progressStep +
+                                                                '.TEXT';
 
                 popoverObject.show($event);
             });

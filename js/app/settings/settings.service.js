@@ -14,7 +14,7 @@
             getOptions: getOptions,
             getParameters: getParameters,
             updateGameParameter: updateGameParameter,
-            updateGameParameter: updateAppParameter,
+            updateAppParameter: updateAppParameter,
             assignDefaultGameParameters: assignDefaultGameParameters
         };
         return service;

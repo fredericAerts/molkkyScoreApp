@@ -411,7 +411,8 @@
 
         function initGameRulesModalVariables() {
             var settingsOptions = settingsService.getOptions().game;
-            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(settings.winningScoreExceeded) + 1;
+            var winningScoreExceededValue = settings.winningScoreExceeded;
+            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(winningScoreExceededValue) + 1;
             var winningScoreExceeded = $translate.instant('HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' +
                                         indexWinningScoreExceeded);
             var indexThreeMisses = settingsOptions.threeMisses.indexOf(settings.threeMisses) + 1;

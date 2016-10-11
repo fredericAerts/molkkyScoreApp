@@ -5264,9 +5264,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
     angular
         .module('molkkyscore')
-        .constant('TEMPLATES_ROOT', '/templates')
-        .constant('LANGUAGES_ROOT', '/languages')
-        .constant('IMAGES_ROOT', '/img');
+        .constant('TEMPLATES_ROOT', 'templates')
+        .constant('LANGUAGES_ROOT', 'languages')
+        .constant('IMAGES_ROOT', 'img');
 })();
 
 (function() {
@@ -5981,7 +5981,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initGameRulesModalVariables() {
             var settingsOptions = settingsService.getOptions().game;
-            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(settings.winningScoreExceeded) + 1;
+            var winningScoreExceededValue = settings.winningScoreExceeded;
+            var indexWinningScoreExceeded = settingsOptions.winningScoreExceeded.indexOf(winningScoreExceededValue) + 1;
             var winningScoreExceeded = $translate.instant('HOME.SETTINGS.TABS.GAME.WINNING-SCORE-EXCEEDED.OPTION-' +
                                         indexWinningScoreExceeded);
             var indexThreeMisses = settingsOptions.threeMisses.indexOf(settings.threeMisses) + 1;
@@ -7525,7 +7526,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             getOptions: getOptions,
             getParameters: getParameters,
             updateGameParameter: updateGameParameter,
-            updateGameParameter: updateAppParameter,
+            updateAppParameter: updateAppParameter,
             assignDefaultGameParameters: assignDefaultGameParameters
         };
         return service;
@@ -8117,8 +8118,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             return popoverObject.hide().then(function() {
-                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep +'.TITLE';
-                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' + popoverScope.viewModel.progressStep + '.TEXT';
+                popoverScope.viewModel.titleTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' +
+                                                                popoverScope.viewModel.progressStep +
+                                                                '.TITLE';
+                popoverScope.viewModel.textTranslationId = 'HOME.TUTORIAL.INFO-POPOVER.STEP-' +
+                                                                popoverScope.viewModel.progressStep +
+                                                                '.TEXT';
 
                 popoverObject.show($event);
             });
