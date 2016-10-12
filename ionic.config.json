@@ -1,0 +1,14 @@
+{
+  "name": "molkkyScoreIonic",
+  "app_id": "",
+  "gulpStartupTasks": [
+    "default"
+  ],
+  "watchPatterns": [
+    "www/css/*.css",
+    "www/img/*",
+    "www/js/*.js",
+    "www/templates/**/*.html",
+    "www/index.html"
+  ]
+}
