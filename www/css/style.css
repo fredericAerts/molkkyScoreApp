@@ -3786,6 +3786,36 @@ a.subdued {
   .action-sheet-open .action-sheet-backdrop {
     pointer-events: auto; }
 
+.platform-android .action-sheet-backdrop.active {
+  background-color: rgba(0, 0, 0, 0.2); }
+
+.platform-android .action-sheet {
+  margin: 0; }
+  .platform-android .action-sheet .action-sheet-title,
+  .platform-android .action-sheet .button {
+    text-align: left;
+    border-color: transparent;
+    font-size: 16px;
+    color: inherit; }
+  .platform-android .action-sheet .action-sheet-title {
+    font-size: 14px;
+    padding: 16px;
+    color: #666; }
+  .platform-android .action-sheet .button.active,
+  .platform-android .action-sheet .button.activated {
+    background: #e8e8e8; }
+
+.platform-android .action-sheet-group {
+  margin: 0;
+  border-radius: 0;
+  background-color: #fafafa; }
+
+.platform-android .action-sheet-cancel {
+  display: none; }
+
+.platform-android .action-sheet-has-icons .button {
+  padding-left: 56px; }
+
 .backdrop {
   position: fixed;
   top: 0;
@@ -6838,8 +6868,7 @@ button.item.item-button-right {
 .swiper-container-autoheight .swiper-wrapper {
   -webkit-box-align: start;
   -ms-flex-align: start;
-  -ms-grid-row-align: flex-start;
-      align-items: flex-start;
+  align-items: flex-start;
   -webkit-transition-property: -webkit-transform, height;
   -webkit-transition-property: height, -webkit-transform;
   transition-property: height, -webkit-transform;
@@ -8949,49 +8978,48 @@ a.button {
   -webkit-box-align: start;
   -ms-flex-align: start;
   -moz-align-items: flex-start;
-  -ms-grid-row-align: flex-start;
-      align-items: flex-start; }
+  align-items: flex-start; }
 
 .row-bottom {
   -webkit-box-align: end;
   -ms-flex-align: end;
   -moz-align-items: flex-end;
-  -ms-grid-row-align: flex-end;
-      align-items: flex-end; }
+  align-items: flex-end; }
 
 .row-center {
   -webkit-box-align: center;
   -ms-flex-align: center;
   -moz-align-items: center;
-  -ms-grid-row-align: center;
-      align-items: center; }
+  align-items: center; }
 
 .row-stretch {
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   -moz-align-items: stretch;
-  -ms-grid-row-align: stretch;
-      align-items: stretch; }
+  align-items: stretch; }
 
 .row-baseline {
   -webkit-box-align: baseline;
   -ms-flex-align: baseline;
   -moz-align-items: baseline;
-  -ms-grid-row-align: baseline;
-      align-items: baseline; }
+  align-items: baseline; }
 
 /* .col-* vertically aligns an individual .col */
 .col-top {
+  -webkit-align-self: flex-start;
   -ms-flex-item-align: start;
   align-self: flex-start; }
 
 .col-bottom {
+  -webkit-align-self: flex-end;
   -ms-flex-item-align: end;
   align-self: flex-end; }
 
 .col-center {
+  -webkit-align-self: center;
   -ms-flex-item-align: center;
-  align-self: center; }
+  -ms-grid-row-align: center;
+      align-self: center; }
 
 /* Column Offsets */
 .col-offset-10 {

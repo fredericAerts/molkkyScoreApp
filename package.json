@@ -1,7 +1,7 @@
 {
   "name": "molkkyscoreionic",
   "version": "1.1.1",
-  "description": "molkkyScoreIonic: An Ionic project",
+  "description": "molkkyScoreIonicTwo: An Ionic project",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-autoprefixer": "^3.1.0",
@@ -47,6 +47,10 @@
   ],
   "cordovaPlatforms": [
     "ios",
-    "android"
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
+    }
   ]
 }
