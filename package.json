@@ -1,7 +1,7 @@
 {
   "name": "molkkyscoreionic",
   "version": "1.1.1",
-  "description": "molkkyScoreIonicTwo: An Ionic project",
+  "description": "molkkyScoreIonic: An Ionic project",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-autoprefixer": "^3.1.0",
@@ -40,6 +40,7 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
+    "cordova-plugin-camera",
     {
       "locator": "https://github.com/litehelpers/Cordova-sqlite-storage.git",
       "id": "cordova-sqlite-storage"
