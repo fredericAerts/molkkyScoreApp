@@ -122,6 +122,7 @@
         function initPlayers() {
             var selectAllPlayersQuery = 'SELECT * FROM PLAYERS';
             return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
+                console.log(JSON.stringify(res));
                 for (var i = 0; i < res.rows.length; i++) {
                     var row = res.rows.item(i);
                     players.push({
@@ -476,7 +477,7 @@
                 $cordovaSQLite.execute(database, insertPlayers, playerOneValues),
                 $cordovaSQLite.execute(database, insertPlayers, playerTwoValues)
             ]).then(function(results) {
-                return initPlayers().then(function(players) {
+                return fetchAllPlayersFromDB().then(function(players) {
                     var promises = [];
                     players.forEach(function(player) {
                         promises.push(introPlayerStatistics(player));
@@ -531,6 +532,26 @@
             var insertGameTutorial = 'INSERT INTO GAME_TUTORIAL (SHOW_INVITE) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertGameTutorial, values);
+        }
+
+        function fetchAllPlayersFromDB() {
+            var fetchedPlayers = [];
+            var selectAllPlayersQuery = 'SELECT * FROM PLAYERS';
+
+            return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var row = res.rows.item(i);
+                    fetchedPlayers.push({
+                        id: row.ID,
+                        firstName: row.FIRSTNAME,
+                        lastName: row.LASTNAME,
+                        tagline: row.TAGLINE,
+                        face: row.FACE,
+                        statistics: {}
+                    });
+                }
+                return fetchedPlayers;
+            });
         }
     }
 })();

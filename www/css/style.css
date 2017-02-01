@@ -9863,21 +9863,23 @@ b, strong {
 
 .add-avatar-block {
   width: 150px;
-  margin: 30px auto 10px;
+  margin: 30px auto 0;
   font-size: 10px;
   line-height: 12px; }
   .add-avatar-block > .avatar-block__avatar {
     position: relative; }
 
 .add-avatar-block__buttons {
+  position: relative;
+  height: 50px;
   text-align: center; }
   .add-avatar-block__buttons > .button:first-child {
-    position: relative;
-    left: -10px;
+    position: absolute;
+    left: -20px;
     float: left; }
   .add-avatar-block__buttons > .button:last-child {
-    position: relative;
-    right: -10px;
+    position: absolute;
+    right: -20px;
     float: right; }
 
 .add-avatar-block__placeholder {

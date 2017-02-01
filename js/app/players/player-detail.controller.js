@@ -136,8 +136,8 @@
                 saveToPhotoAlbum: false
             };
 
-            $cordovaCamera.getPicture(options).then(function(imageURI) {
-                editPlayerModalScope.viewModel.player.face = imageURI;
+            $cordovaCamera.getPicture(options).then(function(imageData) {
+                editPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
             }, function(err) {
                 console.log(err.message);
             });

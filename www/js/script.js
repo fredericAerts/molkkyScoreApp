@@ -6629,8 +6629,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 saveToPhotoAlbum: false
             };
 
-            $cordovaCamera.getPicture(options).then(function(imageURI) {
-                editPlayerModalScope.viewModel.player.face = imageURI;
+            $cordovaCamera.getPicture(options).then(function(imageData) {
+                editPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
             }, function(err) {
                 console.log(err.message);
             });
@@ -6779,7 +6779,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
                 quality : 75,
-                destinationType : Camera.DestinationType.FILE_URI,
+                destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
                 encodingType: Camera.EncodingType.JPEG,
@@ -6788,8 +6788,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 saveToPhotoAlbum: false
             };
 
-            $cordovaCamera.getPicture(options).then(function(imageURI) {
-                addPlayerModalScope.viewModel.player.face = imageURI;
+            $cordovaCamera.getPicture(options).then(function(imageData) {
+                addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                console.log(addPlayerModalScope.viewModel.player.face);
             }, function(err) {
                 console.log(err.message);
             });
@@ -7064,6 +7065,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function initPlayers() {
             var selectAllPlayersQuery = 'SELECT * FROM PLAYERS';
             return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
+                console.log(JSON.stringify(res));
                 for (var i = 0; i < res.rows.length; i++) {
                     var row = res.rows.item(i);
                     players.push({
@@ -7418,7 +7420,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 $cordovaSQLite.execute(database, insertPlayers, playerOneValues),
                 $cordovaSQLite.execute(database, insertPlayers, playerTwoValues)
             ]).then(function(results) {
-                return initPlayers().then(function(players) {
+                return fetchAllPlayersFromDB().then(function(players) {
                     var promises = [];
                     players.forEach(function(player) {
                         promises.push(introPlayerStatistics(player));
@@ -7473,6 +7475,26 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var insertGameTutorial = 'INSERT INTO GAME_TUTORIAL (SHOW_INVITE) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertGameTutorial, values);
+        }
+
+        function fetchAllPlayersFromDB() {
+            var fetchedPlayers = [];
+            var selectAllPlayersQuery = 'SELECT * FROM PLAYERS';
+
+            return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var row = res.rows.item(i);
+                    fetchedPlayers.push({
+                        id: row.ID,
+                        firstName: row.FIRSTNAME,
+                        lastName: row.LASTNAME,
+                        tagline: row.TAGLINE,
+                        face: row.FACE,
+                        statistics: {}
+                    });
+                }
+                return fetchedPlayers;
+            });
         }
     }
 })();

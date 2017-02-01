@@ -99,7 +99,7 @@
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
                 quality : 75,
-                destinationType : Camera.DestinationType.FILE_URI,
+                destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
                 encodingType: Camera.EncodingType.JPEG,
@@ -108,8 +108,9 @@
                 saveToPhotoAlbum: false
             };
 
-            $cordovaCamera.getPicture(options).then(function(imageURI) {
-                addPlayerModalScope.viewModel.player.face = imageURI;
+            $cordovaCamera.getPicture(options).then(function(imageData) {
+                addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                console.log(addPlayerModalScope.viewModel.player.face);
             }, function(err) {
                 console.log(err.message);
             });
