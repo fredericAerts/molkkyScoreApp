@@ -127,7 +127,7 @@
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
                 quality : 75,
-                destinationType : Camera.DestinationType.FILE_URI,
+                destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
                 encodingType: Camera.EncodingType.JPEG,
@@ -171,7 +171,12 @@
             });
         }
 
-        function confirmPlayer() {
+        function confirmPlayer($event) {
+            if (!editPlayerModalScope.viewModel.player.firstName || !editPlayerModalScope.viewModel.player.lastName) {
+                toast.show('First name and Last name are required');
+                return;
+            }
+
             if (!editPlayerModalScope.viewModel.player.tagline) {
                 editPlayerModalScope.viewModel.player.tagline = 'No tagline provided';
             }

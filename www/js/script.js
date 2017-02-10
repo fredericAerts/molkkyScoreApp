@@ -6620,7 +6620,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
                 quality : 75,
-                destinationType : Camera.DestinationType.FILE_URI,
+                destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
                 encodingType: Camera.EncodingType.JPEG,
@@ -6664,7 +6664,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
-        function confirmPlayer() {
+        function confirmPlayer($event) {
+            if (!editPlayerModalScope.viewModel.player.firstName || !editPlayerModalScope.viewModel.player.lastName) {
+                toast.show('First name and Last name are required');
+                return;
+            }
+
             if (!editPlayerModalScope.viewModel.player.tagline) {
                 editPlayerModalScope.viewModel.player.tagline = 'No tagline provided';
             }
@@ -6790,7 +6795,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
                 addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
-                console.log(addPlayerModalScope.viewModel.player.face);
             }, function(err) {
                 console.log(err.message);
             });
@@ -6830,7 +6834,12 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.addPlayerModal.hide();
         }
 
-        function confirmPlayer() {
+        function confirmPlayer($event) {
+            if (!addPlayerModalScope.viewModel.player.firstName || !addPlayerModalScope.viewModel.player.lastName) {
+                toast.show('First name and Last name are required');
+                return;
+            }
+
             initNewPlayer(addPlayerModalScope.viewModel.player);
 
             vm.players.push(addPlayerModalScope.viewModel.player);
@@ -8106,7 +8115,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             $cordovaToast.showWithOptions({
                 message: message,
                 duration: 'short',
-                position: 'bottom',
+                position: 'top',
                 styling: {
                     cornerRadius: 4
                 }

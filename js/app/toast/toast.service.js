@@ -24,7 +24,7 @@
             $cordovaToast.showWithOptions({
                 message: message,
                 duration: 'short',
-                position: 'bottom',
+                position: 'top',
                 styling: {
                     cornerRadius: 4
                 }

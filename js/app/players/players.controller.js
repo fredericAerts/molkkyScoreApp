@@ -110,7 +110,6 @@
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
                 addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
-                console.log(addPlayerModalScope.viewModel.player.face);
             }, function(err) {
                 console.log(err.message);
             });
@@ -150,7 +149,12 @@
             vm.addPlayerModal.hide();
         }
 
-        function confirmPlayer() {
+        function confirmPlayer($event) {
+            if (!addPlayerModalScope.viewModel.player.firstName || !addPlayerModalScope.viewModel.player.lastName) {
+                toast.show('First name and Last name are required');
+                return;
+            }
+
             initNewPlayer(addPlayerModalScope.viewModel.player);
 
             vm.players.push(addPlayerModalScope.viewModel.player);
