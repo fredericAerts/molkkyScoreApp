@@ -49,6 +49,10 @@
             var modalScope = $scope.$new(true);
             var guestColors = getGuestColors();
 
+            modalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
                 scope: modalScope,
                 animation: 'slide-in-up'
@@ -165,6 +169,10 @@
         }
 
         function initScoreDetailsModal($scope) {
+            $scope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
@@ -172,6 +180,10 @@
         }
 
         function initGameRulesModal($scope) {
+            $scope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-game-rules.html', {
                 scope: $scope,
                 animation: 'slide-in-up'

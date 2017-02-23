@@ -267,6 +267,7 @@
         }
 
         function newGame(isNewPlayers) {
+
             if (isNewPlayers) {
                 addPlayersToGameModal.show();
             }
@@ -278,8 +279,6 @@
                 initScoreboard();
                 initGame();
             }
-
-            vm.scoreDetailsModal.hide();
         }
 
         function undoLast() {

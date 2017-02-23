@@ -190,7 +190,7 @@
                         "VIEW-TITLE": "Total games played",
                         "INFO": {
                             "SUMMARY": "Total number of games played",
-                            "RECORDED": "When game is won by a player",
+                            "RECORDED": "When game is won by a player (i.e. a player reaches maximum score)",
                             "CALCULATION": ""
                         }
                     }
@@ -200,7 +200,7 @@
                         "VIEW-TITLE": "Total wins",
                         "INFO": {
                             "SUMMARY": "Total number of wins",
-                            "RECORDED": "When player wins game",
+                            "RECORDED": "When player wins game (i.e. player is the first to reach maximum score)",
                             "CALCULATION": ""
                         }
                     },

@@ -63,6 +63,10 @@
         /*  FUNCTIONS
             ======================================================================================== */
         function initAddPlayerModal() {
+            addPlayerModalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
                 scope: addPlayerModalScope,
                 animation: 'slide-in-up'
@@ -109,7 +113,7 @@
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
-                addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                addPlayerModalScope.viewModel.player.face = 'data:image/jpeg;base64,' + imageData;
             }, function(err) {
                 console.log(err.message);
             });

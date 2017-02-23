@@ -94,6 +94,10 @@
         }
 
         function initEditPlayerModal() {
+            editPlayerModalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-edit-player.html', {
                 scope: editPlayerModalScope,
                 animation: 'slide-in-up'
@@ -137,7 +141,7 @@
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
-                editPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                editPlayerModalScope.viewModel.player.face = 'data:image/jpeg;base64,' + imageData;
             }, function(err) {
                 console.log(err.message);
             });

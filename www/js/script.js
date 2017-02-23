@@ -5905,6 +5905,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function newGame(isNewPlayers) {
+
             if (isNewPlayers) {
                 addPlayersToGameModal.show();
             }
@@ -5916,8 +5917,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 initScoreboard();
                 initGame();
             }
-
-            vm.scoreDetailsModal.hide();
         }
 
         function undoLast() {
@@ -6356,6 +6355,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var modalScope = $scope.$new(true);
             var guestColors = getGuestColors();
 
+            modalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/modals/modal-start-players.html', {
                 scope: modalScope,
                 animation: 'slide-in-up'
@@ -6472,6 +6475,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initScoreDetailsModal($scope) {
+            $scope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-score-details.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
@@ -6479,6 +6486,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initGameRulesModal($scope) {
+            $scope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             return $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/game/modal-game-rules.html', {
                 scope: $scope,
                 animation: 'slide-in-up'
@@ -6587,6 +6598,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initEditPlayerModal() {
+            editPlayerModalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-edit-player.html', {
                 scope: editPlayerModalScope,
                 animation: 'slide-in-up'
@@ -6630,7 +6645,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
-                editPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                editPlayerModalScope.viewModel.player.face = 'data:image/jpeg;base64,' + imageData;
             }, function(err) {
                 console.log(err.message);
             });
@@ -6748,6 +6763,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  FUNCTIONS
             ======================================================================================== */
         function initAddPlayerModal() {
+            addPlayerModalScope.$on('modal.hidden', function() {
+                angular.element(document).find('body').removeClass('modal-open');
+            });
+
             $ionicModal.fromTemplateUrl(TEMPLATES_ROOT + '/players/modal-add-player.html', {
                 scope: addPlayerModalScope,
                 animation: 'slide-in-up'
@@ -6794,7 +6813,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
-                addPlayerModalScope.viewModel.player.face = "data:image/jpeg;base64," + imageData;
+                addPlayerModalScope.viewModel.player.face = 'data:image/jpeg;base64,' + imageData;
             }, function(err) {
                 console.log(err.message);
             });
