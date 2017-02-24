@@ -5785,6 +5785,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
 
             function addPlayersToGameModalConfirmFunction() {
+                vm.scoreDetailsModal.hide();
                 initParticipants();
                 initScoreboard();
                 initGame();
@@ -5905,11 +5906,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function newGame(isNewPlayers) {
-
             if (isNewPlayers) {
                 addPlayersToGameModal.show();
             }
             else {
+                vm.scoreDetailsModal.hide();
                 loadingService.show('STARTING-NEW-GAME');
 
                 gameService.sortParticipantsOnScore(); // TODO: Implement this function
@@ -5950,11 +5951,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.threeMisses);
+                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.threeMisses);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.maxScoreExceeded);
+                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.maxScoreExceeded);
             }
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
@@ -5963,7 +5964,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
-                    toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
+                    toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
             }
@@ -7752,7 +7753,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     statisticsProcessor.$inject = ['gameService', 'settingsService', 'dataService'];
 
     function statisticsProcessor(gameService, settingsService, dataService) {
-
         var service = {
             update: update
         };
@@ -7760,7 +7760,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         ////////////////
 
-        function update(event, player, undo) {
+        function update(event, player, undo) { // player specific updates
             var throws = player.scoreHistory.length;
 
             switch (event) {
@@ -7781,15 +7781,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             // update raw data
             player.statistics.rawData.gamesWon += increment;
-
-            // non player specific updates
-            overallStatistics.totalGamesPlayed += increment;
-            dataService.updateOverallStatistics();
-            participants.forEach(function(player) {
-                if (player.statistics) {
-                    player.statistics.rawData.gamesPlayed += increment;
-                }
-            });
 
             updatePlayerMetric('totalWins', player);
             updatePlayerMetric('winningRatio', participants);
@@ -7943,6 +7934,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function initStatsItemsInfoPopover() {
+            statsItemsInfoPopoverScope.$on('popover.hidden', function() {
+                angular.element(document).find('body').removeClass('popover-open');
+            });
+
             $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
                 scope: statsItemsInfoPopoverScope
             }).then(function(popover) {
@@ -8003,9 +7998,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'dataService', 'statisticsProcessor', 'settingsService'];
+    statisticsService.$inject = ['$translate', 'dataService', 'gameService', 'statisticsProcessor', 'settingsService'];
 
-    function statisticsService($translate, dataService, statisticsProcessor, settingsService) {
+    function statisticsService($translate, dataService, gameService, statisticsProcessor, settingsService) {
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
@@ -8081,12 +8076,27 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
-                // no statisitcs for guest player or when game settings are customized
-                return;
+            // non player specific updates (overall statistics)
+            if (event === 'playerWonGame') {
+                var participants = gameService.getParticipants();
+                var increment = undo ? -1 : 1;
+
+                dataService.getOverallStatistics().totalGamesPlayed += increment;
+                dataService.updateOverallStatistics();
+                participants.forEach(function(player) {
+                    if (player.statistics) {
+                        player.statistics.rawData.gamesPlayed += increment;
+                    }
+                });
             }
 
-            statisticsProcessor.update(event, activePlayer, undo);
+            // player specific updates
+            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
+                // no player specific update for guest player or when game settings are customized
+            }
+            else {
+                statisticsProcessor.update(event, activePlayer, undo);
+            }
         }
 
         /*  Helper functions

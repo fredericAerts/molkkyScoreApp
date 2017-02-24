@@ -54,6 +54,10 @@
         }
 
         function initStatsItemsInfoPopover() {
+            statsItemsInfoPopoverScope.$on('popover.hidden', function() {
+                angular.element(document).find('body').removeClass('popover-open');
+            });
+
             $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/statistics/popover-statistics-item-info.html', {
                 scope: statsItemsInfoPopoverScope
             }).then(function(popover) {

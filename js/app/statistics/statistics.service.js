@@ -32,9 +32,9 @@
         .module('molkkyscore')
         .factory('statisticsService', statisticsService);
 
-    statisticsService.$inject = ['$translate', 'dataService', 'statisticsProcessor', 'settingsService'];
+    statisticsService.$inject = ['$translate', 'dataService', 'gameService', 'statisticsProcessor', 'settingsService'];
 
-    function statisticsService($translate, dataService, statisticsProcessor, settingsService) {
+    function statisticsService($translate, dataService, gameService, statisticsProcessor, settingsService) {
         var metrics = [
             metric(0, 'totalGamesPlayed', 'overall', 'OVERALL.TOTAL-GAMES-PLAYED', ''),
             metric(1, 'totalWins', 'players', 'PLAYERS.TOTAL-WINS', ''),
@@ -110,12 +110,27 @@
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
-                // no statisitcs for guest player or when game settings are customized
-                return;
+            // non player specific updates (overall statistics)
+            if (event === 'playerWonGame') {
+                var participants = gameService.getParticipants();
+                var increment = undo ? -1 : 1;
+
+                dataService.getOverallStatistics().totalGamesPlayed += increment;
+                dataService.updateOverallStatistics();
+                participants.forEach(function(player) {
+                    if (player.statistics) {
+                        player.statistics.rawData.gamesPlayed += increment;
+                    }
+                });
             }
 
-            statisticsProcessor.update(event, activePlayer, undo);
+            // player specific updates
+            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
+                // no player specific update for guest player or when game settings are customized
+            }
+            else {
+                statisticsProcessor.update(event, activePlayer, undo);
+            }
         }
 
         /*  Helper functions

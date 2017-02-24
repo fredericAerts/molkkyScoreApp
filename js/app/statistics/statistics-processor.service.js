@@ -8,7 +8,6 @@
     statisticsProcessor.$inject = ['gameService', 'settingsService', 'dataService'];
 
     function statisticsProcessor(gameService, settingsService, dataService) {
-
         var service = {
             update: update
         };
@@ -16,7 +15,7 @@
 
         ////////////////
 
-        function update(event, player, undo) {
+        function update(event, player, undo) { // player specific updates
             var throws = player.scoreHistory.length;
 
             switch (event) {
@@ -37,15 +36,6 @@
 
             // update raw data
             player.statistics.rawData.gamesWon += increment;
-
-            // non player specific updates
-            overallStatistics.totalGamesPlayed += increment;
-            dataService.updateOverallStatistics();
-            participants.forEach(function(player) {
-                if (player.statistics) {
-                    player.statistics.rawData.gamesPlayed += increment;
-                }
-            });
 
             updatePlayerMetric('totalWins', player);
             updatePlayerMetric('winningRatio', participants);

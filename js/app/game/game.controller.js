@@ -147,6 +147,7 @@
             });
 
             function addPlayersToGameModalConfirmFunction() {
+                vm.scoreDetailsModal.hide();
                 initParticipants();
                 initScoreboard();
                 initGame();
@@ -267,11 +268,11 @@
         }
 
         function newGame(isNewPlayers) {
-
             if (isNewPlayers) {
                 addPlayersToGameModal.show();
             }
             else {
+                vm.scoreDetailsModal.hide();
                 loadingService.show('STARTING-NEW-GAME');
 
                 gameService.sortParticipantsOnScore(); // TODO: Implement this function
@@ -312,11 +313,11 @@
 
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.threeMisses);
+                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.threeMisses);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + toastMessages.maxScoreExceeded);
+                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.maxScoreExceeded);
             }
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
@@ -325,7 +326,7 @@
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
-                    toast.show(vm.activePlayer.firstName + ' ' + toastMessages.winner);
+                    toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
             }
