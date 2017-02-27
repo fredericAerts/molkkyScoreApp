@@ -122,7 +122,6 @@
         function initPlayers() {
             var selectAllPlayersQuery = 'SELECT * FROM PLAYERS';
             return $cordovaSQLite.execute(database, selectAllPlayersQuery).then(function(res) {
-                console.log(JSON.stringify(res));
                 for (var i = 0; i < res.rows.length; i++) {
                     var row = res.rows.item(i);
                     players.push({
