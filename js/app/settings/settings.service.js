@@ -32,10 +32,6 @@
                         {
                             value: 'Français',
                             key: 'french'
-                        },
-                        {
-                            value: 'Finnish',
-                            key: 'finnish'
                         }
                     ]
                 },

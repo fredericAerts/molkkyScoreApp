@@ -7695,10 +7695,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         {
                             value: 'Français',
                             key: 'french'
-                        },
-                        {
-                            value: 'Finnish',
-                            key: 'finnish'
                         }
                     ]
                 },

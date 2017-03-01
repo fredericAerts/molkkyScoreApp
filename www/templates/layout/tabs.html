@@ -6,17 +6,17 @@ navigation history that also transitions its views in and out.
 <ion-tabs class="tabs-icon-top tabs-color-active-positive">
 
   <!-- Home Tab -->
-  <ion-tab title="Home" icon-off="ion-ios-home-outline" icon-on="ion-ios-home" href="#/tab/home">
+  <ion-tab title="{{ 'HOME.VIEW-TITLE' | translate }}" icon-off="ion-ios-home-outline" icon-on="ion-ios-home" href="#/tab/home">
     <ion-nav-view name="home"></ion-nav-view>
   </ion-tab>
 
   <!-- Statistics Tab -->
-  <ion-tab title="Statistics" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/statistics">
+  <ion-tab title="{{ 'HOME.STATISTICS.VIEW-TITLE' | translate }}" icon-off="ion-ios-pulse" icon-on="ion-ios-pulse-strong" href="#/tab/statistics">
     <ion-nav-view name="statistics"></ion-nav-view>
   </ion-tab>
 
   <!-- Players Tab -->
-  <ion-tab title="Players" icon-off="ion-ios-people-outline" icon-on="ion-ios-people" href="#/tab/players">
+  <ion-tab title="{{ 'HOME.PLAYERS.VIEW-TITLE' | translate }}" icon-off="ion-ios-people-outline" icon-on="ion-ios-people" href="#/tab/players">
     <ion-nav-view name="players"></ion-nav-view>
   </ion-tab>
 
