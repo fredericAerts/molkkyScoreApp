@@ -9,8 +9,12 @@
     <ion-footer-bar>
         <div class="buttons pull-right">
             <button class="button" ng-click="viewModel.triggerProceed(viewModel.progressStep + 1)">
-              <span ng-if="viewModel.progressStep < viewModel.progressSteps">NEXT</span>
-              <span ng-if="viewModel.progressStep === viewModel.progressSteps">Let's play!</span>
+                <span ng-if="viewModel.progressStep < viewModel.progressSteps">
+                    {{ 'HOME.TUTORIAL.INFO-POPOVER.NEXT' | translate }}
+                </span>
+                <span ng-if="viewModel.progressStep === viewModel.progressSteps">
+                    {{ 'HOME.TUTORIAL.INFO-POPOVER.FINISH' | translate }}
+                </span>
             </button>
         </div>
     </ion-footer-bar>

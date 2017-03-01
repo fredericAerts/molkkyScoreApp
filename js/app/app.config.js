@@ -51,7 +51,7 @@
             }
 
             if (window.cordova) {
-                loadingService.showIndefinite('LOADING-APP');
+                // loadingService.showIndefinite('LOADING-APP');
                 dataService.initDatabase().then(function() {
                     var playerStatisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
@@ -60,7 +60,7 @@
                         });
                         $q.all([playerStatisticsPromises]).then(function() {
                             $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
-                            loadingService.hide();
+                            // loadingService.hide();
                         });
                     });
                     dataService.initOverallStatistics();

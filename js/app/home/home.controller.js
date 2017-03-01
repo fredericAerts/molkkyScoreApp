@@ -13,6 +13,7 @@
         var vm = this;
 
         vm.addPlayersToGameModal = {};
+        vm.visitWebsite = visitWebsite;
 
         activate();
 
@@ -48,6 +49,10 @@
             function addPlayersToGameModalConfirmFunction() {
                 $state.go('game');
             }
+        }
+
+        function visitWebsite() {
+            window.open('http://www.fredericaerts.com', '_system', 'location=yes');
         }
     }
 })();

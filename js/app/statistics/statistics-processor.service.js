@@ -25,7 +25,9 @@
                 case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
             }
 
-            dataService.updatePlayerStatistics(player);
+            if (!player.guestColor) {
+                dataService.updatePlayerStatistics(player);
+            }
         }
 
         /*  Helper functions
@@ -34,14 +36,29 @@
             var participants = gameService.getParticipants();
             var increment = undo ? -1 : 1;
 
-            // update raw data
-            player.statistics.rawData.gamesWon += increment;
+            // overall statistics
+            dataService.getOverallStatistics().totalGamesPlayed += increment;
+            dataService.updateOverallStatistics();
 
-            updatePlayerMetric('totalWins', player);
+            // update winning player data
+            if (!player.guestColor) {
+                player.statistics.rawData.gamesWon += increment;
+                updatePlayerMetric('totalWins', player);
+            }
+            // update participants data
+            participants.forEach(function(player) {
+                if (player.statistics) {
+                    player.statistics.rawData.gamesPlayed += increment;
+                }
+            });
             updatePlayerMetric('winningRatio', participants);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.gamesReachedMaxScore += increment;
             player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
@@ -50,11 +67,19 @@
         }
 
         function updatePlayerThrowsSinglePin(player, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throwsSinglePin += increment;
         }
 
         function updatePlayerThrow(player, throws, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throws += increment;
 

@@ -5187,7 +5187,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             }
 
             if (window.cordova) {
-                loadingService.showIndefinite('LOADING-APP');
+                // loadingService.showIndefinite('LOADING-APP');
                 dataService.initDatabase().then(function() {
                     var playerStatisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
@@ -5196,7 +5196,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         });
                         $q.all([playerStatisticsPromises]).then(function() {
                             $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
-                            loadingService.hide();
+                            // loadingService.hide();
                         });
                     });
                     dataService.initOverallStatistics();
@@ -6222,6 +6222,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var vm = this;
 
         vm.addPlayersToGameModal = {};
+        vm.visitWebsite = visitWebsite;
 
         activate();
 
@@ -6257,6 +6258,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             function addPlayersToGameModalConfirmFunction() {
                 $state.go('game');
             }
+        }
+
+        function visitWebsite() {
+            window.open('http://www.fredericaerts.com', '_system', 'location=yes');
         }
     }
 })();
@@ -6511,6 +6516,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$scope',
+                                '$rootScope',
                                 '$stateParams',
                                 'TEMPLATES_ROOT',
                                 'playersService',
@@ -6522,6 +6528,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                                 'toast'];
 
     function PlayerDetailCtrl($scope,
+                                $rootScope,
                                 $stateParams,
                                 TEMPLATES_ROOT,
                                 playersService,
@@ -6534,6 +6541,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
+        var toastMessages = toast.getMessages().players;
 
         vm.player = playersService.get($stateParams.playerId);
         vm.editPlayerModal = {};
@@ -6550,6 +6558,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initProfileData();
             initEditPlayerModal();
         }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().players;
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.editPlayerModal.remove();
+        });
 
         /*  FUNCTIONS
             ======================================================================================== */
@@ -6571,17 +6590,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function initProfileData() {
             var profileItems = [
-                item('First name', vm.player.firstName),
-                item('Last name', vm.player.lastName),
-                item('Tagline', vm.player.tagline)
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.FIRST-NAME'), vm.player.firstName),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.LAST-NAME'), vm.player.lastName),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.TAGLINE'), vm.player.tagline)
             ];
             var statisticsItems = [// raw data
-                item('Games played', vm.player.statistics.rawData.gamesPlayed),
-                item('Games won', vm.player.statistics.rawData.gamesWon),
-                item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
-                item('Throws', vm.player.statistics.rawData.throws),
-                item('Throws single pin', vm.player.statistics.rawData.throwsSinglePin),
-                item('Throws when reached max score', vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-PLAYED'), vm.player.statistics.rawData.gamesPlayed),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-WON'), vm.player.statistics.rawData.gamesWon),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-REACHED-MAX-SCORE'), vm.player.statistics.rawData.gamesReachedMaxScore),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS'), vm.player.statistics.rawData.throws),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-SINGLE-PIN'), vm.player.statistics.rawData.throwsSinglePin),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-REACHED-MAX-SCORE'), vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
             ];
 
             vm.profileData.profile = profileItems;
@@ -6635,7 +6654,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
-                quality : 75,
+                quality : 90,
                 destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
@@ -6656,8 +6675,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function removeAvatar() {
             var popupOptions = {
-                title: 'Remove avatar',
-                template: 'Are you sure you want to remove this picture from your profile?',
+                title: $translate.instant('HOME.PLAYERS.EDIT-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.EDIT-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT'),
                 buttons: [
                     {
                         text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
@@ -6682,7 +6701,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function confirmPlayer($event) {
             if (!editPlayerModalScope.viewModel.player.firstName || !editPlayerModalScope.viewModel.player.lastName) {
-                toast.show('First name and Last name are required');
+                toast.show(toastMessages.requiredFields);
                 return;
             }
 
@@ -6692,7 +6711,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             initProfileData();
             playersService.updatePlayer(vm.player);
-            toast.show('Update to player profile saved');
+            toast.show(toastMessages.updateSaved);
 
             vm.editPlayerModal.hide();
         }
@@ -6803,7 +6822,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
-                quality : 75,
+                quality : 90,
                 destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
@@ -6824,8 +6843,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function removeAvatar() {
             var popupOptions = {
-                title: 'Remove avatar',
-                template: 'Are you sure you want to remove this picture from your profile?',
+                title: $translate.instant('HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT'),
                 buttons: [
                     {
                         text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
@@ -6856,7 +6875,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function confirmPlayer($event) {
             if (!addPlayerModalScope.viewModel.player.firstName || !addPlayerModalScope.viewModel.player.lastName) {
-                toast.show('First name and Last name are required');
+                toast.show(toastMessages.requiredFields);
                 return;
             }
 
@@ -6877,7 +6896,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             $ionicPopup.confirm({
                 title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant(templateTranslationId, templateTranslationVariable)
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.YES'),
+                cancelText: $translate.instant('HOME.GENERAL.CONFIRM.NO'),
             })
             .then(function(confirmed) {
                 if (confirmed) {
@@ -6894,7 +6915,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         /*  Helper functions
             ======================================================================================== */
         function getNewPlayerTemplate() {
-            var playerId = _.max(vm.players, function(player) { return player.id; }).id + 1;
+            var playerId = getNewPlayerId();
             var player = { // id is added when written to Database
                 id: playerId,
                 firstName: '',
@@ -6913,6 +6934,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             statisticsService.initPlayerStatistics(player);
 
             return player;
+        }
+
+        function getNewPlayerId() {
+            if (!vm.players.length) {
+                return 0;
+            }
+            else {
+                return _.max(vm.players, function(player) {
+                    return player.id;
+                }).id + 1;
+            }
         }
     }
 })();
@@ -7598,7 +7630,8 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         function showAlert() {
             var alertPopup = $ionicPopup.alert({
                 title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT'),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.OK')
             });
 
             alertPopup.then(function(res) {
@@ -7769,7 +7802,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 case 'playerThrow': updatePlayerThrow(player, throws, undo); break;
             }
 
-            dataService.updatePlayerStatistics(player);
+            if (!player.guestColor) {
+                dataService.updatePlayerStatistics(player);
+            }
         }
 
         /*  Helper functions
@@ -7778,14 +7813,29 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             var participants = gameService.getParticipants();
             var increment = undo ? -1 : 1;
 
-            // update raw data
-            player.statistics.rawData.gamesWon += increment;
+            // overall statistics
+            dataService.getOverallStatistics().totalGamesPlayed += increment;
+            dataService.updateOverallStatistics();
 
-            updatePlayerMetric('totalWins', player);
+            // update winning player data
+            if (!player.guestColor) {
+                player.statistics.rawData.gamesWon += increment;
+                updatePlayerMetric('totalWins', player);
+            }
+            // update participants data
+            participants.forEach(function(player) {
+                if (player.statistics) {
+                    player.statistics.rawData.gamesPlayed += increment;
+                }
+            });
             updatePlayerMetric('winningRatio', participants);
         }
 
         function updatePlayerReachedMaxScore(player, throws, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.gamesReachedMaxScore += increment;
             player.statistics.rawData.throwsInGamesReachedMaxScore += (throws * increment);
@@ -7794,11 +7844,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updatePlayerThrowsSinglePin(player, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throwsSinglePin += increment;
         }
 
         function updatePlayerThrow(player, throws, undo) {
+            if (player.guestColor) {
+                return;
+            }
+
             var increment = undo ? -1 : 1;
             player.statistics.rawData.throws += increment;
 
@@ -8075,25 +8133,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            // non player specific updates (overall statistics)
-            if (event === 'playerWonGame') {
-                var participants = gameService.getParticipants();
-                var increment = undo ? -1 : 1;
-
-                dataService.getOverallStatistics().totalGamesPlayed += increment;
-                dataService.updateOverallStatistics();
-                participants.forEach(function(player) {
-                    if (player.statistics) {
-                        player.statistics.rawData.gamesPlayed += increment;
-                    }
-                });
-            }
-
-            // player specific updates
-            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
-                // no player specific update for guest player or when game settings are customized
-            }
-            else {
+            if (!settingsService.getParameters().game.isCustom) {
                 statisticsProcessor.update(event, activePlayer, undo);
             }
         }
@@ -8163,7 +8203,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 },
                 players: {
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
-                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER')
+                    removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER'),
+                    requiredFields: $translate.instant('HOME.PLAYERS.TOASTS.REQUIRED-FIELDS'),
+                    updateSaved: $translate.instant('HOME.PLAYERS.TOASTS.UPDATE-SAVED')
                 },
                 settings: {
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')

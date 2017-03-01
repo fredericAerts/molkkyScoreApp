@@ -69,7 +69,8 @@
         function showAlert() {
             var alertPopup = $ionicPopup.alert({
                 title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
-                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT')
+                template: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TEXT'),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.OK')
             });
 
             alertPopup.then(function(res) {

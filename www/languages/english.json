@@ -10,7 +10,7 @@
         },
         "SPLASH": {
             "SUBTITLE": "Bringing world class quality<br>to the game",
-            "CTA": "Visit our store"
+            "CTA": "Visit our website"
         },
         "LOADING": {
             "STARTING-GAME": "starting game",
@@ -60,7 +60,9 @@
                 "STEP-5": {
                     "TITLE": "Options ({{ progressStep }}/{{ progressSteps }})",
                     "TEXT": "You can at any given time consult the game rules, undo the last throw, exit the game etc… via the options button."
-                }
+                },
+                "NEXT": "Next",
+                "FINISH": "Let's play!"
             }
         },
         "GAME": {
@@ -184,6 +186,7 @@
             }
         },
         "STATISTICS": {
+            "VIEW-TITLE": "Statistics",
             "METRICS": {
                 "OVERALL": {
                     "TOTAL-GAMES-PLAYED": {
@@ -216,7 +219,7 @@
                         "VIEW-TITLE": "Winning ratio",
                         "INFO": {
                             "SUMMARY": "Total number of wins as per total number of games played",
-                            "RECORDED": "When game is won by a player",
+                            "RECORDED": "When game is won by a player (i.e. a player reaches maximum score)",
                             "CALCULATION": "a = total wins<br>b = total games played<br><i>Winning ratio</i> = (a / b) * 100"
                         }
                     },
@@ -239,7 +242,7 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Since you have enabled custom game settings, no statistics are currently being recorded"
+                "TEXT": "Since you have enabled custom game settings, no player statistics are currently being recorded"
             },
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
@@ -260,7 +263,7 @@
             "VIEW-TITLE": "Players",
             "REMOVE-POPUP": {
                 "TITLE": "Remove player",
-                "TEXT": "<p>Are you sure you want to remove <strong>{{ playerName }}</strong> from players?</p><p>All statistics associated with a removed player will be lost as well..</p>"
+                "TEXT": "<p>Are you sure you want to remove <strong>{{ playerName }}</strong> from players?</p><p>All statistics associated with a removed player will be lost..</p>"
             },
             "ADD-PLAYER-MODAL": {
                 "TITLE": "Add new player",
@@ -269,7 +272,11 @@
                 "INPUT-TAGLINE": "Your tagline",
                 "BUTTON-CANCEL": "@:HOME.START.START-PLAYERS-MODAL.BUTTON-CANCEL",
                 "AVATAR-PLACEHOLDER": "Take a picture or upload an image from your photo library",
-                "BUTTON-ADD-PLAYER": "Add player"
+                "BUTTON-ADD-PLAYER": "Add player",
+                "REMOVE-AVATAR-POPUP": {
+                    "TITLE": "Remove avatar",
+                    "TEXT": "Are you sure you want to remove this picture from your profile?"
+                }
             },
             "EDIT-PLAYER-MODAL": {
                 "TITLE": "Edit player",
@@ -277,11 +284,32 @@
                 "INPUT-LAST-NAME": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.INPUT-LAST-NAME",
                 "INPUT-TAGLINE": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.INPUT-TAGLINE",
                 "AVATAR-PLACEHOLDER": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.AVATAR-PLACEHOLDER",
-                "BUTTON-ADD-PLAYER": "Save"
+                "BUTTON-ADD-PLAYER": "Save",
+                "REMOVE-AVATAR-POPUP": {
+                    "TITLE": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE",
+                    "TEXT": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT"
+                }
+            },
+            "DETAIL": {
+                "PROFILE": "Profile",
+                "STATISTICS": "Statistics",
+                "PROFILE-DATA-LABELS": {
+                    "FIRST-NAME": "First name",
+                    "LAST-NAME": "Last name",
+                    "TAGLINE": "Tagline",
+                    "GAMES-PLAYED": "Games played",
+                    "GAMES-WON": "Games won",
+                    "GAMES-REACHED-MAX-SCORE": "Games reached max score",
+                    "THROWS": "Throws",
+                    "THROWS-SINGLE-PIN": "Throws single pin",
+                    "THROWS-REACHED-MAX-SCORE": "Throws when reached max score"
+                }
             },
             "TOASTS": {
                 "ADD-PLAYER": "is added to players",
-                "REMOVE-PLAYER": "is removed from players"
+                "REMOVE-PLAYER": "is removed from players",
+                "REQUIRED-FIELDS": "First Name and Last Name are required",
+                "UPDATE-SAVED": "Update to player profile saved"
             }
         }
     }

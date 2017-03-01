@@ -1,66 +1,66 @@
 {
     "HOME": {
-        "VIEW-TITLE": "Masion",
+        "VIEW-TITLE": "French",
         "START": {
             "VIEW-TITLE": "fais jeu",
             "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE",
             "TOASTS": {
-                "MAX-PARTICIPANTS": "French Max participants reached"
+                "MAX-PARTICIPANTS": "French"
             }
         },
         "GAME": {
             "TOASTS": {
-                "UNDO-LAST": "Toast french",
-                "THREE-MISSES": "missed three times in a row!",
-                "MAX-SCORE-EXCEEDED": "has exceeded maximum score!",
-                "WINNER": "wins this game!"
+                "UNDO-LAST": "French",
+                "THREE-MISSES": "French",
+                "MAX-SCORE-EXCEEDED": "French",
+                "WINNER": "French"
             }
         },
         "SETTINGS": {
-            "VIEW-TITLE": "Configuration",
+            "VIEW-TITLE": "French",
             "BUTTON-TITLE": "@:HOME.SETTINGS.VIEW-TITLE",
             "TABS": {
                 "GAME": {
-                    "TITLE": "Jeu",
+                    "TITLE": "French",
                     "CUSTOM-TOGGLE": {
-                        "ON": "Disable custom settings",
-                        "OFF": "Enable custom settings",
+                        "ON": "French",
+                        "OFF": "French",
                         "POPUP": {
-                            "TITLE": "Attention"
+                            "TITLE": "French"
                         }
                     }
                 },
                 "APP": {
-                    "TITLE": "Appli",
+                    "TITLE": "French",
                     "LANGUAGE": {
-                        "TITLE": "Langue"
+                        "TITLE": "French"
                     }
                 }
             },
             "TOASTS": {
-                "UPDATE": "French Settings updated"
+                "UPDATE": "French"
             }
         },
         "STATISTICS": {
             "METRICS": {
                 "HALLOFFAME": {
-                    "VIEW-TITLE": "Hall de les fameuse",
+                    "VIEW-TITLE": "French",
                     "TITLE": "@:HOME.STATISTICS.METRICS.HALLOFFAME.VIEW-TITLE"
                 },
                 "EFFECTIVENESS": {
-                    "VIEW-TITLE": "Les plus effective",
+                    "VIEW-TITLE": "French",
                     "TITLE": "@:HOME.STATISTICS.METRICS.EFFECTIVENESS.VIEW-TITLE"
                 },
                 "ACCURACY": {
-                    "VIEW-TITLE": "Les plus accurate",
+                    "VIEW-TITLE": "French",
                     "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
                 }
             },
             "INFO-POPOVER": {
                 "CONTENT": {
-                    "WHAT": "French What is this?",
-                    "WHEN": "French When is it updated?",
-                    "HOW": "French How is it calculated?"
+                    "WHAT": "French",
+                    "WHEN": "French",
+                    "HOW": "French"
                 }
             }
         }

@@ -2,7 +2,7 @@
     // display: none;
     position: relative;
     z-index: 9;
-    padding: 25px 10px 0;
+    padding: 35px 10px 0;
     background: $positive;
 }
 
@@ -13,12 +13,16 @@
     background: $positive;
 
     & .home-cta__title {
-        margin: 0 auto 10px;
+        margin: 0 auto 5px;
 
         color: $light;
         font-family: $font-family-bold;
         font-size: 36px;
         white-space: nowrap;
+
+        @media (max-width: 360px) {
+            font-size: 30px;
+        }
     }
 
     & .home-cta__subtitle {
@@ -51,7 +55,7 @@
         border-radius: 50%;
         box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 
-        color: $positive;
+        // color: $assertive;
     }
 }
 

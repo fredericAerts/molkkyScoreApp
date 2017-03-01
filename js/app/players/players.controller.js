@@ -102,7 +102,7 @@
 
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
-                quality : 75,
+                quality : 90,
                 destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
@@ -123,8 +123,8 @@
 
         function removeAvatar() {
             var popupOptions = {
-                title: 'Remove avatar',
-                template: 'Are you sure you want to remove this picture from your profile?',
+                title: $translate.instant('HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT'),
                 buttons: [
                     {
                         text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
@@ -155,7 +155,7 @@
 
         function confirmPlayer($event) {
             if (!addPlayerModalScope.viewModel.player.firstName || !addPlayerModalScope.viewModel.player.lastName) {
-                toast.show('First name and Last name are required');
+                toast.show(toastMessages.requiredFields);
                 return;
             }
 
@@ -176,7 +176,9 @@
 
             $ionicPopup.confirm({
                 title: $translate.instant('HOME.PLAYERS.REMOVE-POPUP.TITLE'),
-                template: $translate.instant(templateTranslationId, templateTranslationVariable)
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.YES'),
+                cancelText: $translate.instant('HOME.GENERAL.CONFIRM.NO'),
             })
             .then(function(confirmed) {
                 if (confirmed) {
@@ -193,7 +195,7 @@
         /*  Helper functions
             ======================================================================================== */
         function getNewPlayerTemplate() {
-            var playerId = _.max(vm.players, function(player) { return player.id; }).id + 1;
+            var playerId = getNewPlayerId();
             var player = { // id is added when written to Database
                 id: playerId,
                 firstName: '',
@@ -212,6 +214,17 @@
             statisticsService.initPlayerStatistics(player);
 
             return player;
+        }
+
+        function getNewPlayerId() {
+            if (!vm.players.length) {
+                return 0;
+            }
+            else {
+                return _.max(vm.players, function(player) {
+                    return player.id;
+                }).id + 1;
+            }
         }
     }
 })();

@@ -6,6 +6,7 @@
         .controller('PlayerDetailCtrl', PlayerDetailCtrl);
 
     PlayerDetailCtrl.$inject = ['$scope',
+                                '$rootScope',
                                 '$stateParams',
                                 'TEMPLATES_ROOT',
                                 'playersService',
@@ -17,6 +18,7 @@
                                 'toast'];
 
     function PlayerDetailCtrl($scope,
+                                $rootScope,
                                 $stateParams,
                                 TEMPLATES_ROOT,
                                 playersService,
@@ -29,6 +31,7 @@
         /* jshint validthis: true */
         var vm = this;
         var editPlayerModalScope = $scope.$new(true);
+        var toastMessages = toast.getMessages().players;
 
         vm.player = playersService.get($stateParams.playerId);
         vm.editPlayerModal = {};
@@ -45,6 +48,17 @@
             initProfileData();
             initEditPlayerModal();
         }
+
+        /*  LISTENERS
+            ======================================================================================== */
+        $rootScope.$on('$translateChangeSuccess', function () {
+            toastMessages = toast.getMessages().players;
+        });
+
+        // Cleanup the modal when we're done with it!
+        $scope.$on('$destroy', function() {
+            vm.editPlayerModal.remove();
+        });
 
         /*  FUNCTIONS
             ======================================================================================== */
@@ -66,17 +80,17 @@
 
         function initProfileData() {
             var profileItems = [
-                item('First name', vm.player.firstName),
-                item('Last name', vm.player.lastName),
-                item('Tagline', vm.player.tagline)
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.FIRST-NAME'), vm.player.firstName),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.LAST-NAME'), vm.player.lastName),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.TAGLINE'), vm.player.tagline)
             ];
             var statisticsItems = [// raw data
-                item('Games played', vm.player.statistics.rawData.gamesPlayed),
-                item('Games won', vm.player.statistics.rawData.gamesWon),
-                item('Games reached max score', vm.player.statistics.rawData.gamesReachedMaxScore),
-                item('Throws', vm.player.statistics.rawData.throws),
-                item('Throws single pin', vm.player.statistics.rawData.throwsSinglePin),
-                item('Throws when reached max score', vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-PLAYED'), vm.player.statistics.rawData.gamesPlayed),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-WON'), vm.player.statistics.rawData.gamesWon),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-REACHED-MAX-SCORE'), vm.player.statistics.rawData.gamesReachedMaxScore),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS'), vm.player.statistics.rawData.throws),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-SINGLE-PIN'), vm.player.statistics.rawData.throwsSinglePin),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-REACHED-MAX-SCORE'), vm.player.statistics.rawData.throwsInGamesReachedMaxScore)
             ];
 
             vm.profileData.profile = profileItems;
@@ -130,7 +144,7 @@
 
             var sourceType = fromGallery ? Camera.PictureSourceType.PHOTOLIBRARY : Camera.PictureSourceType.CAMERA;
             var options = {
-                quality : 75,
+                quality : 90,
                 destinationType : Camera.DestinationType.DATA_URL,
                 sourceType : sourceType,
                 allowEdit : false,
@@ -151,8 +165,8 @@
 
         function removeAvatar() {
             var popupOptions = {
-                title: 'Remove avatar',
-                template: 'Are you sure you want to remove this picture from your profile?',
+                title: $translate.instant('HOME.PLAYERS.EDIT-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE'),
+                template: $translate.instant('HOME.PLAYERS.EDIT-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT'),
                 buttons: [
                     {
                         text: $translate.instant('HOME.GENERAL.CONFIRM.NO')
@@ -177,7 +191,7 @@
 
         function confirmPlayer($event) {
             if (!editPlayerModalScope.viewModel.player.firstName || !editPlayerModalScope.viewModel.player.lastName) {
-                toast.show('First name and Last name are required');
+                toast.show(toastMessages.requiredFields);
                 return;
             }
 
@@ -187,7 +201,7 @@
 
             initProfileData();
             playersService.updatePlayer(vm.player);
-            toast.show('Update to player profile saved');
+            toast.show(toastMessages.updateSaved);
 
             vm.editPlayerModal.hide();
         }

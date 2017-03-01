@@ -44,13 +44,13 @@
         <div class="padding">
             <ion-list>
                 <div class="item item-divider">
-                    Profile
+                    {{ 'HOME.PLAYERS.DETAIL.PROFILE' | translate }}
                 </div>
                 <ion-item ng-repeat="item in playerDetail.profileData.profile">
                     {{item.title}}: {{item.value}}
                 </ion-item>
                 <div class="item item-divider">
-                    Statistics
+                    {{ 'HOME.PLAYERS.DETAIL.STATISTICS' | translate }}
                 </div>
                 <ion-item ng-repeat="item in playerDetail.profileData.statistics">
                     {{item.title}}: {{item.value + item.unit}}

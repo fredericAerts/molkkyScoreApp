@@ -110,25 +110,7 @@
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            // non player specific updates (overall statistics)
-            if (event === 'playerWonGame') {
-                var participants = gameService.getParticipants();
-                var increment = undo ? -1 : 1;
-
-                dataService.getOverallStatistics().totalGamesPlayed += increment;
-                dataService.updateOverallStatistics();
-                participants.forEach(function(player) {
-                    if (player.statistics) {
-                        player.statistics.rawData.gamesPlayed += increment;
-                    }
-                });
-            }
-
-            // player specific updates
-            if (activePlayer.guestColor || settingsService.getParameters().game.isCustom) {
-                // no player specific update for guest player or when game settings are customized
-            }
-            else {
+            if (!settingsService.getParameters().game.isCustom) {
                 statisticsProcessor.update(event, activePlayer, undo);
             }
         }
