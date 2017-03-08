@@ -1,67 +1,315 @@
-{
+﻿{
     "HOME": {
-        "VIEW-TITLE": "French",
+        "GENERAL": {
+            "CONFIRM": {
+                "CANCEL": "Annuler",
+                "OK": "Ok",
+                "NO": "Non",
+                "YES": "Oui"
+            }
+        },
+        "SPLASH": {
+            "SUBTITLE": "Nous apportons la qualité<br>de classe mondiale au jeu",
+            "CTA": "Visitez notre site web"
+        },
+        "LOADING": {
+            "STARTING-GAME": "démarrage",
+            "RESTARTING-GAME": "redémarrage",
+            "STARTING-NEW-GAME": "démarrage de nouvelle partie",
+            "LOADING-APP": "chargement de l'application"
+        },
+        "VIEW-TITLE": "Accueil",
         "START": {
-            "VIEW-TITLE": "fais jeu",
-            "BUTTON-TITLE": "@:HOME.START.VIEW-TITLE",
+            "BUTTON-TITLE": "Jouer",
+            "START-PLAYERS-MODAL": {
+                "TITLE": "Ajouter des joueurs",
+                "BUTTON-CANCEL": "Annuler",
+                "BUTTON-START-GAME": "Commencer partie",
+                "TOGGLE-REORDER": "Réorganiser participants",
+                "BUTTON-ADD-GUEST": "Ajouter participant invité",
+                "DATABASE-LIST-HEADER": "Base de données",
+                "PARTICIPANTS-LIST-HEADER": "Participants"
+            },
             "TOASTS": {
-                "MAX-PARTICIPANTS": "French"
+                "MAX-PARTICIPANTS": "Max. de participants atteint"
+            }
+        },
+        "TUTORIAL": {
+            "INVITE-POPUP": {
+                "TITLE": "Faire un tour",
+                "TEXT": "<p>L'utilisation incorrecte du pavé numérique de scores peut fausser les statistiques des joueurs. Si vous utilisez l'application pour la première fois, nous vous recommandons vraiment de faire un tour rapide ici.</p><p>Voulez-vous être guidé à travers le pavé numérique avec un tutoriel en 5 étapes?</p>",
+                "ASK-AGAIN": "Ne plus demander"
+            },
+            "INFO-POPOVER": {
+                "STEP-1": {
+                    "TITLE": "Entrer score ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Le score obtenu dans chaque jet peut être attribué au joueur respectif en tapant le numéro approprié sur le pavé numérique.<br>Lorsque vous tapez le numéro une fois, il devient vert. Cela indique le renversement d'une quille marquée avec ce numéro (par exemple, dans ce cas, ça indique le renversement de la quille marquée 12)."
+                },
+                "STEP-2": {
+                    "TITLE": "Entrer score ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Lorsque vous tapez le numéro deux fois, il devient bleu. Cela indique le renversement du nombre de quilles que vous avez tapé sur le pavé numérique (par exemple, dans ce cas, ça indique le renversement des 12 quilles).<br><br>note: si vous manquez toutes les quilles, vous deverez taper 0 sur le pavé numérique"
+                },
+                "STEP-3": {
+                    "TITLE": "Entrer score ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Une fois que vous avez activé le score appropriée, vous pouvez l'attribuer au joueur respectif en appuyant sur le joueur sur le pavé numérique."
+                },
+                "STEP-4": {
+                    "TITLE": "Fiche de score ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Les scores des joueurs peuvent être consultés tout au long du jeu sur la fiche de score. Vous pouvez tapper sur la fiche de score à tout moment pour un récapitulatif plus détaillé des scores."
+                },
+                "STEP-5": {
+                    "TITLE": "Options ({{ progressStep }}/{{ progressSteps }})",
+                    "TEXT": "Vous pouvez à tout moment consulter les règles du jeu, annuler le dernier jet, quitter le jeu etc... via le bouton options."
+                },
+                "NEXT": "Suivant",
+                "FINISH": "C'est parti!"
             }
         },
         "GAME": {
+            "VIEW-TITLE": "C'est parti!",
+            "ACTIVE-PLAYER-CELL": {
+                "SCORE-HISTORY-PLACEHOLDER": "Historique de scores..."
+            },
+            "SCORE-DETAILS-MODAL": {
+                "TITLE": "Fiche de score",
+                "TABS": {
+                    "SCORE-LIST": {
+                        "TITLE": "Liste des scores",
+                        "SORT-TOGGLE": "Classer les joueurs par score"
+                    },
+                    "DETAILS": {
+                        "TITLE": "Détails des scores"
+                    }
+                },
+                "BUTTONS": {
+                    "EXIT": "Quitter",
+                    "NEW-GAME": "Nouvelle partie",
+                    "CONTINUE": "Continuer"
+                }
+            },
+            "RULES-MODAL": {
+                "TITLE": "Règles du jeu",
+                "BODY": {
+                    "SETUP": {
+                        "TITLE": "Configuration",
+                        "TEXT": "Les joueurs utilisent un lançeur en bois pour essayer de faire tomber des quilles en bois de dimensions presque similaires, qui sont numérotées de 1 à 12. Les quilles sont initialement placés dans un groupe serré en position verticale à 3-4 mètres des joueurs, et organisées comme suit: 1ère rangée, 1/2; 2ème rangée, 3/10/4; 3ème rangée, 5/11/12/6; 4ème rangée, 7/9/8."
+                    },
+                    "RULES": {
+                        "TITLE": "Règles\r",
+                        "TEXT": "Une quille reversée rapporte le nombre de points marqués dessus. Faire tomber 2 quilles ou plus rapporte le nombre de quilles renversées (par exemple, renverser 3 quilles rapporte 3 points). Une quille ne compte pas si elle s'appuie sur le mölkky ou l'une des quilles numérotées (elle doit être parallèle au sol pour qu'elle compte). Après chaque jet, les quilles sont relevées à nouveau à l'endroit exact où elles sont tombées."
+                    },
+                    "SETTINGS": {
+                        "TITLE": "Paramètres",
+                        "CUSTOMIZED": "personnalisé",
+                        "TEXT": "Le premier à atteindre exactement {{ winningScore }} points gagne la partie. Si un joueur marque plus de {{ winningScore }} points, il aura {{ winningScoreExceeded }}. Si un joueur rate toutes les quilles trois fois de suite, les {{ threeMisses }}."
+                    }
+                }
+            },
+            "ACTION-SHEET": {
+                "TITLE": "Options",
+                "GAME-RULES": {
+                    "BUTTON": "Règles du jeu"
+                },
+                "RESTART": {
+                    "BUTTON": "Recommencer la partie",
+                    "CONFIRM": {
+                        "TITLE": "Recommencer la partie",
+                        "TEXT": "Êtes-vous sûr de vouloir recommencer la partie?"
+                    }
+                },
+                "NEW": {
+                    "BUTTON": "Nouvelle partie",
+                    "CONFIRM": {
+                        "TITLE": "Nouvelle partie",
+                        "TEXT": "Voulez-vous utiliser les mêmes joueurs?"
+                    }
+                },
+                "UNDO": {
+                    "BUTTON": "Annuler dernier"
+                },
+                "EXIT": {
+                    "BUTTON": "Quitter le jeu",
+                    "CONFIRM": {
+                        "TITLE": "Quitter le jeu",
+                        "TEXT": "Êtes-vous sûr de vouloir quitter?"
+                    }
+                },
+                "CONTINUE": {
+                    "BUTTON": "Continuer"
+                }
+            },
             "TOASTS": {
-                "UNDO-LAST": "French",
-                "THREE-MISSES": "French",
-                "MAX-SCORE-EXCEEDED": "French",
-                "WINNER": "French"
+                "UNDO-LAST": "Dernier jet annulé",
+                "THREE-MISSES": "a raté trois fois de suite!",
+                "MAX-SCORE-EXCEEDED": "a dépassé le score maximum!",
+                "WINNER": "gagne cette partie!"
             }
         },
         "SETTINGS": {
-            "VIEW-TITLE": "French",
+            "VIEW-TITLE": "Paramètres",
             "BUTTON-TITLE": "@:HOME.SETTINGS.VIEW-TITLE",
             "TABS": {
                 "GAME": {
-                    "TITLE": "French",
+                    "TITLE": "Jeu",
                     "CUSTOM-TOGGLE": {
-                        "ON": "French",
-                        "OFF": "French",
+                        "LABEL": "Paramètres personnalisés",
                         "POPUP": {
-                            "TITLE": "French"
+                            "TITLE": "Avertissement",
+                            "TEXT": "Les statistiques des joueurs ne sont pas enregistrées si les paramètres personnalisés sont activés"
                         }
+                    },
+                    "WINNING-SCORE": {
+                        "TITLE": "Le score gagnant est ..."
+                    },
+                    "WINNING-SCORE-EXCEEDED": {
+                        "TITLE": "Quand le joueur dépasse le score gagnant ...",
+                        "OPTION-1": "le score est mis à zéro",
+                        "OPTION-2": "le score est divisé par deux",
+                        "OPTION-3": "le score est mis à la moitié du score gagnant"
+                    },
+                    "THREE-MISSES": {
+                        "TITLE": "En ratant trois jets de suite ...",
+                        "OPTION-1": "le score est mis à zéro",
+                        "OPTION-2": "le score est divisé par deux",
+                        "OPTION-3": "le joueur est eliminé"
                     }
                 },
                 "APP": {
-                    "TITLE": "French",
+                    "TITLE": "Application",
                     "LANGUAGE": {
-                        "TITLE": "French"
+                        "TITLE": "Langue"
                     }
                 }
             },
             "TOASTS": {
-                "UPDATE": "French"
+                "UPDATE": "Paramètres actualisés"
             }
         },
         "STATISTICS": {
+            "VIEW-TITLE": "Statistiques",
             "METRICS": {
-                "HALLOFFAME": {
-                    "VIEW-TITLE": "French",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.HALLOFFAME.VIEW-TITLE"
+                "OVERALL": {
+                    "TOTAL-GAMES-PLAYED": {
+                        "VIEW-TITLE": "Total de parties jouées",
+                        "INFO": {
+                            "SUMMARY": "Nombre total de parties jouées",
+                            "RECORDED": "Lorsque le jeu est gagné par un joueur (par exemple, un joueur atteint le score maximum)",
+                            "CALCULATION": ""
+                        }
+                    }
                 },
-                "EFFECTIVENESS": {
-                    "VIEW-TITLE": "French",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.EFFECTIVENESS.VIEW-TITLE"
-                },
-                "ACCURACY": {
-                    "VIEW-TITLE": "French",
-                    "TITLE": "@:HOME.STATISTICS.METRICS.ACCURACY.VIEW-TITLE"
+                "PLAYERS": {
+                    "TOTAL-WINS": {
+                        "VIEW-TITLE": "Total de victoires",
+                        "INFO": {
+                            "SUMMARY": "Nombre total de victoires",
+                            "RECORDED": "Quand un joueur gagne le jeu (par exemple, un joueur est le premier à atteindre le score maximum)",
+                            "CALCULATION": ""
+                        }
+                    },
+                    "VERSATILITY": {
+                        "VIEW-TITLE": "Polyvalence",
+                        "INFO": {
+                            "SUMMARY": "Taux de gain, précision et efficacité combinés en une seule valeur",
+                            "RECORDED": "À chaque jet",
+                            "CALCULATION": "a = taux de gain<br>b = efficacité<br>c = précision<br><i>Polyvalence</i> = (a + b + c) / 3"
+                        }
+                    },
+                    "WINNING-RATIO": {
+                        "VIEW-TITLE": "Taux de gain",
+                        "INFO": {
+                            "SUMMARY": "Nombre total de victoires par nombre total de parties jouées",
+                            "RECORDED": "Lorsque le jeu est gagné par un joueur (par exemple, un joueur atteint le score maximum)",
+                            "CALCULATION": "a = victoires totales<br>b = total de parties jouées<br><i>Taux de gain</i> = (a / b) * 100"
+                        }
+                    },
+                    "ACCURACY": {
+                        "VIEW-TITLE": "Précision",
+                        "INFO": {
+                            "SUMMARY": "La capacité du joueur de faire tomber une seule quille",
+                            "RECORDED": "À chaque jet",
+                            "CALCULATION": "a = jets totals avec une seule quille de tombée<br>b = jets totals<br><i>Précision</i> = (a / b) * 100"
+                        }
+                    },
+                    "EFFICIENCY": {
+                        "VIEW-TITLE": "Efficacité",
+                        "INFO": {
+                            "SUMMARY": "La capacité du joueur à minimiser le nombre de jets pour finir une partie",
+                            "RECORDED": "Quand le joueur atteint le score maximum",
+                            "CALCULATION": "a = total de jets dans les parties où le joueur à atteint le score maximum<br>b = nombre de parties où le joueur à atteint le score maximum<br><i>Efficacité</i> = (4 / (a / b)) * 100"
+                        }
+                    }
                 }
+            },
+            "INFO-BLOCK": {
+                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques des joueurs ne sont pas enregistrées"
+            },
+            "INFO-MODAL": {
+                "TITLE": "Infos des statistiques",
+                "BUTTON-CLOSE": "Fermer"
             },
             "INFO-POPOVER": {
                 "CONTENT": {
-                    "WHAT": "French",
-                    "WHEN": "French",
-                    "HOW": "French"
+                    "WHAT": "Qu'est-ce que c'est?",
+                    "WHEN": "Ça s'actualise quand?\r",
+                    "HOW": "Ça se calcule comment?"
                 }
+            },
+            "LISTING": {
+                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici"
+            }
+        },
+        "PLAYERS": {
+            "VIEW-TITLE": "Joueurs",
+            "REMOVE-POPUP": {
+                "TITLE": "Supprimer joueur",
+                "TEXT": "<p>Êtes-vous sûr de vouloir supprimer <strong>{{ playerName }}</strong> des joueurs?</p><p>Toutes les statistiques associées à un joueur éliminé seront perdues..</p>"
+            },
+            "ADD-PLAYER-MODAL": {
+                "TITLE": "Ajouter nouveau joueur",
+                "INPUT-FIRST-NAME": "Prénom",
+                "INPUT-LAST-NAME": "Nom",
+                "INPUT-TAGLINE": "Votre slogan",
+                "BUTTON-CANCEL": "@:HOME.START.START-PLAYERS-MODAL.BUTTON-CANCEL",
+                "AVATAR-PLACEHOLDER": "Prenez une photo ou chargez une image de votre photothèque",
+                "BUTTON-ADD-PLAYER": "Ajouter joueur",
+                "REMOVE-AVATAR-POPUP": {
+                    "TITLE": "Supprimer avatar",
+                    "TEXT": "Êtes-vous sûr de vouloir supprimer cette image de votre profil?"
+                }
+            },
+            "EDIT-PLAYER-MODAL": {
+                "TITLE": "Éditer joueur",
+                "INPUT-FIRST-NAME": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.INPUT-FIRST-NAME",
+                "INPUT-LAST-NAME": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.INPUT-LAST-NAME",
+                "INPUT-TAGLINE": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.INPUT-TAGLINE",
+                "AVATAR-PLACEHOLDER": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.AVATAR-PLACEHOLDER",
+                "BUTTON-ADD-PLAYER": "Sauvegarder",
+                "REMOVE-AVATAR-POPUP": {
+                    "TITLE": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TITLE",
+                    "TEXT": "@:HOME.PLAYERS.ADD-PLAYER-MODAL.REMOVE-AVATAR-POPUP.TEXT"
+                }
+            },
+            "DETAIL": {
+                "PROFILE": "Profil",
+                "STATISTICS": "Statistiques",
+                "PROFILE-DATA-LABELS": {
+                    "FIRST-NAME": "Prénom",
+                    "LAST-NAME": "Nom",
+                    "TAGLINE": "Slogan",
+                    "GAMES-PLAYED": "Parties jouées:",
+                    "GAMES-WON": "Parties gagnées",
+                    "GAMES-REACHED-MAX-SCORE": "Parties score maximum atteint",
+                    "THROWS": "Jets",
+                    "THROWS-SINGLE-PIN": "Jets d'une seule quille",
+                    "THROWS-REACHED-MAX-SCORE": "Jets quand score maximum atteint"
+                }
+            },
+            "TOASTS": {
+                "ADD-PLAYER": "est ajouté aux joueurs",
+                "REMOVE-PLAYER": "est retiré des joueurs",
+                "REQUIRED-FIELDS": "Prénom et Nom sont requis",
+                "UPDATE-SAVED": "Actualisation de profil sauvegardée"
             }
         }
     }

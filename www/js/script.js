@@ -6261,7 +6261,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         }
 
         function visitWebsite() {
-            window.open('http://www.fredericaerts.com', '_system', 'location=yes');
+            window.open('http://www.molkky.world', '_system', 'location=yes');
         }
     }
 })();
