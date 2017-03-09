@@ -16,8 +16,8 @@
     background: transparent;
 
     color: $light;
-    font-size: 9px;
-    line-height: 14px;
+    font-size: 11px;
+    line-height: 15px;
     text-align: center;
 
     &:before { // arrow above title
@@ -69,7 +69,7 @@
     left: 52%;
     @include transform(translateX(-50%) translateY(-50%));
 
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .metric-donut__circle__bg-fill {

@@ -16,21 +16,22 @@
         margin: 0 auto 5px;
 
         color: $light;
-        font-family: $font-family-bold;
-        font-size: 36px;
+        font-family: $font-family-black;
+        font-size: 46px;
         white-space: nowrap;
 
         @media (max-width: 360px) {
-            font-size: 30px;
+            font-size: 40px;
         }
     }
 
     & .home-cta__subtitle {
         margin: 0;
 
+        font-family: $font-family-bold;
         color: $light;
-        font-size: 16px;
-        line-height: 20px;
+        font-size: 20px;
+        line-height: 24px;
 
         white-space: nowrap;
     }
@@ -80,8 +81,8 @@
     display: inline-block;
     padding-right: 5px;
 
-    font-size: 10px;
-    line-height: 14px;
+    font-size: 11px;
+    line-height: 15px;
 }
 
 .home-cta__cta-info__image {

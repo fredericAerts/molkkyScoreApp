@@ -3318,7 +3318,7 @@ body,
   word-wrap: break-word;
   font-size: 14px;
   font-family: -apple-system;
-  font-family: "Champion-regular", Arial, Helvetica, sans-serif;
+  font-family: "roboto-regular", Arial, Helvetica, sans-serif;
   line-height: 20px;
   text-rendering: optimizeLegibility;
   -webkit-backface-visibility: hidden;
@@ -3569,7 +3569,7 @@ h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   color: #000;
   font-weight: 500;
-  font-family: "Champion-regular", Arial, Helvetica, sans-serif;
+  font-family: "roboto-regular", Arial, Helvetica, sans-serif;
   line-height: 1.2; }
   h1 small, h2 small, h3 small, h4 small, h5 small, h6 small,
   .h1 small, .h2 small, .h3 small, .h4 small, .h5 small, .h6 small {
@@ -5116,7 +5116,7 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.tab-item-active, ion-tabs
   white-space: nowrap;
   font-weight: 400;
   font-size: 14px;
-  font-family: "Champion-regular", Arial, Helvetica, sans-serif;
+  font-family: "roboto-regular", Arial, Helvetica, sans-serif;
   opacity: 0.7; }
   .tab-item:hover {
     cursor: pointer; }
@@ -7466,7 +7466,7 @@ input,
 button,
 select,
 textarea {
-  font-family: "Champion-regular", Arial, Helvetica, sans-serif; }
+  font-family: "roboto-regular", Arial, Helvetica, sans-serif; }
 
 .item-input {
   display: -webkit-box;
@@ -9699,16 +9699,19 @@ a.button {
     transform: rotate(359deg); } }
 
 b, strong {
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif; }
-
-/* .ttf is best choice for offline apps  */
-@font-face {
-  font-family: 'Champion-medium';
-  src: local("Champion-medium"), url("../lib/ionic/fonts/national-champion/nationalchampion-medium-webfont.ttf") format("truetype"); }
+  font-family: "roboto-medium", sans-serif; }
 
 @font-face {
-  font-family: 'Champion-regular';
-  src: local("Champion-regular"), url("../lib/ionic/fonts/national-champion/nationalchampion-regular-webfont.ttf") format("truetype"); }
+  font-family: 'roboto-regular';
+  src: local("Champion-regular"), url("../lib/ionic/fonts/roboto/Roboto-Regular.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'roboto-bold';
+  src: local("Champion-medium"), url("../lib/ionic/fonts/roboto/Roboto-Bold.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'roboto-black';
+  src: local("Champion-medium"), url("../lib/ionic/fonts/roboto/Roboto-Black.ttf") format("truetype"); }
 
 .home-cta {
   position: relative;
@@ -9723,17 +9726,18 @@ b, strong {
   .home-cta__header .home-cta__title {
     margin: 0 auto 5px;
     color: #fff;
-    font-family: "Champion-medium", "Arial Black", Gadget, sans-serif;
-    font-size: 36px;
+    font-family: "roboto-black", sans-serif;
+    font-size: 46px;
     white-space: nowrap; }
     @media (max-width: 360px) {
       .home-cta__header .home-cta__title {
-        font-size: 30px; } }
+        font-size: 40px; } }
   .home-cta__header .home-cta__subtitle {
     margin: 0;
+    font-family: "roboto-medium", sans-serif;
     color: #fff;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 20px;
+    line-height: 24px;
     white-space: nowrap; }
 
 .home-cta__cta-wrapper {
@@ -9766,8 +9770,8 @@ b, strong {
 .home-cta__cta-info__text {
   display: inline-block;
   padding-right: 5px;
-  font-size: 10px;
-  line-height: 14px; }
+  font-size: 11px;
+  line-height: 15px; }
 
 .home-cta__cta-info__image {
   position: relative;
@@ -9851,7 +9855,7 @@ b, strong {
 
 .avatar-block__name {
   margin-top: 20px;
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif;
+  font-family: "roboto-black", sans-serif;
   font-size: 28px;
   line-height: 34px;
   overflow: hidden;
@@ -9901,8 +9905,8 @@ b, strong {
   width: 75%;
   margin: 0 auto;
   padding: 10px;
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 11px;
+  line-height: 15px;
   color: #919191;
   text-align: center; }
   .padding .info-block {
@@ -9910,7 +9914,7 @@ b, strong {
     padding: 0; }
 
 .modal-title {
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif; }
+  font-family: "roboto-medium", sans-serif; }
 
 .footnote {
   font-size: 12px;
@@ -9930,8 +9934,8 @@ b, strong {
   margin-top: 10px;
   background: transparent;
   color: #fff;
-  font-size: 9px;
-  line-height: 14px;
+  font-size: 11px;
+  line-height: 15px;
   text-align: center; }
   .metric-donut__title:before {
     position: absolute;
@@ -9973,7 +9977,7 @@ b, strong {
   left: 52%;
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
-  font-size: 12px; }
+  font-size: 16px; }
 
 .metric-donut__circle__bg-fill {
   position: absolute;
@@ -9996,7 +10000,7 @@ b, strong {
   margin-right: 5px; }
 
 .popup .popup-title {
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif; }
+  font-family: "roboto-black", sans-serif; }
 
 .three-btn .popup {
   width: 300px; }
@@ -10008,7 +10012,7 @@ b, strong {
 
 .popover__content-title {
   margin-bottom: 0;
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif;
+  font-family: "roboto-black", sans-serif;
   font-size: 12px; }
 
 .action-sheet-option.button {
@@ -10256,7 +10260,9 @@ b, strong {
   font-size: 13px; }
 
 .item h2 {
-  font-size: 14px; }
+  margin-bottom: 0;
+  font-family: "roboto-medium", sans-serif;
+  font-size: 16px; }
 
 .item p {
   font-size: 12px; }
@@ -10367,7 +10373,7 @@ b, strong {
   content: "\f356"; }
 
 .item-avatar.numbered:after {
-  font-family: "Champion-medium", "Arial Black", Gadget, sans-serif;
+  font-family: "roboto-medium", sans-serif;
   font-size: 18px;
   line-height: 40px;
   content: counter(slideNum); }

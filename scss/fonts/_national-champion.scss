@@ -1,11 +1,17 @@
-/* .ttf is best choice for offline apps  */
 @font-face {
-    font-family: 'Champion-medium';
-    src: local('Champion-medium'),
-         url('../lib/ionic/fonts/national-champion/nationalchampion-medium-webfont.ttf') format('truetype');
-}
-@font-face {
-    font-family: 'Champion-regular';
+    font-family: 'roboto-regular';
     src: local('Champion-regular'),
-         url('../lib/ionic/fonts/national-champion/nationalchampion-regular-webfont.ttf') format('truetype');
+         url('../lib/ionic/fonts/roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'roboto-bold';
+    src: local('Champion-medium'),
+         url('../lib/ionic/fonts/roboto/Roboto-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'roboto-black';
+    src: local('Champion-medium'),
+         url('../lib/ionic/fonts/roboto/Roboto-Black.ttf') format('truetype');
 }

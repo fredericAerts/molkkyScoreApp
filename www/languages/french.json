@@ -193,7 +193,7 @@
                         "VIEW-TITLE": "Total de parties jouées",
                         "INFO": {
                             "SUMMARY": "Nombre total de parties jouées",
-                            "RECORDED": "Lorsque le jeu est gagné par un joueur (par exemple, un joueur atteint le score maximum)",
+                            "RECORDED": "Lorsque le jeu est gagné par un joueur (un joueur atteint le score maximum)",
                             "CALCULATION": ""
                         }
                     }
@@ -203,7 +203,7 @@
                         "VIEW-TITLE": "Total de victoires",
                         "INFO": {
                             "SUMMARY": "Nombre total de victoires",
-                            "RECORDED": "Quand un joueur gagne le jeu (par exemple, un joueur est le premier à atteindre le score maximum)",
+                            "RECORDED": "Quand le joueur gagne le jeu (le joueur est le premier à atteindre le score maximum)",
                             "CALCULATION": ""
                         }
                     },
@@ -219,7 +219,7 @@
                         "VIEW-TITLE": "Taux de gain",
                         "INFO": {
                             "SUMMARY": "Nombre total de victoires par nombre total de parties jouées",
-                            "RECORDED": "Lorsque le jeu est gagné par un joueur (par exemple, un joueur atteint le score maximum)",
+                            "RECORDED": "Lorsque le jeu est gagné par un joueur (un joueur atteint le score maximum)",
                             "CALCULATION": "a = victoires totales<br>b = total de parties jouées<br><i>Taux de gain</i> = (a / b) * 100"
                         }
                     },
