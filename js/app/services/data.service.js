@@ -60,10 +60,26 @@
                     tagline: 'Hey, it\'s me!',
                     face: 'img/dummy-woman.jpg',
                     statistics: getDefaultStatistics()
+                },
+                {
+                    id: 2,
+                    firstName: 'Adam',
+                    lastName: 'McCarthy',
+                    tagline: 'I should buy a boat',
+                    face: 'img/perry.png',
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 3,
+                    firstName: 'Ben',
+                    lastName: 'Dillon',
+                    tagline: 'Molkky is fun!',
+                    face: 'img/ben.png',
+                    statistics: getDefaultStatistics()
                 }
             ];
             overallStatistics = {
-                totalGamesPlayed: 0
+                totalGamesPlayed: 89
             };
             gameSettings = {
                 isCustom: false,
@@ -81,19 +97,19 @@
             function getDefaultStatistics() {
                 return {
                     rawData: {
-                        throws: 0,
-                        throwsSinglePin: 0,
-                        throwsInGamesReachedMaxScore: 0,
-                        gamesPlayed: 0,
-                        gamesReachedMaxScore: 0,
-                        gamesWon: 0
+                        throws: 148,
+                        throwsSinglePin: 126,
+                        throwsInGamesReachedMaxScore: 89,
+                        gamesPlayed: 64,
+                        gamesReachedMaxScore: 51,
+                        gamesWon: 41
                     },
                     metrics: {
-                        totalWins: 0,
-                        versatility: 0,
-                        winningRatio: 0,
-                        accuracy: 0,
-                        efficiency: 0
+                        totalWins: 41,
+                        versatility: 78,
+                        winningRatio: 86,
+                        accuracy: 58,
+                        efficiency: 74
                     }
                 };
             }

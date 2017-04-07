@@ -1,7 +1,7 @@
 {
-  "name": "molkkyscoreionic",
-  "version": "1.1.1",
-  "description": "molkkyScoreIonic: An Ionic project",
+  "name": "MolkkyWorldApp",
+  "version": "1.0.1",
+  "description": "Free (and ad free) application for keeping score on the game named 'mölkky'",
   "dependencies": {
     "gulp": "^3.5.6",
     "gulp-autoprefixer": "^3.1.0",
