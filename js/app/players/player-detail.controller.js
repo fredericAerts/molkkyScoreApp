@@ -151,7 +151,8 @@
                 encodingType: Camera.EncodingType.JPEG,
                 targetWidth: 150,
                 targetHeight: 150,
-                saveToPhotoAlbum: false
+                saveToPhotoAlbum: false,
+                correctOrientation: true
             };
 
             $cordovaCamera.getPicture(options).then(function(imageData) {
@@ -160,7 +161,7 @@
                 console.log(err.message);
             });
 
-            $cordovaCamera.cleanup();
+            // $cordovaCamera.cleanup(); // only on iOS, remove for android build
         }
 
         function removeAvatar() {
