@@ -10,5 +10,6 @@
     "www/js/*.js",
     "www/templates/**/*.html",
     "www/index.html"
-  ]
+  ],
+  "type": "ionic1"
 }
