@@ -9703,7 +9703,7 @@ b, strong {
 
 @font-face {
   font-family: 'roboto-regular';
-  src: local("Champion-regular"), url("../lib/ionic/fonts/roboto/Roboto-Regular.ttf") format("truetype"); }
+  src: local("Champion-regular"), url("../lib/ionic/fonts/roboto/Roboto-Medium.ttf") format("truetype"); }
 
 @font-face {
   font-family: 'roboto-bold';
