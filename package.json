@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Free (and ad free) application for keeping score on the game named 'mölkky'",
   "dependencies": {
+    "@ionic/cli-plugin-cordova": "^1.4.1",
     "gulp": "^3.5.6",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.2.0",
