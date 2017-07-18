@@ -51,6 +51,57 @@
     }
 }
 
+.avatar-block__team-avatar {
+    position: relative;
+
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    > div {
+        position: relative;
+
+        display: inline-block;
+        height: 100%;
+        font-size: 0;
+
+        overflow: hidden;
+
+        & > img {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+
+            height: 100%;
+        }
+    }
+
+    &[data-count="2"] {
+
+        > div {
+            width: 50%;
+        }
+    }
+
+    &[data-count="3"] {
+
+        > div {
+            width: 33.3333%;
+        }
+    }
+
+    &[data-count="4"] {
+
+        > div {
+            width: 25%;
+        }
+    }
+}
+
 .avatar-block__face-placeholder {
     position: relative;
 

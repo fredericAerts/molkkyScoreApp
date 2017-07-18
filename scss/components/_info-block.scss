@@ -9,6 +9,10 @@
     color: lighten($dark, 30%);
     text-align: center;
 
+    &--no-margin {
+        width: 100%;
+    }
+
     .padding & {
         margin-bottom: 5px;
         padding: 0;

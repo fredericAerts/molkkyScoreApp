@@ -45,8 +45,13 @@
                 players: {
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER'),
+                    addTeam: $translate.instant('HOME.PLAYERS.TOASTS.ADD-TEAM'),
+                    removeTeam: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-TEAM'),
                     requiredFields: $translate.instant('HOME.PLAYERS.TOASTS.REQUIRED-FIELDS'),
-                    updateSaved: $translate.instant('HOME.PLAYERS.TOASTS.UPDATE-SAVED')
+                    updateSaved: $translate.instant('HOME.PLAYERS.TOASTS.UPDATE-SAVED'),
+                    zeroTeam: $translate.instant('HOME.PLAYERS.TOASTS.ZERO-TEAM'),
+                    teamExists: $translate.instant('HOME.PLAYERS.TOASTS.TEAM-EXISTS'),
+                    maxTeam: $translate.instant('HOME.PLAYERS.TOASTS.MAX-TEAM')
                 },
                 settings: {
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')

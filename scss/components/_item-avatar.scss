@@ -22,6 +22,60 @@
         }
     }
 
+    & .item-avatar__team-avatar:first-child {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+
+        > div {
+            position: relative;
+
+            display: inline-block;
+            height: 100%;
+            font-size: 0;
+
+            overflow: hidden;
+
+            & > img {
+                position: absolute;
+                left: 50%;
+                top: 0;
+                transform: translateX(-50%);
+
+                height: 100%;
+            }
+        }
+
+        &[data-count="2"] {
+
+            > div {
+                width: 50%;
+            }
+        }
+
+        &[data-count="3"] {
+
+            > div {
+                width: 33.3333%;
+            }
+        }
+
+        &[data-count="4"] {
+
+            > div {
+                width: 25%;
+            }
+        }
+    }
+
     &--small {
         min-height: 52px;
         padding-left: 52px;
@@ -31,7 +85,8 @@
             padding-left: 50px;
             padding-right: 16px;
 
-            & > .item-avatar__avatar:first-child {
+            & > .item-avatar__avatar:first-child,
+            & .item-avatar__team-avatar:first-child {
                 top: 10px;
                 left: 10px;
 
@@ -40,7 +95,8 @@
             }
         }
 
-        & .item-avatar__avatar:first-child {
+        & .item-avatar__avatar:first-child,
+        & .item-avatar__team-avatar:first-child {
             top: 10px;
             left: 10px;
 

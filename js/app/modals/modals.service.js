@@ -65,13 +65,17 @@
                 - viewModel data is initialized (reset) each time modal is shown
                 ====================================================================== */
                 modalScope.viewModel = {
+                    isTeamMode: false,
                     showReorder: false,
                     guestColors: guestColors,
                     playersInDatabase: playersService.all().slice(), // modal input
+                    teamsInDatabase: playersService.allTeams().slice(), // modal input
                     participants: [], // modal output
+                    toggleTeamMode: toggleTeamMode,
                     addPlayerToParticipants: addPlayerToParticipants,
+                    addTeamToParticipants: addTeamToParticipants,
                     addGuestParticipant: addGuestParticipant,
-                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    removeFromParticipants: removeFromParticipants,
                     reorderParticipant: reorderParticipant,
                     cancelAddPlayersToGame: cancelAddPlayersToGame,
                     startGame: startGame
@@ -88,6 +92,14 @@
 
             /*  FUNCTIONS
                 ======================================================================================== */
+            function toggleTeamMode() {
+                for (var i = modalScope.viewModel.participants.length - 1; i >= 0; i--) {
+                    removeFromParticipants(i);
+                }
+
+                modalScope.viewModel.isTeamMode = !modalScope.viewModel.isTeamMode;
+            }
+
             function addPlayerToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
                     toast.show(toastMessages.maxParticipants);
@@ -101,36 +113,59 @@
                 modalScope.viewModel.participants.push(playerFromDatabase);
             }
 
-            function addGuestParticipant() {
+            function addTeamToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
                     toast.show(toastMessages.maxParticipants);
                     return;
                 }
 
+                var teamIndex = _.findIndex(modalScope.viewModel.teamsInDatabase, function(team) {
+                    return team.id === newParticipant.id;
+                });
+                var teamFromDatabase = modalScope.viewModel.teamsInDatabase.splice(teamIndex, 1)[0];
+                modalScope.viewModel.participants.push(teamFromDatabase);
+            }
+
+            function addGuestParticipant() {
+                if (modalScope.viewModel.participants.length === 8) {
+                    toast.show(toastMessages.maxParticipants);
+                    return;
+                }
+                var guestPlayer = {};
                 var guestColor = pickRandomGuestColor();
 
-                modalScope.viewModel.participants.push({
-                    firstName: 'Mr.',
-                    lastName: capitalizeFirstLetter(guestColor),
-                    tagline: 'I\'m a guest player',
-                    guestColor: guestColor
-                });
+                if (modalScope.viewModel.isTeamMode) {
+                    guestPlayer = {
+                        name: 'Mr. ' + capitalizeFirstLetter(guestColor),
+                        tagline: 'I\'m a guest player',
+                        guestColor: guestColor
+                    }
+                } else {
+                    guestPlayer = {
+                        firstName: 'Mr.',
+                        lastName: capitalizeFirstLetter(guestColor),
+                        tagline: 'I\'m a guest player',
+                        guestColor: guestColor
+                    }
+                }
+                modalScope.viewModel.participants.push(guestPlayer);
             }
 
-            function removePlayerFromParticipants(index) {
-                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
+            function removeFromParticipants(index) {
+                var removedParticipant = modalScope.viewModel.participants.splice(index, 1)[0];
 
-                if (removedPlayer.guestColor) {
-                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
-                }
-                else {
-                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
+                if (removedParticipant.guestColor) {
+                    modalScope.viewModel.guestColors.push(removedParticipant.guestColor);
+                } else if (!modalScope.viewModel.isTeamMode) {
+                    modalScope.viewModel.playersInDatabase.push(removedParticipant);
+                } else if (modalScope.viewModel.isTeamMode) {
+                    modalScope.viewModel.teamsInDatabase.push(removedParticipant);
                 }
             }
 
-            function reorderParticipant(player, fromIndex, toIndex) {
+            function reorderParticipant(item, fromIndex, toIndex) {
                 modalScope.viewModel.participants.splice(fromIndex, 1);
-                modalScope.viewModel.participants.splice(toIndex, 0, player);
+                modalScope.viewModel.participants.splice(toIndex, 0, item);
             }
 
             function cancelAddPlayersToGame() {
@@ -151,9 +186,11 @@
             /*  Helper functions
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
+                modalScope.viewModel.isTeamMode = false;
                 modalScope.viewModel.showReorder = false;
                 modalScope.viewModel.guestColors = getGuestColors();
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
+                modalScope.viewModel.teamsInDatabase = playersService.allTeams().slice();
                 modalScope.viewModel.participants = [];
             }
 

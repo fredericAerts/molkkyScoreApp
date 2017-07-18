@@ -27,8 +27,13 @@
                 "BUTTON-START-GAME": "Commencer partie",
                 "TOGGLE-REORDER": "Réorganiser participants",
                 "BUTTON-ADD-GUEST": "Ajouter participant invité",
-                "DATABASE-LIST-HEADER": "Base de données",
-                "PARTICIPANTS-LIST-HEADER": "Participants"
+                "DATABASE-LIST-HEADER": "Jouers",
+                "DATABASE-LIST-HEADER-PLAYERS": "Jouers",
+                "DATABASE-LIST-HEADER-TEAMS": "Equipes",
+                "PARTICIPANTS-LIST-HEADER": "Participants",
+                "PLAY-AS-TEAM": "Jouer en équipe",
+                "PLAY-INDIVIDUALLY": "Jouer individuellement",
+                "NO-TEAMS": "Aucune équipe disponible. Vous pouvez créer des équipes sur l'écran <strong>Joueurs</strong>"
             },
             "TOASTS": {
                 "MAX-PARTICIPANTS": "Max. de participants atteint"
@@ -189,6 +194,7 @@
             "VIEW-TITLE": "Statistiques",
             "METRICS": {
                 "OVERALL": {
+                    "TITLE": "Global",
                     "TOTAL-GAMES-PLAYED": {
                         "VIEW-TITLE": "Total de parties jouées",
                         "INFO": {
@@ -199,6 +205,7 @@
                     }
                 },
                 "PLAYERS": {
+                    "TITLE": "Joueurs",
                     "TOTAL-WINS": {
                         "VIEW-TITLE": "Total de victoires",
                         "INFO": {
@@ -242,7 +249,7 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques des joueurs ne sont pas enregistrées"
+                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques des joueurs/équipes ne sont pas enregistrées"
             },
             "INFO-MODAL": {
                 "TITLE": "Infos des statistiques",
@@ -264,6 +271,21 @@
             "REMOVE-POPUP": {
                 "TITLE": "Supprimer joueur",
                 "TEXT": "<p>Êtes-vous sûr de vouloir supprimer <strong>{{ playerName }}</strong> des joueurs?</p><p>Toutes les statistiques associées à un joueur éliminé seront perdues..</p>"
+            },
+            "REMOVE-TEAM-PLAYER_POPUP": {
+                "TITLE": "Alerte",
+                "TEXT": "Vous ne pouvez pas supprimer <strong>{{ playerName }}</strong> car ce joueur fait partie de l'équipe{{ plural }} {{teamNames}}"
+            },
+            "REMOVE-TEAM-POPUP": {
+                "TITLE": "Supprimer équipe",
+                "TEXT": "<p>Êtes-vous sûr de vouloir supprimer <strong>{{ teamName }}</strong> des équipes?</p><p>Toutes les statistiques associées à un équipe éliminé seront perdues..</p>"
+            },
+            "CREATE-A-TEAM": {
+                "SUBMIT": "Soumettre",
+                "PLACEHOLDER": "Nom de l'équipe"
+            },
+            "LIST": {
+                "TEAMS": "Equipes"
             },
             "ADD-PLAYER-MODAL": {
                 "TITLE": "Ajouter nouveau joueur",
@@ -292,6 +314,7 @@
             },
             "DETAIL": {
                 "PROFILE": "Profil",
+                "TEAM-MEMBERS": "Membres",
                 "STATISTICS": "Statistiques",
                 "PROFILE-DATA-LABELS": {
                     "FIRST-NAME": "Prénom",
@@ -308,8 +331,13 @@
             "TOASTS": {
                 "ADD-PLAYER": "est ajouté aux joueurs",
                 "REMOVE-PLAYER": "est retiré des joueurs",
+                "ADD-TEAM": "est ajouté aux équipes",
+                "REMOVE-TEAM": "est retiré des équipes",
                 "REQUIRED-FIELDS": "Prénom et Nom sont requis",
-                "UPDATE-SAVED": "Actualisation de profil sauvegardée"
+                "UPDATE-SAVED": "Actualisation de profil sauvegardée",
+                "ZERO-TEAM": "Sélectionnez au moins 1 joueur",
+                "TEAM-EXISTS": "Le nom de l'équipe existe déjà",
+                "MAX-TEAM": "Max. 4 joueurs par équipe"
             }
         }
     }

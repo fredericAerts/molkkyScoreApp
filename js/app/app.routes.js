@@ -81,6 +81,15 @@
                         controller: 'PlayerDetailCtrl as playerDetail'
                     }
                 }
+            })
+            .state('tab.team-detail', {
+                url: '/players/t/:teamId',
+                views: {
+                    'players': {
+                        templateUrl: TEMPLATES_ROOT + '/players/team-detail.html',
+                        controller: 'TeamDetailCtrl as teamDetail'
+                    }
+                }
             });
 
         // if none of the above states are matched, use this as the fallback

@@ -1,4 +1,4 @@
-players - done
+players
 --------------------------------- */
 id
 first name
@@ -39,3 +39,28 @@ threeMisses
 app settings
 --------------------------------- */
 language
+
+teams
+--------------------------------- */
+id
+name
+playerIds
+
+statistics team raw data
+--------------------------------- */
+teamId
+throws
+throwsSinglePin
+throwsInGamesReachedMaxScore
+gamesPlayed
+gamesReachedMaxScore
+gamesWon
+
+statistics team metrics
+--------------------------------- */
+teamId
+totalWins
+versatility
+winningRatio
+accuracy
+efficiency
