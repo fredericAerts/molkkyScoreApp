@@ -185,15 +185,15 @@
             return $cordovaSQLite.execute(database, selectAllTeamsQuery).then(function(res) {
                 for (var i = 0; i < res.rows.length; i++) {
                     var row = res.rows.item(i);
-                    var players = row.PLAYER_IDS.split('/').map(function(playerId) {
+                    var teamPlayers = row.PLAYER_IDS.split('/').map(function(playerId) {
                         return players.filter(function(player) {
-                            return player.id === playerId;
+                            return player.id === parseInt(playerId, 10);
                         })[0];
                     });
                     teams.push({
                         id: row.ID,
                         name: row.NAME,
-                        players: players,
+                        players: teamPlayers,
                         statistics: {}
                     });
                 }
