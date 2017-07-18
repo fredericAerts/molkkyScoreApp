@@ -5173,6 +5173,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
+        if (!window.cordova) {
+            dataService.initBrowserDev();
+        }
+
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -5189,14 +5193,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             if (window.cordova) {
                 // loadingService.showIndefinite('LOADING-APP');
                 dataService.initDatabase().then(function() {
-                    var playerStatisticsPromises = [];
+                    var statisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
-                        players.forEach(function(player) {
-                            playerStatisticsPromises.push(dataService.initPlayerStatistics(player));
-                        });
-                        $q.all([playerStatisticsPromises]).then(function() {
-                            $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
-                            // loadingService.hide();
+                        dataService.initTeams(players).then(function(teams) {
+                            players.forEach(function(player) {
+                                statisticsPromises.push(dataService.initPlayerStatistics(player));
+                            });
+                            teams.forEach(function(team) {
+                                statisticsPromises.push(dataService.initTeamStatistics(team));
+                            });
+                            $q.all([statisticsPromises]).then(function() {
+                                $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
+                                // loadingService.hide();
+                            });
                         });
                     });
                     dataService.initOverallStatistics();
@@ -5209,10 +5218,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 }, function(err) {
                     console.log(err.message);
                 });
-            }
-            else { // browser version
-                dataService.initBrowserDev();
-                // $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
             }
         });
     }
@@ -5318,6 +5323,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     'players': {
                         templateUrl: TEMPLATES_ROOT + '/players/player-detail.html',
                         controller: 'PlayerDetailCtrl as playerDetail'
+                    }
+                }
+            })
+            .state('tab.team-detail', {
+                url: '/players/t/:teamId',
+                views: {
+                    'players': {
+                        templateUrl: TEMPLATES_ROOT + '/players/team-detail.html',
+                        controller: 'TeamDetailCtrl as teamDetail'
                     }
                 }
             });
@@ -6377,13 +6391,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 - viewModel data is initialized (reset) each time modal is shown
                 ====================================================================== */
                 modalScope.viewModel = {
+                    isTeamMode: false,
                     showReorder: false,
                     guestColors: guestColors,
                     playersInDatabase: playersService.all().slice(), // modal input
+                    teamsInDatabase: playersService.allTeams().slice(), // modal input
                     participants: [], // modal output
+                    toggleTeamMode: toggleTeamMode,
                     addPlayerToParticipants: addPlayerToParticipants,
+                    addTeamToParticipants: addTeamToParticipants,
                     addGuestParticipant: addGuestParticipant,
-                    removePlayerFromParticipants: removePlayerFromParticipants,
+                    removeFromParticipants: removeFromParticipants,
                     reorderParticipant: reorderParticipant,
                     cancelAddPlayersToGame: cancelAddPlayersToGame,
                     startGame: startGame
@@ -6400,6 +6418,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
             /*  FUNCTIONS
                 ======================================================================================== */
+            function toggleTeamMode() {
+                for (var i = modalScope.viewModel.participants.length - 1; i >= 0; i--) {
+                    removeFromParticipants(i);
+                }
+
+                modalScope.viewModel.isTeamMode = !modalScope.viewModel.isTeamMode;
+            }
+
             function addPlayerToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
                     toast.show(toastMessages.maxParticipants);
@@ -6413,36 +6439,59 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 modalScope.viewModel.participants.push(playerFromDatabase);
             }
 
-            function addGuestParticipant() {
+            function addTeamToParticipants(newParticipant) {
                 if (modalScope.viewModel.participants.length === 8) {
                     toast.show(toastMessages.maxParticipants);
                     return;
                 }
 
+                var teamIndex = _.findIndex(modalScope.viewModel.teamsInDatabase, function(team) {
+                    return team.id === newParticipant.id;
+                });
+                var teamFromDatabase = modalScope.viewModel.teamsInDatabase.splice(teamIndex, 1)[0];
+                modalScope.viewModel.participants.push(teamFromDatabase);
+            }
+
+            function addGuestParticipant() {
+                if (modalScope.viewModel.participants.length === 8) {
+                    toast.show(toastMessages.maxParticipants);
+                    return;
+                }
+                var guestPlayer = {};
                 var guestColor = pickRandomGuestColor();
 
-                modalScope.viewModel.participants.push({
-                    firstName: 'Mr.',
-                    lastName: capitalizeFirstLetter(guestColor),
-                    tagline: 'I\'m a guest player',
-                    guestColor: guestColor
-                });
+                if (modalScope.viewModel.isTeamMode) {
+                    guestPlayer = {
+                        name: 'Mr. ' + capitalizeFirstLetter(guestColor),
+                        tagline: 'I\'m a guest player',
+                        guestColor: guestColor
+                    }
+                } else {
+                    guestPlayer = {
+                        firstName: 'Mr.',
+                        lastName: capitalizeFirstLetter(guestColor),
+                        tagline: 'I\'m a guest player',
+                        guestColor: guestColor
+                    }
+                }
+                modalScope.viewModel.participants.push(guestPlayer);
             }
 
-            function removePlayerFromParticipants(index) {
-                var removedPlayer = modalScope.viewModel.participants.splice(index, 1)[0];
+            function removeFromParticipants(index) {
+                var removedParticipant = modalScope.viewModel.participants.splice(index, 1)[0];
 
-                if (removedPlayer.guestColor) {
-                    modalScope.viewModel.guestColors.push(removedPlayer.guestColor);
-                }
-                else {
-                    modalScope.viewModel.playersInDatabase.push(removedPlayer);
+                if (removedParticipant.guestColor) {
+                    modalScope.viewModel.guestColors.push(removedParticipant.guestColor);
+                } else if (!modalScope.viewModel.isTeamMode) {
+                    modalScope.viewModel.playersInDatabase.push(removedParticipant);
+                } else if (modalScope.viewModel.isTeamMode) {
+                    modalScope.viewModel.teamsInDatabase.push(removedParticipant);
                 }
             }
 
-            function reorderParticipant(player, fromIndex, toIndex) {
+            function reorderParticipant(item, fromIndex, toIndex) {
                 modalScope.viewModel.participants.splice(fromIndex, 1);
-                modalScope.viewModel.participants.splice(toIndex, 0, player);
+                modalScope.viewModel.participants.splice(toIndex, 0, item);
             }
 
             function cancelAddPlayersToGame() {
@@ -6463,9 +6512,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             /*  Helper functions
             ======================================================================================== */
             function resetAddPlayersToGameModal() {
+                modalScope.viewModel.isTeamMode = false;
                 modalScope.viewModel.showReorder = false;
                 modalScope.viewModel.guestColors = getGuestColors();
                 modalScope.viewModel.playersInDatabase = playersService.all().slice();
+                modalScope.viewModel.teamsInDatabase = playersService.allTeams().slice();
                 modalScope.viewModel.participants = [];
             }
 
@@ -6757,8 +6808,14 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
         var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
+        vm.teams = playersService.allTeams();
         vm.removeVisible = false;
-        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
+        vm.deleteMode = 'delete';
+        vm.initDeleteButton = initDeleteButton;
+        vm.onClickDeleteButton = onClickDeleteButton;
+        vm.submitTeam = submitTeam;
+        vm.teamName = '';
+        vm.deleteTeam = deleteTeam;
         vm.addPlayerModal = {};
         vm.showPlayerModal = showPlayerModal;
 
@@ -6808,6 +6865,16 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
                 };
             });
+        }
+
+        function initDeleteButton(mode) {
+            vm.deleteMode = mode;
+            vm.removeVisible = !vm.removeVisible;
+
+            // reset state
+            if(!vm.removeVisible) {
+                resetTeamForm();
+            }
         }
 
         function showPlayerModal() {
@@ -6892,6 +6959,118 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             vm.addPlayerModal.hide();
         }
 
+        function onClickDeleteButton(player) {
+            if (vm.deleteMode === 'delete') {
+                var teamPlayers = _.flatten(_.pluck(vm.teams, 'players'));
+                var isPartOfTeam = _.contains(teamPlayers, player);
+                if (isPartOfTeam) {
+                    vm.removeVisible = false;
+                    showPlayerPartOfTeamAlert(player)
+                } else {
+                    showRemoveConfirmPopup(player);
+                }
+            } else if (vm.deleteMode === 'team') {
+                var selectedPlayers = vm.players.filter(function(player) {
+                    return player.isSelected;
+                });
+
+                if (selectedPlayers.length > 3) {
+                    toast.show(toastMessages.maxTeam);
+                } else {
+                    player.isSelected = player.isSelected ? false : true;
+                }
+            }
+        }
+
+        function showPlayerPartOfTeamAlert(player) {
+            var teams = vm.teams.filter(function(team) {
+                return _.contains(team.players, player)
+            });
+            var teamNamesArray = _.pluck(teams, 'name');
+            var teamNames = '';
+            var lastTeamName = '';
+            if (teamNamesArray.length > 1) {
+                lastTeamName = ' & ' + teamNamesArray.pop();
+            }
+            teamNames = teamNamesArray.join(', ') + lastTeamName;
+
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-TEAM-PLAYER_POPUP.TEXT';
+            var templateTranslationVariable = {
+                plural: teams.length > 1 ? 's' : '',
+                playerName: player.firstName + ' ' + player.lastName,
+                teamNames: teamNames
+            };
+
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-TEAM-PLAYER_POPUP.TITLE'),
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.OK')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function submitTeam() {
+            var teamExists = vm.teams.map(function(team) {
+                return team.name;
+            }).indexOf(vm.teamName) > -1
+            var selectedPlayers = vm.players.filter(function(player) {
+                return player.isSelected;
+            });
+
+            if (!selectedPlayers.length) {
+                toast.show(toastMessages.zeroTeam);
+                return;
+            }
+
+            if (teamExists) {
+                toast.show(toastMessages.teamExists);
+                return;
+            }
+
+            // create  new team
+            var newTeam = {
+                id: getNewTeamId(),
+                name: vm.teamName,
+                players: selectedPlayers
+            };
+            statisticsService.initPlayerStatistics(newTeam);
+            vm.teams.push(newTeam);
+            $ionicHistory.clearCache();
+
+            dataService.addTeam(newTeam);
+            toast.show(newTeam.name + ' ' + toastMessages.addTeam);
+
+            // reset screen state
+            resetTeamForm();
+            vm.removeVisible = false;
+
+        }
+
+        function resetTeamForm() {
+            vm.players.map(function(player) {
+                delete player.isSelected;
+            });
+            vm.teamName = '';
+        }
+
+        function deleteTeam(team) {
+            showRemoveTeamConfirmPopup(team)
+        }
+
+        function getNewTeamId() {
+            if (!vm.teams.length) {
+                return 0;
+            } else {
+                return _.max(vm.teams, function(team) {
+                    return team.id;
+                }).id + 1;
+            }
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
         function showRemoveConfirmPopup(player) {
             var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
             var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
@@ -6914,8 +7093,29 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
-        /*  Helper functions
-            ======================================================================================== */
+        function showRemoveTeamConfirmPopup(team) {
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-TEAM-POPUP.TEXT';
+            var templateTranslationVariable = {teamName: team.name};
+
+            $ionicPopup.confirm({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-TEAM-POPUP.TITLE'),
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.YES'),
+                cancelText: $translate.instant('HOME.GENERAL.CONFIRM.NO'),
+            })
+            .then(function(confirmed) {
+                if (confirmed) {
+                    playersService.removeTeam(team);
+                    $ionicHistory.clearCache();
+
+                    // TODO: remove from DB
+                    dataService.removeTeam(team);
+                    toast.show(team.name + ' ' + toastMessages.removeTeam);
+                }
+                vm.removeVisible = false;
+            });
+        }
+
         function getNewPlayerTemplate() {
             var playerId = getNewPlayerId();
             var player = { // id is added when written to Database
@@ -6961,14 +7161,17 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     playersService.$inject = ['dataService'];
 
     function playersService(dataService) {
-        // Some fake testing data
-        var players = {};
+        var players = [];
+        var teams = [];
 
         var service = {
             all: all,
             get: get,
             remove: remove,
-            updatePlayer: updatePlayer
+            updatePlayer: updatePlayer,
+            allTeams:allTeams,
+            getTeam: getTeam,
+            removeTeam: removeTeam
         };
         return service;
 
@@ -6978,7 +7181,6 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             if (_.isEmpty(players)) {
                 players = dataService.getAllPlayers();
             }
-
             return players;
         }
 
@@ -6999,8 +7201,110 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             dataService.updatePlayerProfile(updatedPlayer);
         }
 
+        function allTeams() {
+            if (_.isEmpty(teams)) {
+                teams = dataService.getAllTeams();
+            }
+
+            return teams;
+        }
+
+        function getTeam(teamId) {
+            for (var i = 0; i < teams.length; i++) {
+                if (teams[i].id === parseInt(teamId)) {
+                    return teams[i];
+                }
+            }
+            return null;
+        }
+
+        function removeTeam(team) {
+            teams.splice(teams.indexOf(team), 1);
+        }
+
         /*  Helper functions
             ======================================================================================== */
+    }
+})();
+
+(function() {
+    'use strict';
+
+    angular
+        .module('molkkyscore')
+        .controller('TeamDetailCtrl', TeamDetailCtrl);
+
+    TeamDetailCtrl.$inject = ['$scope',
+                                '$rootScope',
+                                '$stateParams',
+                                'TEMPLATES_ROOT',
+                                'playersService',
+                                'statisticsService',
+                                '$translate'];
+
+    function TeamDetailCtrl($scope,
+                                $rootScope,
+                                $stateParams,
+                                TEMPLATES_ROOT,
+                                playersService,
+                                statisticsService,
+                                $translate) {
+        /* jshint validthis: true */
+        var vm = this;
+
+        vm.team = playersService.getTeam($stateParams.teamId);
+        vm.metricDonuts = [];
+        vm.profileData = {};
+
+        activate();
+
+        ////////////////
+
+        function activate() {
+            initMetricDonuts();
+            initProfileData();
+        }
+
+        /*  FUNCTIONS
+            ======================================================================================== */
+        function initMetricDonuts() {
+            var metricKeys = ['versatility', 'winningRatio', 'accuracy', 'efficiency'];
+            var metric = {};
+
+            metricKeys.forEach(function(key) {
+                metric = statisticsService.getMetricByKey(key);
+                vm.metricDonuts.push({
+                    translationId: metric.translationId,
+                    value: vm.team.statistics.metrics[key],
+                    unit: metric.unit
+                });
+            });
+
+            return vm.metricDonuts;
+        }
+
+        function initProfileData() {
+            var statisticsItems = [// raw data
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-PLAYED'), vm.team.statistics.rawData.gamesPlayed),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-WON'), vm.team.statistics.rawData.gamesWon),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.GAMES-REACHED-MAX-SCORE'), vm.team.statistics.rawData.gamesReachedMaxScore),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS'), vm.team.statistics.rawData.throws),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-SINGLE-PIN'), vm.team.statistics.rawData.throwsSinglePin),
+                item($translate.instant('HOME.PLAYERS.DETAIL.PROFILE-DATA-LABELS.THROWS-REACHED-MAX-SCORE'), vm.team.statistics.rawData.throwsInGamesReachedMaxScore)
+            ];
+
+            vm.profileData.statistics = statisticsItems;
+
+            return vm.profileData;
+
+            function item(title, value, unit) {
+                var item = {};
+                item.title = title;
+                item.value = value;
+                item.unit = unit ? unit : '';
+                return item;
+            }
+        }
     }
 })();
 
@@ -7016,6 +7320,7 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
     function dataService($cordovaSQLite, $q) {
         var database = {};
         var players = [];
+        var teams = [];
         var overallStatistics = {};
         var gameSettings = {};
         var appSettings = {};
@@ -7025,12 +7330,15 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             initBrowserDev: initBrowserDev,
             initDatabase: initDatabase,
             initPlayers: initPlayers,
+            initTeams: initTeams,
             initPlayerStatistics: initPlayerStatistics,
+            initTeamStatistics: initTeamStatistics,
             initOverallStatistics: initOverallStatistics,
             initGameSettings: initGameSettings,
             initAppSettings: initAppSettings,
             initGameTutorial: initGameTutorial,
             getAllPlayers: getAllPlayers,
+            getAllTeams: getAllTeams,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
             getDefaultGameSettings: getDefaultGameSettings,
@@ -7043,7 +7351,9 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             updateGameTutorial: updateGameTutorial,
             updatePlayerProfile: updatePlayerProfile,
             addPlayer: addPlayer,
-            removePlayer: removePlayer
+            removePlayer: removePlayer,
+            addTeam: addTeam,
+            removeTeam: removeTeam
         };
         return service;
 
@@ -7081,6 +7391,27 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     lastName: 'Dillon',
                     tagline: 'Molkky is fun!',
                     face: 'img/ben.png',
+                    statistics: getDefaultStatistics()
+                }
+            ];
+            teams = [
+                {
+                    id: 0,
+                    name: 'De Bosklappers',
+                    players: [
+                       players[0],
+                       players[1],
+                       players[2]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 1,
+                    name: 'De Muppets',
+                    players: [
+                       players[0],
+                       players[1]
+                    ],
                     statistics: getDefaultStatistics()
                 }
             ];
@@ -7159,6 +7490,27 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             });
         }
 
+        function initTeams(players) {
+            var selectAllTeamsQuery = 'SELECT * FROM TEAMS';
+            return $cordovaSQLite.execute(database, selectAllTeamsQuery).then(function(res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var row = res.rows.item(i);
+                    var players = row.PLAYER_IDS.split('/').map(function(playerId) {
+                        return players.filter(function(player) {
+                            return player.id === playerId;
+                        })[0];
+                    });
+                    teams.push({
+                        id: row.ID,
+                        name: row.NAME,
+                        players: players,
+                        statistics: {}
+                    });
+                }
+                return teams;
+            });
+        }
+
         function initPlayerStatistics(player) {
             var statistics = {};
             var selectRawDataQuery = 'SELECT * FROM STATISTICS_PLAYER_RAW_DATA WHERE PLAYER_ID=' +
@@ -7185,6 +7537,37 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                     efficiency: res[1].rows.item(0).EFFICIENCY
                 };
                 player.statistics = statistics;
+
+                return statistics;
+            });
+        }
+
+        function initTeamStatistics(team) {
+            var statistics = {};
+            var selectRawDataQuery = 'SELECT * FROM STATISTICS_TEAM_RAW_DATA WHERE TEAM_ID=' +
+                                        team.id + ' LIMIT 1';
+            var selectMetricsQuery = 'SELECT * FROM STATISTICS_TEAM_METRICS WHERE TEAM_ID=' +
+                                        team.id + ' LIMIT 1';
+            return $q.all([
+                $cordovaSQLite.execute(database, selectRawDataQuery),
+                $cordovaSQLite.execute(database, selectMetricsQuery)
+            ]).then(function(res) {
+                statistics.rawData = {
+                    throws: res[0].rows.item(0).THROWS,
+                    throwsSinglePin: res[0].rows.item(0).THROWS_SINGLE_PIN,
+                    throwsInGamesReachedMaxScore: res[0].rows.item(0).THROWS_IN_GAMES_REACHED_MAX_SCORE,
+                    gamesPlayed: res[0].rows.item(0).GAMES_PLAYED,
+                    gamesReachedMaxScore: res[0].rows.item(0).GAMES_REACHED_MAX_SCORE,
+                    gamesWon: res[0].rows.item(0).GAMES_WON
+                };
+                statistics.metrics = {
+                    totalWins: res[1].rows.item(0).TOTAL_WINS,
+                    versatility: res[1].rows.item(0).VERSATILITY,
+                    winningRatio: res[1].rows.item(0).WINNING_RATIO,
+                    accuracy: res[1].rows.item(0).ACCURACY,
+                    efficiency: res[1].rows.item(0).EFFICIENCY
+                };
+                team.statistics = statistics;
 
                 return statistics;
             });
@@ -7255,6 +7638,10 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
 
         function getAllPlayers() {
             return players;
+        }
+
+        function getAllTeams() {
+            return teams;
         }
 
         function getOverallStatistics() {
@@ -7406,18 +7793,62 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             $cordovaSQLite.execute(database, deletePlayerMetrics);
         }
 
+        function addTeam(team) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var playerIds = team.players.map(function(player) {
+                return player.id;
+            }).join('/');
+
+            var teamValues = [
+                team.id,
+                team.name,
+                playerIds
+            ];
+            var addTeam = 'INSERT INTO TEAMS (ID, NAME, PLAYER_IDS)' +
+                ' VALUES (?,?,?)';
+            $cordovaSQLite.execute(database, addTeam, teamValues);
+
+            introTeamStatistics(team);
+        }
+
+        function removeTeam(team) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var deleteTeam = 'DELETE FROM TEAMS WHERE ID=' + team.id;
+            var deleteTeamRawData = 'DELETE FROM STATISTICS_TEAM_RAW_DATA WHERE TEAM_ID=' + team.id;
+            var deleteTeamMetrics = 'DELETE FROM STATISTICS_TEAM_METRICS WHERE TEAM_ID=' + team.id;
+            $cordovaSQLite.execute(database, deleteTeam);
+            $cordovaSQLite.execute(database, deleteTeamRawData);
+            $cordovaSQLite.execute(database, deleteTeamMetrics);
+        }
+
         /*  Helper functions
             ======================================================================================== */
         function initDatabaseTables(database) {
             var addPlayersTable = 'CREATE TABLE IF NOT EXISTS PLAYERS' +
                 ' (ID integer, FIRSTNAME text, LASTNAME text, TAGLINE text,' +
                 ' FACE text)';
+            var addTeamsTable = 'CREATE TABLE IF NOT EXISTS TEAMS' +
+                ' (ID integer, NAME text, PLAYER_IDS text)';
             var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_PLAYER_RAW_DATA' +
                 ' (PLAYER_ID integer, THROWS integer, THROWS_SINGLE_PIN integer,' +
                 ' THROWS_IN_GAMES_REACHED_MAX_SCORE integer, GAMES_PLAYED integer,' +
                 ' GAMES_REACHED_MAX_SCORE integer, GAMES_WON integer)';
             var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS' +
                 ' STATISTICS_PLAYER_METRICS (PLAYER_ID integer, TOTAL_WINS integer,' +
+                ' VERSATILITY decimal(5,4), WINNING_RATIO decimal(5,4), ACCURACY decimal(5,4),' +
+                ' EFFICIENCY decimal(5,4))';
+            var addStatisticsTeamRawDataTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_TEAM_RAW_DATA' +
+                ' (TEAM_ID integer, THROWS integer, THROWS_SINGLE_PIN integer,' +
+                ' THROWS_IN_GAMES_REACHED_MAX_SCORE integer, GAMES_PLAYED integer,' +
+                ' GAMES_REACHED_MAX_SCORE integer, GAMES_WON integer)';
+            var addStatisticsTeamMetricsTable = 'CREATE TABLE IF NOT EXISTS' +
+                ' STATISTICS_TEAM_METRICS (TEAM_ID integer, TOTAL_WINS integer,' +
                 ' VERSATILITY decimal(5,4), WINNING_RATIO decimal(5,4), ACCURACY decimal(5,4),' +
                 ' EFFICIENCY decimal(5,4))';
             var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_OVERALL_METRICS' +
@@ -7433,8 +7864,11 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             // Init players & their statistics
             return $q.all([
                 $cordovaSQLite.execute(database, addPlayersTable),
+                $cordovaSQLite.execute(database, addTeamsTable),
                 $cordovaSQLite.execute(database, addStatisticsPlayerRawDataTable),
                 $cordovaSQLite.execute(database, addStatisticsPlayerMetricsTable),
+                $cordovaSQLite.execute(database, addStatisticsTeamRawDataTable),
+                $cordovaSQLite.execute(database, addStatisticsTeamMetricsTable),
                 $cordovaSQLite.execute(database, addStatisticsOverallMetricsTable),
                 $cordovaSQLite.execute(database, addGameSettingsTable),
                 $cordovaSQLite.execute(database, addAppSettingsTable),
@@ -7519,6 +7953,19 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
             return $q.all([
                 $cordovaSQLite.execute(database, insertRawData, [player.id, 0, 0, 0, 0, 0, 0]),
                 $cordovaSQLite.execute(database, insertMetrics, [player.id, 0, 0, 0, 0, 0])
+            ]);
+        }
+
+        function introTeamStatistics(team) {
+            var insertRawData = 'INSERT INTO STATISTICS_TEAM_RAW_DATA (TEAM_ID, THROWS,' +
+                ' THROWS_SINGLE_PIN, THROWS_IN_GAMES_REACHED_MAX_SCORE, GAMES_PLAYED,' +
+                ' GAMES_REACHED_MAX_SCORE, GAMES_WON) VALUES (?,?,?,?,?,?,?)';
+            var insertMetrics = 'INSERT INTO STATISTICS_TEAM_METRICS (TEAM_ID, TOTAL_WINS,' +
+                ' VERSATILITY, WINNING_RATIO, ACCURACY, EFFICIENCY) VALUES (?,?,?,?,?,?)';
+
+            return $q.all([
+                $cordovaSQLite.execute(database, insertRawData, [team.id, 0, 0, 0, 0, 0, 0]),
+                $cordovaSQLite.execute(database, insertMetrics, [team.id, 0, 0, 0, 0, 0])
             ]);
         }
 
@@ -8218,8 +8665,13 @@ angular.module('molkkyscore', ['ionic', 'ngCordova', 'pascalprecht.translate']);
                 players: {
                     addPlayer: $translate.instant('HOME.PLAYERS.TOASTS.ADD-PLAYER'),
                     removePlayer: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-PLAYER'),
+                    addTeam: $translate.instant('HOME.PLAYERS.TOASTS.ADD-TEAM'),
+                    removeTeam: $translate.instant('HOME.PLAYERS.TOASTS.REMOVE-TEAM'),
                     requiredFields: $translate.instant('HOME.PLAYERS.TOASTS.REQUIRED-FIELDS'),
-                    updateSaved: $translate.instant('HOME.PLAYERS.TOASTS.UPDATE-SAVED')
+                    updateSaved: $translate.instant('HOME.PLAYERS.TOASTS.UPDATE-SAVED'),
+                    zeroTeam: $translate.instant('HOME.PLAYERS.TOASTS.ZERO-TEAM'),
+                    teamExists: $translate.instant('HOME.PLAYERS.TOASTS.TEAM-EXISTS'),
+                    maxTeam: $translate.instant('HOME.PLAYERS.TOASTS.MAX-TEAM')
                 },
                 settings: {
                     update: $translate.instant('HOME.SETTINGS.TOASTS.UPDATE')

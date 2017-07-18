@@ -27,8 +27,12 @@
                 "BUTTON-START-GAME": "Start game",
                 "TOGGLE-REORDER": "Reorder participants",
                 "BUTTON-ADD-GUEST": "Add guest participant",
-                "DATABASE-LIST-HEADER": "Database",
-                "PARTICIPANTS-LIST-HEADER": "Participants"
+                "DATABASE-LIST-HEADER-PLAYERS": "Players",
+                "DATABASE-LIST-HEADER-TEAMS": "Teams",
+                "PARTICIPANTS-LIST-HEADER": "Participants",
+                "PLAY-AS-TEAM": "Play in Teams",
+                "PLAY-INDIVIDUALLY": "Play Individually",
+                "NO-TEAMS": "No teams available. You can create teams on the <strong>Players</strong> screen"
             },
             "TOASTS": {
                 "MAX-PARTICIPANTS": "Max participants reached"
@@ -189,6 +193,7 @@
             "VIEW-TITLE": "Statistics",
             "METRICS": {
                 "OVERALL": {
+                    "TITLE": "Overall",
                     "TOTAL-GAMES-PLAYED": {
                         "VIEW-TITLE": "Total games played",
                         "INFO": {
@@ -199,6 +204,7 @@
                     }
                 },
                 "PLAYERS": {
+                    "TITLE": "Players",
                     "TOTAL-WINS": {
                         "VIEW-TITLE": "Total wins",
                         "INFO": {
@@ -242,7 +248,7 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Since you have enabled custom game settings, no player statistics are currently being recorded"
+                "TEXT": "Since you have enabled custom game settings, no player/team statistics are currently being recorded"
             },
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
@@ -264,6 +270,21 @@
             "REMOVE-POPUP": {
                 "TITLE": "Remove player",
                 "TEXT": "<p>Are you sure you want to remove <strong>{{ playerName }}</strong> from players?</p><p>All statistics associated with a removed player will be lost..</p>"
+            },
+            "REMOVE-TEAM-PLAYER_POPUP": {
+                "TITLE": "Alert",
+                "TEXT": "You can not remove <strong>{{ playerName }}</strong> because this player is part of team{{ plural }} {{teamNames}}"
+            },
+            "REMOVE-TEAM-POPUP": {
+                "TITLE": "Remove team",
+                "TEXT": "<p>Are you sure you want to remove <strong>{{ teamName }}</strong> from teams?</p><p>All statistics associated with a removed team will be lost..</p>"
+            },
+            "CREATE-A-TEAM": {
+                "SUBMIT": "Submit",
+                "PLACEHOLDER": "Team name"
+            },
+            "LIST": {
+                "TEAMS": "Teams"
             },
             "ADD-PLAYER-MODAL": {
                 "TITLE": "Add new player",
@@ -292,6 +313,7 @@
             },
             "DETAIL": {
                 "PROFILE": "Profile",
+                "TEAM-MEMBERS": "Members",
                 "STATISTICS": "Statistics",
                 "PROFILE-DATA-LABELS": {
                     "FIRST-NAME": "First name",
@@ -308,8 +330,13 @@
             "TOASTS": {
                 "ADD-PLAYER": "is added to players",
                 "REMOVE-PLAYER": "is removed from players",
+                "ADD-TEAM": "is added to teams",
+                "REMOVE-TEAM": "is removed from teams",
                 "REQUIRED-FIELDS": "First Name and Last Name are required",
-                "UPDATE-SAVED": "Update to player profile saved"
+                "UPDATE-SAVED": "Update to player profile saved",
+                "ZERO-TEAM": "Select at least 1 player",
+                "TEAM-EXISTS": "Team name exists already",
+                "MAX-TEAM": "Max. 4 players per team"
             }
         }
     }

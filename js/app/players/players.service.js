@@ -8,14 +8,17 @@
     playersService.$inject = ['dataService'];
 
     function playersService(dataService) {
-        // Some fake testing data
-        var players = {};
+        var players = [];
+        var teams = [];
 
         var service = {
             all: all,
             get: get,
             remove: remove,
-            updatePlayer: updatePlayer
+            updatePlayer: updatePlayer,
+            allTeams:allTeams,
+            getTeam: getTeam,
+            removeTeam: removeTeam
         };
         return service;
 
@@ -25,7 +28,6 @@
             if (_.isEmpty(players)) {
                 players = dataService.getAllPlayers();
             }
-
             return players;
         }
 
@@ -44,6 +46,27 @@
 
         function updatePlayer(updatedPlayer) {
             dataService.updatePlayerProfile(updatedPlayer);
+        }
+
+        function allTeams() {
+            if (_.isEmpty(teams)) {
+                teams = dataService.getAllTeams();
+            }
+
+            return teams;
+        }
+
+        function getTeam(teamId) {
+            for (var i = 0; i < teams.length; i++) {
+                if (teams[i].id === parseInt(teamId)) {
+                    return teams[i];
+                }
+            }
+            return null;
+        }
+
+        function removeTeam(team) {
+            teams.splice(teams.indexOf(team), 1);
         }
 
         /*  Helper functions

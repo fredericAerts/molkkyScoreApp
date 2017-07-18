@@ -1,0 +1,69 @@
+<!--
+  This template loads for the 'tab.friend-detail' state (app.js)
+  'friend' is a $scope variable created in the FriendsCtrl controller (controllers.js)
+  The FriendsCtrl pulls data from the Friends service (service.js)
+  The Friends service returns an array of friend data
+-->
+<ion-view view-title="{{teamDetail.team.name}}">
+    <ion-content>
+        <div class="avatar-block-wrapper">
+            <div class="avatar-block">
+                <div class="avatar-block__team-avatar" data-count="{{teamDetail.team.players.length}}">
+                    <div ng-repeat="player in teamDetail.team.players  | orderBy: 'name'">
+                      <img ng-src="{{player.face}}">
+                    </div>
+                </div>
+
+                <!-- <div class="avatar-block__avatar" ng-if="teamDetail.player.face">
+                    <img ng-src="{{teamDetail.player.face}}">
+                </div> -->
+                <!-- <div ng-if="true" class="avatar-block__face-placeholder">
+                    <i class="icon ion-help"></i>
+                </div> -->
+                <p class="avatar-block__name">
+                    {{teamDetail.team.name}}
+                </p>
+                <p class="avatar-block__tagline">
+                    <span ng-repeat="player in teamDetail.team.players">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                </p>
+            </div>
+            <div class="row">
+                <div class="col col-25" ng-repeat="donut in teamDetail.metricDonuts">
+                    <div class="metric-donut">
+                        <div class="metric-donut__circle">
+                            <div class="metric-donut__circle__center">
+                                <span class="metric-donut__circle__center__value">{{donut.value + donut.unit}}</span>
+                            </div>
+                            <div class="metric-donut__circle__bg-fill"></div>
+                            <div class="metric-donut__circle__percentage-fill" style="height:{{donut.value}}%;"></div>
+                        </div>
+                    </div>
+                    <span class="metric-donut__title">
+                        {{ 'HOME.STATISTICS.METRICS.' + donut.translationId + '.VIEW-TITLE' | translate }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="padding">
+            <ion-list>
+                <div class="item item-divider">
+                    {{ 'HOME.PLAYERS.DETAIL.TEAM-MEMBERS' | translate }}
+                </div>
+                <ion-item class="item-avatar item-icon-right" ng-repeat="player in teamDetail.team.players | orderBy: 'name'" type="item-text-wrap">
+                    <div ng-if="player.face" class="item-avatar__avatar">
+                        <img ng-src="{{player.face}}">
+                    </div>
+                    <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
+                    <h2>{{player.firstName}} {{player.lastName}}</h2>
+                    <p>{{player.tagline}}</p>
+                </ion-item>
+                <div class="item item-divider">
+                    {{ 'HOME.PLAYERS.DETAIL.STATISTICS' | translate }}
+                </div>
+                <ion-item ng-repeat="item in teamDetail.profileData.statistics">
+                    {{item.title}}: {{item.value + item.unit}}
+                </ion-item>
+            </ion-list>
+        </div>
+    </ion-content>
+</ion-view>

@@ -10,6 +10,7 @@
     function dataService($cordovaSQLite, $q) {
         var database = {};
         var players = [];
+        var teams = [];
         var overallStatistics = {};
         var gameSettings = {};
         var appSettings = {};
@@ -19,12 +20,15 @@
             initBrowserDev: initBrowserDev,
             initDatabase: initDatabase,
             initPlayers: initPlayers,
+            initTeams: initTeams,
             initPlayerStatistics: initPlayerStatistics,
+            initTeamStatistics: initTeamStatistics,
             initOverallStatistics: initOverallStatistics,
             initGameSettings: initGameSettings,
             initAppSettings: initAppSettings,
             initGameTutorial: initGameTutorial,
             getAllPlayers: getAllPlayers,
+            getAllTeams: getAllTeams,
             getOverallStatistics: getOverallStatistics,
             getGameSettings: getGameSettings,
             getDefaultGameSettings: getDefaultGameSettings,
@@ -37,7 +41,9 @@
             updateGameTutorial: updateGameTutorial,
             updatePlayerProfile: updatePlayerProfile,
             addPlayer: addPlayer,
-            removePlayer: removePlayer
+            removePlayer: removePlayer,
+            addTeam: addTeam,
+            removeTeam: removeTeam
         };
         return service;
 
@@ -75,6 +81,27 @@
                     lastName: 'Dillon',
                     tagline: 'Molkky is fun!',
                     face: 'img/ben.png',
+                    statistics: getDefaultStatistics()
+                }
+            ];
+            teams = [
+                {
+                    id: 0,
+                    name: 'De Bosklappers',
+                    players: [
+                       players[0],
+                       players[1],
+                       players[2]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 1,
+                    name: 'De Muppets',
+                    players: [
+                       players[0],
+                       players[1]
+                    ],
                     statistics: getDefaultStatistics()
                 }
             ];
@@ -153,6 +180,27 @@
             });
         }
 
+        function initTeams(players) {
+            var selectAllTeamsQuery = 'SELECT * FROM TEAMS';
+            return $cordovaSQLite.execute(database, selectAllTeamsQuery).then(function(res) {
+                for (var i = 0; i < res.rows.length; i++) {
+                    var row = res.rows.item(i);
+                    var players = row.PLAYER_IDS.split('/').map(function(playerId) {
+                        return players.filter(function(player) {
+                            return player.id === playerId;
+                        })[0];
+                    });
+                    teams.push({
+                        id: row.ID,
+                        name: row.NAME,
+                        players: players,
+                        statistics: {}
+                    });
+                }
+                return teams;
+            });
+        }
+
         function initPlayerStatistics(player) {
             var statistics = {};
             var selectRawDataQuery = 'SELECT * FROM STATISTICS_PLAYER_RAW_DATA WHERE PLAYER_ID=' +
@@ -179,6 +227,37 @@
                     efficiency: res[1].rows.item(0).EFFICIENCY
                 };
                 player.statistics = statistics;
+
+                return statistics;
+            });
+        }
+
+        function initTeamStatistics(team) {
+            var statistics = {};
+            var selectRawDataQuery = 'SELECT * FROM STATISTICS_TEAM_RAW_DATA WHERE TEAM_ID=' +
+                                        team.id + ' LIMIT 1';
+            var selectMetricsQuery = 'SELECT * FROM STATISTICS_TEAM_METRICS WHERE TEAM_ID=' +
+                                        team.id + ' LIMIT 1';
+            return $q.all([
+                $cordovaSQLite.execute(database, selectRawDataQuery),
+                $cordovaSQLite.execute(database, selectMetricsQuery)
+            ]).then(function(res) {
+                statistics.rawData = {
+                    throws: res[0].rows.item(0).THROWS,
+                    throwsSinglePin: res[0].rows.item(0).THROWS_SINGLE_PIN,
+                    throwsInGamesReachedMaxScore: res[0].rows.item(0).THROWS_IN_GAMES_REACHED_MAX_SCORE,
+                    gamesPlayed: res[0].rows.item(0).GAMES_PLAYED,
+                    gamesReachedMaxScore: res[0].rows.item(0).GAMES_REACHED_MAX_SCORE,
+                    gamesWon: res[0].rows.item(0).GAMES_WON
+                };
+                statistics.metrics = {
+                    totalWins: res[1].rows.item(0).TOTAL_WINS,
+                    versatility: res[1].rows.item(0).VERSATILITY,
+                    winningRatio: res[1].rows.item(0).WINNING_RATIO,
+                    accuracy: res[1].rows.item(0).ACCURACY,
+                    efficiency: res[1].rows.item(0).EFFICIENCY
+                };
+                team.statistics = statistics;
 
                 return statistics;
             });
@@ -249,6 +328,10 @@
 
         function getAllPlayers() {
             return players;
+        }
+
+        function getAllTeams() {
+            return teams;
         }
 
         function getOverallStatistics() {
@@ -400,18 +483,62 @@
             $cordovaSQLite.execute(database, deletePlayerMetrics);
         }
 
+        function addTeam(team) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var playerIds = team.players.map(function(player) {
+                return player.id;
+            }).join('/');
+
+            var teamValues = [
+                team.id,
+                team.name,
+                playerIds
+            ];
+            var addTeam = 'INSERT INTO TEAMS (ID, NAME, PLAYER_IDS)' +
+                ' VALUES (?,?,?)';
+            $cordovaSQLite.execute(database, addTeam, teamValues);
+
+            introTeamStatistics(team);
+        }
+
+        function removeTeam(team) {
+            if (!window.cordova) {
+                return;
+            }
+
+            var deleteTeam = 'DELETE FROM TEAMS WHERE ID=' + team.id;
+            var deleteTeamRawData = 'DELETE FROM STATISTICS_TEAM_RAW_DATA WHERE TEAM_ID=' + team.id;
+            var deleteTeamMetrics = 'DELETE FROM STATISTICS_TEAM_METRICS WHERE TEAM_ID=' + team.id;
+            $cordovaSQLite.execute(database, deleteTeam);
+            $cordovaSQLite.execute(database, deleteTeamRawData);
+            $cordovaSQLite.execute(database, deleteTeamMetrics);
+        }
+
         /*  Helper functions
             ======================================================================================== */
         function initDatabaseTables(database) {
             var addPlayersTable = 'CREATE TABLE IF NOT EXISTS PLAYERS' +
                 ' (ID integer, FIRSTNAME text, LASTNAME text, TAGLINE text,' +
                 ' FACE text)';
+            var addTeamsTable = 'CREATE TABLE IF NOT EXISTS TEAMS' +
+                ' (ID integer, NAME text, PLAYER_IDS text)';
             var addStatisticsPlayerRawDataTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_PLAYER_RAW_DATA' +
                 ' (PLAYER_ID integer, THROWS integer, THROWS_SINGLE_PIN integer,' +
                 ' THROWS_IN_GAMES_REACHED_MAX_SCORE integer, GAMES_PLAYED integer,' +
                 ' GAMES_REACHED_MAX_SCORE integer, GAMES_WON integer)';
             var addStatisticsPlayerMetricsTable = 'CREATE TABLE IF NOT EXISTS' +
                 ' STATISTICS_PLAYER_METRICS (PLAYER_ID integer, TOTAL_WINS integer,' +
+                ' VERSATILITY decimal(5,4), WINNING_RATIO decimal(5,4), ACCURACY decimal(5,4),' +
+                ' EFFICIENCY decimal(5,4))';
+            var addStatisticsTeamRawDataTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_TEAM_RAW_DATA' +
+                ' (TEAM_ID integer, THROWS integer, THROWS_SINGLE_PIN integer,' +
+                ' THROWS_IN_GAMES_REACHED_MAX_SCORE integer, GAMES_PLAYED integer,' +
+                ' GAMES_REACHED_MAX_SCORE integer, GAMES_WON integer)';
+            var addStatisticsTeamMetricsTable = 'CREATE TABLE IF NOT EXISTS' +
+                ' STATISTICS_TEAM_METRICS (TEAM_ID integer, TOTAL_WINS integer,' +
                 ' VERSATILITY decimal(5,4), WINNING_RATIO decimal(5,4), ACCURACY decimal(5,4),' +
                 ' EFFICIENCY decimal(5,4))';
             var addStatisticsOverallMetricsTable = 'CREATE TABLE IF NOT EXISTS STATISTICS_OVERALL_METRICS' +
@@ -427,8 +554,11 @@
             // Init players & their statistics
             return $q.all([
                 $cordovaSQLite.execute(database, addPlayersTable),
+                $cordovaSQLite.execute(database, addTeamsTable),
                 $cordovaSQLite.execute(database, addStatisticsPlayerRawDataTable),
                 $cordovaSQLite.execute(database, addStatisticsPlayerMetricsTable),
+                $cordovaSQLite.execute(database, addStatisticsTeamRawDataTable),
+                $cordovaSQLite.execute(database, addStatisticsTeamMetricsTable),
                 $cordovaSQLite.execute(database, addStatisticsOverallMetricsTable),
                 $cordovaSQLite.execute(database, addGameSettingsTable),
                 $cordovaSQLite.execute(database, addAppSettingsTable),
@@ -513,6 +643,19 @@
             return $q.all([
                 $cordovaSQLite.execute(database, insertRawData, [player.id, 0, 0, 0, 0, 0, 0]),
                 $cordovaSQLite.execute(database, insertMetrics, [player.id, 0, 0, 0, 0, 0])
+            ]);
+        }
+
+        function introTeamStatistics(team) {
+            var insertRawData = 'INSERT INTO STATISTICS_TEAM_RAW_DATA (TEAM_ID, THROWS,' +
+                ' THROWS_SINGLE_PIN, THROWS_IN_GAMES_REACHED_MAX_SCORE, GAMES_PLAYED,' +
+                ' GAMES_REACHED_MAX_SCORE, GAMES_WON) VALUES (?,?,?,?,?,?,?)';
+            var insertMetrics = 'INSERT INTO STATISTICS_TEAM_METRICS (TEAM_ID, TOTAL_WINS,' +
+                ' VERSATILITY, WINNING_RATIO, ACCURACY, EFFICIENCY) VALUES (?,?,?,?,?,?)';
+
+            return $q.all([
+                $cordovaSQLite.execute(database, insertRawData, [team.id, 0, 0, 0, 0, 0, 0]),
+                $cordovaSQLite.execute(database, insertMetrics, [team.id, 0, 0, 0, 0, 0])
             ]);
         }
 

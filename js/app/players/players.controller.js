@@ -36,8 +36,14 @@
         var toastMessages = toast.getMessages().players;
 
         vm.players = playersService.all();
+        vm.teams = playersService.allTeams();
         vm.removeVisible = false;
-        vm.showRemoveConfirmPopup = showRemoveConfirmPopup;
+        vm.deleteMode = 'delete';
+        vm.initDeleteButton = initDeleteButton;
+        vm.onClickDeleteButton = onClickDeleteButton;
+        vm.submitTeam = submitTeam;
+        vm.teamName = '';
+        vm.deleteTeam = deleteTeam;
         vm.addPlayerModal = {};
         vm.showPlayerModal = showPlayerModal;
 
@@ -87,6 +93,16 @@
 
                 };
             });
+        }
+
+        function initDeleteButton(mode) {
+            vm.deleteMode = mode;
+            vm.removeVisible = !vm.removeVisible;
+
+            // reset state
+            if(!vm.removeVisible) {
+                resetTeamForm();
+            }
         }
 
         function showPlayerModal() {
@@ -171,6 +187,118 @@
             vm.addPlayerModal.hide();
         }
 
+        function onClickDeleteButton(player) {
+            if (vm.deleteMode === 'delete') {
+                var teamPlayers = _.flatten(_.pluck(vm.teams, 'players'));
+                var isPartOfTeam = _.contains(teamPlayers, player);
+                if (isPartOfTeam) {
+                    vm.removeVisible = false;
+                    showPlayerPartOfTeamAlert(player)
+                } else {
+                    showRemoveConfirmPopup(player);
+                }
+            } else if (vm.deleteMode === 'team') {
+                var selectedPlayers = vm.players.filter(function(player) {
+                    return player.isSelected;
+                });
+
+                if (selectedPlayers.length > 3) {
+                    toast.show(toastMessages.maxTeam);
+                } else {
+                    player.isSelected = player.isSelected ? false : true;
+                }
+            }
+        }
+
+        function showPlayerPartOfTeamAlert(player) {
+            var teams = vm.teams.filter(function(team) {
+                return _.contains(team.players, player)
+            });
+            var teamNamesArray = _.pluck(teams, 'name');
+            var teamNames = '';
+            var lastTeamName = '';
+            if (teamNamesArray.length > 1) {
+                lastTeamName = ' & ' + teamNamesArray.pop();
+            }
+            teamNames = teamNamesArray.join(', ') + lastTeamName;
+
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-TEAM-PLAYER_POPUP.TEXT';
+            var templateTranslationVariable = {
+                plural: teams.length > 1 ? 's' : '',
+                playerName: player.firstName + ' ' + player.lastName,
+                teamNames: teamNames
+            };
+
+            var alertPopup = $ionicPopup.alert({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-TEAM-PLAYER_POPUP.TITLE'),
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.OK')
+            });
+
+            alertPopup.then(function(res) {
+            });
+        }
+
+        function submitTeam() {
+            var teamExists = vm.teams.map(function(team) {
+                return team.name;
+            }).indexOf(vm.teamName) > -1
+            var selectedPlayers = vm.players.filter(function(player) {
+                return player.isSelected;
+            });
+
+            if (!selectedPlayers.length) {
+                toast.show(toastMessages.zeroTeam);
+                return;
+            }
+
+            if (teamExists) {
+                toast.show(toastMessages.teamExists);
+                return;
+            }
+
+            // create  new team
+            var newTeam = {
+                id: getNewTeamId(),
+                name: vm.teamName,
+                players: selectedPlayers
+            };
+            statisticsService.initPlayerStatistics(newTeam);
+            vm.teams.push(newTeam);
+            $ionicHistory.clearCache();
+
+            dataService.addTeam(newTeam);
+            toast.show(newTeam.name + ' ' + toastMessages.addTeam);
+
+            // reset screen state
+            resetTeamForm();
+            vm.removeVisible = false;
+
+        }
+
+        function resetTeamForm() {
+            vm.players.map(function(player) {
+                delete player.isSelected;
+            });
+            vm.teamName = '';
+        }
+
+        function deleteTeam(team) {
+            showRemoveTeamConfirmPopup(team)
+        }
+
+        function getNewTeamId() {
+            if (!vm.teams.length) {
+                return 0;
+            } else {
+                return _.max(vm.teams, function(team) {
+                    return team.id;
+                }).id + 1;
+            }
+        }
+
+        /*  Helper functions
+            ======================================================================================== */
         function showRemoveConfirmPopup(player) {
             var templateTranslationId = 'HOME.PLAYERS.REMOVE-POPUP.TEXT';
             var templateTranslationVariable = {playerName: player.firstName + ' ' + player.lastName};
@@ -193,8 +321,29 @@
             });
         }
 
-        /*  Helper functions
-            ======================================================================================== */
+        function showRemoveTeamConfirmPopup(team) {
+            var templateTranslationId = 'HOME.PLAYERS.REMOVE-TEAM-POPUP.TEXT';
+            var templateTranslationVariable = {teamName: team.name};
+
+            $ionicPopup.confirm({
+                title: $translate.instant('HOME.PLAYERS.REMOVE-TEAM-POPUP.TITLE'),
+                template: $translate.instant(templateTranslationId, templateTranslationVariable),
+                okText: $translate.instant('HOME.GENERAL.CONFIRM.YES'),
+                cancelText: $translate.instant('HOME.GENERAL.CONFIRM.NO'),
+            })
+            .then(function(confirmed) {
+                if (confirmed) {
+                    playersService.removeTeam(team);
+                    $ionicHistory.clearCache();
+
+                    // TODO: remove from DB
+                    dataService.removeTeam(team);
+                    toast.show(team.name + ' ' + toastMessages.removeTeam);
+                }
+                vm.removeVisible = false;
+            });
+        }
+
         function getNewPlayerTemplate() {
             var playerId = getNewPlayerId();
             var player = { // id is added when written to Database

@@ -1,0 +1,13 @@
+.item-delete {
+
+  .button {
+
+    &.icon {
+
+      &:not(.ion-minus-circled) {
+        color: $positive;
+      }
+    }
+  }
+}
+

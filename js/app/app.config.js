@@ -37,6 +37,10 @@
                         loadingService) {
         $rootScope.imagesRoot = IMAGES_ROOT;
 
+        if (!window.cordova) {
+            dataService.initBrowserDev();
+        }
+
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -53,14 +57,19 @@
             if (window.cordova) {
                 // loadingService.showIndefinite('LOADING-APP');
                 dataService.initDatabase().then(function() {
-                    var playerStatisticsPromises = [];
+                    var statisticsPromises = [];
                     dataService.initPlayers().then(function(players) {
-                        players.forEach(function(player) {
-                            playerStatisticsPromises.push(dataService.initPlayerStatistics(player));
-                        });
-                        $q.all([playerStatisticsPromises]).then(function() {
-                            $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
-                            // loadingService.hide();
+                        dataService.initTeams(players).then(function(teams) {
+                            players.forEach(function(player) {
+                                statisticsPromises.push(dataService.initPlayerStatistics(player));
+                            });
+                            teams.forEach(function(team) {
+                                statisticsPromises.push(dataService.initTeamStatistics(team));
+                            });
+                            $q.all([statisticsPromises]).then(function() {
+                                $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
+                                // loadingService.hide();
+                            });
                         });
                     });
                     dataService.initOverallStatistics();
@@ -73,10 +82,6 @@
                 }, function(err) {
                     console.log(err.message);
                 });
-            }
-            else { // browser version
-                dataService.initBrowserDev();
-                // $rootScope.$broadcast('appInitialized'); // caught in home.controller.js
             }
         });
     }

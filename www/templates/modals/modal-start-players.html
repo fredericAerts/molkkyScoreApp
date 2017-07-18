@@ -16,14 +16,26 @@
             <div class="col col-50">
                 <ion-list>
                     <div class="item item-divider">
-                        {{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER' | translate }}
+                        <span ng-if="!viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER-PLAYERS' | translate }}</span>
+                        <span ng-if="viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER-TEAMS' | translate }}</span>
                     </div>
-                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'firstName'">
+                    <div ng-if="viewModel.isTeamMode && !viewModel.teamsInDatabase.length" class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-TEAMS'}}></div>
+                    <!-- player list -->
+                    <ion-item ng-if="!viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'firstName'">
                         <div ng-if="player.face" class="item-avatar__avatar">
                             <img ng-src="{{player.face}}">
                         </div>
                         <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
                         <h2>{{player.firstName}} {{player.lastName}}</h2>
+                    </ion-item>
+                    <!-- team list -->
+                    <ion-item ng-if="viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.addTeamToParticipants(team)" ng-repeat="team in viewModel.teamsInDatabase | orderBy: 'name'">
+                        <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
+                            <div ng-repeat="player in team.players | orderBy: 'name'">
+                              <img ng-src="{{player.face}}">
+                            </div>
+                        </div>
+                        <h2>{{team.name}}</h2>
                     </ion-item>
                 </ion-list>
             </div>
@@ -33,7 +45,8 @@
                         {{ 'HOME.START.START-PLAYERS-MODAL.PARTICIPANTS-LIST-HEADER' | translate }}
                         <span ng-show="viewModel.participants.length">({{viewModel.participants.length}})</span>
                     </div>
-                    <ion-item class="item-avatar item-avatar--small" ng-click="viewModel.removePlayerFromParticipants($index)" ng-repeat="player in viewModel.participants">
+                    <!-- player list -->
+                    <ion-item ng-if="!viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.removeFromParticipants($index)" ng-repeat="player in viewModel.participants">
                         <div ng-if="player.face" class="item-avatar__avatar">
                             <img ng-src="{{player.face}}">
                         </div>
@@ -41,11 +54,29 @@
                         <h2>{{player.firstName}} {{player.lastName}}</h2>
                         <ion-reorder-button class="ion-navicon" on-reorder="viewModel.reorderParticipant(player, $fromIndex, $toIndex)"></ion-reorder-button>
                     </ion-item>
+                    <!-- team list -->
+                    <ion-item ng-if="viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.removeFromParticipants($index)" ng-repeat="team in viewModel.participants">
+                        <!-- <div ng-if="player.face" class="item-avatar__avatar">
+                            <img ng-src="{{player.face}}">
+                        </div> -->
+                        <div ng-if="team.guestColor" class="item-avatar__face-placeholder {{team.guestColor}}"></div>
+                        <div ng-if="!team.guestColor" class="item-avatar__team-avatar" data-count="{{team.players.length}}">
+                            <div ng-repeat="player in team.players | orderBy: 'name'">
+                              <img ng-src="{{player.face}}">
+                            </div>
+                        </div>
+                        <h2>{{team.name}}</h2>
+                        <ion-reorder-button class="ion-navicon" on-reorder="viewModel.reorderParticipant(team, $fromIndex, $toIndex)"></ion-reorder-button>
+                    </ion-item>
                 </ion-list>
             </div>
         </div>
     </ion-content>
     <ion-footer-bar>
+        <button class="button button-clear button-positive" ng-click="viewModel.toggleTeamMode()">
+            <span ng-if="!viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.PLAY-AS-TEAM' | translate }}</span>
+            <span ng-if="viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.PLAY-INDIVIDUALLY' | translate }}</span>
+        </button>
         <button class="button button-positive pull-right" ng-disabled="viewModel.participants.length < 2" ng-click="viewModel.startGame()">{{ 'HOME.START.START-PLAYERS-MODAL.BUTTON-START-GAME' | translate }}</button>
     </ion-footer-bar>
 </ion-modal-view>
