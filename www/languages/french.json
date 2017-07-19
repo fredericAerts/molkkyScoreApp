@@ -335,7 +335,7 @@
                 "REMOVE-TEAM": "est retiré des équipes",
                 "REQUIRED-FIELDS": "Prénom et Nom sont requis",
                 "UPDATE-SAVED": "Actualisation de profil sauvegardée",
-                "ZERO-TEAM": "Sélectionnez au moins 1 joueur",
+                "ZERO-TEAM": "Sélectionnez au moins 2 joueurs",
                 "TEAM-EXISTS": "Le nom de l'équipe existe déjà",
                 "MAX-TEAM": "Max. 4 joueurs par équipe"
             }

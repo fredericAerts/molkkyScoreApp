@@ -45,7 +45,7 @@
         <ion-delete-button class="ion-minus-circled" ng-click="players.deleteTeam(team)"></ion-delete-button>
         <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
             <div ng-repeat="player in team.players | orderBy: 'name'">
-              <img ng-src="{{player.face}}">
+              <img ng-if="player.face" ng-src="{{player.face}}">
             </div>
         </div>
         <h2>{{team.name}}</h2>

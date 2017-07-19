@@ -80,7 +80,7 @@
                     firstName: 'Ben',
                     lastName: 'Dillon',
                     tagline: 'Molkky is fun!',
-                    face: 'img/ben.png',
+                    face: '',
                     statistics: getDefaultStatistics()
                 }
             ];
@@ -91,16 +91,7 @@
                     players: [
                        players[0],
                        players[1],
-                       players[2]
-                    ],
-                    statistics: getDefaultStatistics()
-                },
-                {
-                    id: 1,
-                    name: 'De Muppets',
-                    players: [
-                       players[0],
-                       players[1]
+                       players[3]
                     ],
                     statistics: getDefaultStatistics()
                 }
