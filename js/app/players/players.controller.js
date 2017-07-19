@@ -246,7 +246,7 @@
                 return player.isSelected;
             });
 
-            if (!selectedPlayers.length) {
+            if (selectedPlayers.length < 2) {
                 toast.show(toastMessages.zeroTeam);
                 return;
             }

@@ -10,7 +10,7 @@
             <div class="avatar-block">
                 <div class="avatar-block__team-avatar" data-count="{{teamDetail.team.players.length}}">
                     <div ng-repeat="player in teamDetail.team.players  | orderBy: 'name'">
-                      <img ng-src="{{player.face}}">
+                      <img ng-if="player.face" ng-src="{{player.face}}">
                     </div>
                 </div>
 

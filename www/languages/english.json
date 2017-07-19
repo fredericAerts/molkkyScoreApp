@@ -334,7 +334,7 @@
                 "REMOVE-TEAM": "is removed from teams",
                 "REQUIRED-FIELDS": "First Name and Last Name are required",
                 "UPDATE-SAVED": "Update to player profile saved",
-                "ZERO-TEAM": "Select at least 1 player",
+                "ZERO-TEAM": "Select at least 2 players",
                 "TEAM-EXISTS": "Team name exists already",
                 "MAX-TEAM": "Max. 4 players per team"
             }
