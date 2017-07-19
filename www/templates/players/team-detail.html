@@ -9,17 +9,10 @@
         <div class="avatar-block-wrapper">
             <div class="avatar-block">
                 <div class="avatar-block__team-avatar" data-count="{{teamDetail.team.players.length}}">
-                    <div ng-repeat="player in teamDetail.team.players  | orderBy: 'name'">
+                    <div ng-repeat="player in teamDetail.team.players  | orderBy: 'firstName'">
                       <img ng-if="player.face" ng-src="{{player.face}}">
                     </div>
                 </div>
-
-                <!-- <div class="avatar-block__avatar" ng-if="teamDetail.player.face">
-                    <img ng-src="{{teamDetail.player.face}}">
-                </div> -->
-                <!-- <div ng-if="true" class="avatar-block__face-placeholder">
-                    <i class="icon ion-help"></i>
-                </div> -->
                 <p class="avatar-block__name">
                     {{teamDetail.team.name}}
                 </p>
@@ -49,7 +42,7 @@
                 <div class="item item-divider">
                     {{ 'HOME.PLAYERS.DETAIL.TEAM-MEMBERS' | translate }}
                 </div>
-                <ion-item class="item-avatar item-icon-right" ng-repeat="player in teamDetail.team.players | orderBy: 'name'" type="item-text-wrap">
+                <ion-item class="item-avatar item-icon-right" ng-repeat="player in teamDetail.team.players | orderBy: 'firstName'" type="item-text-wrap">
                     <div ng-if="player.face" class="item-avatar__avatar">
                         <img ng-src="{{player.face}}">
                     </div>

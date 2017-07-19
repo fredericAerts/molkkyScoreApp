@@ -5,15 +5,18 @@
         .module('molkkyscore')
         .factory('gameService', gameService);
 
-    gameService.$inject = ['playersService', 'dataService'];
+    gameService.$inject = ['$filter', 'playersService', 'dataService'];
 
-    function gameService(playersService, dataService) {
+    function gameService($filter, playersService, dataService) {
         var participants = [];
         var tutorial = {};
+        var teamMode = false;
 
         var service = {
             setParticipants: setParticipants,
+            setTeamMode: setTeamMode,
             getParticipants: getParticipants,
+            isTeamMode: isTeamMode,
             initParticipants: initParticipants,
             sortParticipantsOnScore: sortParticipantsOnScore,
             initScoreboard: initScoreboard,
@@ -28,8 +31,16 @@
             participants = newParticipants;
         }
 
+        function setTeamMode(teamModeParam) {
+            teamMode = teamModeParam;
+        }
+
         function getParticipants() {
             return participants;
+        }
+
+        function isTeamMode() {
+            return teamMode;
         }
 
         function initParticipants() {
@@ -42,6 +53,10 @@
                 participant.disqualified = false;
                 participant.endPosition = -1;
                 participant.activedAvatarStatus = '';
+                if (teamMode && !participant.guestColor) {
+                    participant.activeMemberIndex = 0;
+                    participant.players = $filter('orderBy')(participant.players, 'firstName'); // order needs to match avatar in template
+                }
             });
 
             return participants;

@@ -26,7 +26,7 @@
             }
 
             if (!player.guestColor) {
-                dataService.updatePlayerStatistics(player);
+                dataService.updatePlayerStatistics(player); // player or team
             }
         }
 

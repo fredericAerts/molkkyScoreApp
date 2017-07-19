@@ -5,20 +5,42 @@
             <div class="col col-66">
                 <div id="scoreboard" class="game-board-cell game-board-cell--scoreboard" ng-click="game.showScoreDetailsModal($event)">
                     <div class="row">
-                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowOne">
-                            <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face, 'active': player === game.activePlayer, 'winner': player.endPosition === 1, 'finished': player.endPosition > 1, 'disqualified': player.disqualified}">
-                                <span ng-if="player.endPosition <= 0 && !player.disqualified">{{player.score}}</span>
-                                <i ng-if="player.endPosition > 0 || player.disqualified" class="icon" ng-class="{'ion-trophy': player.endPosition == 1, 'ion-checkmark': player.endPosition > 1, 'ion-close': player.disqualified}"></i>
-                                <img ng-if="player.face" ng-src="{{player.face}}">
+                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="participant in game.scoreboard.rowOne">
+                            <!-- single player mode -->
+                            <div ng-if="!game.isTeamMode" class="game-board-cell {{participant.guestColor}}" ng-class="{'guest': participant.guestColor, 'has-avatar': participant.face, 'active': participant === game.activePlayer, 'winner': participant.endPosition === 1, 'finished': participant.endPosition > 1, 'disqualified': participant.disqualified}">
+                                <span ng-if="participant.endPosition <= 0 && !participant.disqualified">{{participant.score}}</span>
+                                <i ng-if="participant.endPosition > 0 || participant.disqualified" class="icon" ng-class="{'ion-trophy': participant.endPosition == 1, 'ion-checkmark': participant.endPosition > 1, 'ion-close': participant.disqualified}"></i>
+                                <img ng-if="participant.face" ng-src="{{participant.face}}">
+                            </div>
+                            <!-- team mode -->
+                            <div ng-if="game.isTeamMode" class="game-board-cell {{participant.guestColor}}" ng-class="{'guest': participant.guestColor, 'has-avatar': !participant.guestColor, 'active': participant === game.activePlayer, 'winner': participant.endPosition === 1, 'finished': participant.endPosition > 1, 'disqualified': participant.disqualified}">
+                                <span ng-if="participant.endPosition <= 0 && !participant.disqualified">{{participant.score}}</span>
+                                <i ng-if="participant.endPosition > 0 || participant.disqualified" class="icon" ng-class="{'ion-trophy': participant.endPosition == 1, 'ion-checkmark': participant.endPosition > 1, 'ion-close': participant.disqualified}"></i>
+                                <div class="game-board-cell__avatar" data-count="{{participant.players.length}}">
+                                    <div ng-repeat="player in participant.players  | orderBy: 'firstName'">
+                                      <img ng-if="player.face" ng-src="{{player.face}}">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div ng-if="game.scoreboard.rowTwo.length" class="row">
-                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="player in game.scoreboard.rowTwo">
-                            <div class="game-board-cell {{player.guestColor}}" ng-class="{'guest': player.guestColor, 'has-avatar': player.face, 'active': player === game.activePlayer, 'winner': player.endPosition === 1, 'finished': player.endPosition > 1, 'disqualified': player.disqualified}">
-                                <span ng-if="player.endPosition <= 0 && !player.disqualified">{{player.score}}</span>
-                                <i ng-if="player.endPosition > 0 || player.disqualified" class="icon" ng-class="{'ion-trophy': player.endPosition == 1, 'ion-checkmark': player.endPosition > 1, 'ion-close': player.disqualified}"></i>
-                                <img ng-if="player.face" ng-src="{{player.face}}">
+                        <div class="col col-{{game.scoreboard.colWidthPercentage}}" ng-repeat="participant in game.scoreboard.rowTwo">
+                            <!-- single player mode -->
+                            <div ng-if="!game.isTeamMode" class="game-board-cell {{participant.guestColor}}" ng-class="{'guest': participant.guestColor, 'has-avatar': participant.face, 'active': participant === game.activePlayer, 'winner': participant.endPosition === 1, 'finished': participant.endPosition > 1, 'disqualified': participant.disqualified}">
+                                <span ng-if="participant.endPosition <= 0 && !participant.disqualified">{{participant.score}}</span>
+                                <i ng-if="participant.endPosition > 0 || participant.disqualified" class="icon" ng-class="{'ion-trophy': participant.endPosition == 1, 'ion-checkmark': participant.endPosition > 1, 'ion-close': participant.disqualified}"></i>
+                                <img ng-if="participant.face" ng-src="{{participant.face}}">
+                            </div>
+                            <!-- team player mode -->
+                            <div ng-if="game.isTeamMode" class="game-board-cell {{participant.guestColor}}" ng-class="{'guest': participant.guestColor, 'has-avatar': !participant.guestColor, 'active': participant === game.activePlayer, 'winner': participant.endPosition === 1, 'finished': participant.endPosition > 1, 'disqualified': participant.disqualified}">
+                                <span ng-if="participant.endPosition <= 0 && !participant.disqualified">{{participant.score}}</span>
+                                <i ng-if="participant.endPosition > 0 || participant.disqualified" class="icon" ng-class="{'ion-trophy': participant.endPosition == 1, 'ion-checkmark': participant.endPosition > 1, 'ion-close': participant.disqualified}"></i>
+                                <div class="game-board-cell__avatar" data-count="{{participant.players.length}}">
+                                    <div ng-repeat="player in participant.players  | orderBy: 'firstName'">
+                                      <img ng-if="player.face" ng-src="{{player.face}}">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -34,11 +56,20 @@
             <div class="col col-66">
                 <div id="player-cell" class="game-board-cell game-board-cell--player" ng-class="{'active': game.activatedScore.value > -1}" ng-click="game.processThrow($event);">
                     <ion-item class="item-avatar item-icon-right" type="item-text-wrap" ng-class="game.activePlayer.activatedAvatarStatus">
-                        <div ng-if="game.activePlayer.face" class="item-avatar__avatar">
+                        <!-- single player mode -->
+                        <div ng-if="!game.isTeamMode && game.activePlayer.face" class="item-avatar__avatar">
                             <img ng-src="{{game.activePlayer.face}}">
                         </div>
-                        <div ng-if="!game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
-                        <h2>{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>
+                        <div ng-if="!game.isTeamMode && !game.activePlayer.face" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
+                        <h2 ng-if="!game.isTeamMode">{{game.activePlayer.firstName}} {{game.activePlayer.lastName}}</h2>
+                        <!-- team mode -->
+                        <div ng-if="game.isTeamMode && game.activePlayer.players[game.activePlayer.activeMemberIndex].face" class="item-avatar__avatar">
+                            <img ng-src="{{game.activePlayer.players[game.activePlayer.activeMemberIndex].face}}">
+                        </div>
+                        <div ng-if="game.isTeamMode && game.activePlayer.guestColor" class="item-avatar__face-placeholder {{game.activePlayer.guestColor}}"></div>
+                        <div ng-if="game.isTeamMode && !game.activePlayer.guestColor && !game.activePlayer.players[game.activePlayer.activeMemberIndex].face" class="item-avatar__face-placeholder"></div>
+                        <h2 ng-if="game.isTeamMode && !game.activePlayer.guestColor">{{game.activePlayer.players[game.activePlayer.activeMemberIndex].firstName}} {{game.activePlayer.players[game.activePlayer.activeMemberIndex].lastName}}</h2>
+                        <h2 ng-if="game.isTeamMode && game.activePlayer.guestColor">{{game.activePlayer.name}}</h2>
                         <p>
                             <span class="placeholder" ng-if="game.activatedScore.value === -1 && !game.activePlayer.scoreHistory.length">
                                 {{ 'HOME.GAME.ACTIVE-PLAYER-CELL.SCORE-HISTORY-PLACEHOLDER' | translate }}
@@ -53,7 +84,7 @@
                             </span>
                         </p>
                         <i ng-show="game.activatedScore.value > -1" class="icon ion-chevron-right icon-accessory"></i>
-                      </ion-item>
+                    </ion-item>
                 </div>
             </div>
             <div class="col col-33">
