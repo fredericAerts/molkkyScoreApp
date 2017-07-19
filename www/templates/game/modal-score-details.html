@@ -41,7 +41,7 @@
                     <h2>{{participant.name}}</h2>
                     <p>
                         <span ng-if="participant.tagline">{{participant.tagline}}</span>
-                        <span ng-if="!participant.tagline" ng-repeat="player in participant.players">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                        <span ng-if="!participant.tagline" ng-repeat="player in participant.players | orderBy: 'firstName'">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
                     </p>
                     <i class="icon note">
                         {{participant.score}}

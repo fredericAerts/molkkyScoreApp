@@ -9,7 +9,7 @@
         <div class="avatar-block-wrapper">
             <div class="avatar-block">
                 <div class="avatar-block__team-avatar" data-count="{{teamDetail.team.players.length}}">
-                    <div ng-repeat="player in teamDetail.team.players  | orderBy: 'firstName'">
+                    <div ng-repeat="player in teamDetail.team.players | orderBy: 'firstName'">
                       <img ng-if="player.face" ng-src="{{player.face}}">
                     </div>
                 </div>
@@ -17,7 +17,7 @@
                     {{teamDetail.team.name}}
                 </p>
                 <p class="avatar-block__tagline">
-                    <span ng-repeat="player in teamDetail.team.players">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                    <span ng-repeat="player in teamDetail.team.players | orderBy: 'firstName'">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
                 </p>
             </div>
             <div class="row">

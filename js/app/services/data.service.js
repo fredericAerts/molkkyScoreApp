@@ -94,57 +94,6 @@
                        players[3]
                     ],
                     statistics: getDefaultStatistics()
-                },
-                {
-                    id: 1,
-                    name: 'De Muppets',
-                    players: [
-                       players[1],
-                       players[2],
-                       players[3]
-                    ],
-                    statistics: getDefaultStatistics()
-                },
-                {
-                    id: 2,
-                    name: 'De ',
-                    players: [
-                       players[0],
-                       players[1],
-                       players[3],
-                       players[2]
-                    ],
-                    statistics: getDefaultStatistics()
-                },
-                {
-                    id: 3,
-                    name: 'De Mupets',
-                    players: [
-                       players[1],
-                       players[2]
-                    ],
-                    statistics: getDefaultStatistics()
-                },
-                {
-                    id: 4,
-                    name: 'De Boskl',
-                    players: [
-                       players[0],
-                       players[1],
-                       players[3]
-                    ],
-                    statistics: getDefaultStatistics()
-                },
-                {
-                    id: 5,
-                    name: 'De Mup',
-                    players: [
-                       players[1],
-                       players[2],
-                       players[0],
-                       players[3]
-                    ],
-                    statistics: getDefaultStatistics()
                 }
             ];
             overallStatistics = {

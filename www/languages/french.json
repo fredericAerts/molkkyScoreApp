@@ -285,7 +285,8 @@
                 "PLACEHOLDER": "Nom de l'équipe"
             },
             "LIST": {
-                "TEAMS": "Equipes"
+                "TEAMS": "Equipes",
+                "PLAYERS": "Jouers"
             },
             "ADD-PLAYER-MODAL": {
                 "TITLE": "Ajouter nouveau joueur",
