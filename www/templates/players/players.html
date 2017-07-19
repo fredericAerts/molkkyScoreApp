@@ -17,7 +17,28 @@
         </button>
       </div>
     </div>
+    <ion-list ng-if="players.teams.length && !(players.removeVisible && players.deleteMode === 'team')" show-delete="players.removeVisible && players.deleteMode === 'delete'">
+      <div class="item item-divider">
+        {{ 'HOME.PLAYERS.LIST.TEAMS' | translate }}
+      </div>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="team in players.teams | orderBy: 'name'" type="item-text-wrap" href="#/tab/players/t/{{team.id}}">
+        <ion-delete-button class="ion-minus-circled" ng-click="players.deleteTeam(team)"></ion-delete-button>
+        <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
+            <div ng-repeat="player in team.players | orderBy: 'firstName'">
+              <img ng-if="player.face" ng-src="{{player.face}}">
+            </div>
+        </div>
+        <h2>{{team.name}}</h2>
+        <p>
+          <span ng-repeat="player in team.players | orderBy: 'firstName'">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+        </p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
     <ion-list show-delete="players.removeVisible">
+      <div ng-if="players.teams.length" class="item item-divider">
+        {{ 'HOME.PLAYERS.LIST.PLAYERS' | translate }}
+      </div>
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players | orderBy: 'firstName'" type="item-text-wrap" href="#/tab/players/{{player.id}}">
         <ion-delete-button
           ng-class="{
@@ -34,24 +55,6 @@
         <div ng-if="!player.face" class="item-avatar__face-placeholder"></div>
         <h2>{{player.firstName}} {{player.lastName}}</h2>
         <p>{{player.tagline}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-      </ion-item>
-    </ion-list>
-    <ion-list ng-if="players.teams.length" show-delete="players.removeVisible && players.deleteMode === 'delete'">
-      <div class="item item-divider">
-        {{ 'HOME.PLAYERS.LIST.TEAMS' | translate }}
-      </div>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="team in players.teams | orderBy: 'name'" type="item-text-wrap" href="#/tab/players/t/{{team.id}}">
-        <ion-delete-button class="ion-minus-circled" ng-click="players.deleteTeam(team)"></ion-delete-button>
-        <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
-            <div ng-repeat="player in team.players | orderBy: 'firstName'">
-              <img ng-if="player.face" ng-src="{{player.face}}">
-            </div>
-        </div>
-        <h2>{{team.name}}</h2>
-        <p>
-          <span ng-repeat="player in team.players">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
-        </p>
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>
     </ion-list>
