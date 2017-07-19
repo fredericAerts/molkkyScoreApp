@@ -31,7 +31,7 @@
                     <!-- team list -->
                     <ion-item ng-if="viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.addTeamToParticipants(team)" ng-repeat="team in viewModel.teamsInDatabase | orderBy: 'name'">
                         <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
-                            <div ng-repeat="player in team.players | orderBy: 'name'">
+                            <div ng-repeat="player in team.players | orderBy: 'firstName'">
                               <img ng-if="player.face" ng-src="{{player.face}}">
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                         </div> -->
                         <div ng-if="team.guestColor" class="item-avatar__face-placeholder {{team.guestColor}}"></div>
                         <div ng-if="!team.guestColor" class="item-avatar__team-avatar" data-count="{{team.players.length}}">
-                            <div ng-repeat="player in team.players | orderBy: 'name'">
+                            <div ng-repeat="player in team.players | orderBy: 'firstName'">
                               <img ng-if="player.face" ng-src="{{player.face}}">
                             </div>
                         </div>

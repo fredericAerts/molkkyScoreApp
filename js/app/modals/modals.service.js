@@ -174,6 +174,7 @@
 
             function startGame() {
                 gameService.setParticipants(modalScope.viewModel.participants.slice());
+                gameService.setTeamMode(modalScope.viewModel.isTeamMode);
 
                 loadingService.show('STARTING-GAME');
 

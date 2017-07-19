@@ -18,13 +18,31 @@
                 <span>{{ 'HOME.GAME.SCORE-DETAILS-MODAL.TABS.SCORE-LIST.SORT-TOGGLE' | translate }}</span>
             </ion-toggle>
             <ion-list>
-                <ion-item class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants | orderBy: game.scoreListSortPredicate">
+                <!-- single player mode -->
+                <ion-item ng-if="!game.isTeamMode" class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants | orderBy: game.scoreListSortPredicate">
                     <div ng-if="participant.face" class="item-avatar__avatar">
                         <img ng-src="{{participant.face}}">
                     </div>
                     <div ng-if="!participant.face" class="item-avatar__face-placeholder {{participant.guestColor}}"></div>
                     <h2>{{participant.firstName}} {{participant.lastName}}</h2>
                     <p>{{participant.tagline}}</p>
+                    <i class="icon note">
+                        {{participant.score}}
+                    </i>
+                </ion-item>
+                <!-- team mode -->
+                <ion-item ng-if="game.isTeamMode" class="item-avatar item-icon-right" ng-class="{'winner': participant.endPosition === 1, 'success': participant.endPosition > 1, 'error': participant.disqualified}" ng-repeat="participant in game.participants | orderBy: game.scoreListSortPredicate">
+                    <div ng-if="!participant.guestColor" class="item-avatar__team-avatar" data-count="{{participant.players.length}}">
+                        <div ng-repeat="player in participant.players | orderBy: 'name'">
+                          <img ng-if="player.face" ng-src="{{player.face}}">
+                        </div>
+                    </div>
+                    <div ng-if="participant.guestColor" class="item-avatar__face-placeholder {{participant.guestColor}}"></div>
+                    <h2>{{participant.name}}</h2>
+                    <p>
+                        <span ng-if="participant.tagline">{{participant.tagline}}</span>
+                        <span ng-if="!participant.tagline" ng-repeat="player in participant.players">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                    </p>
                     <i class="icon note">
                         {{participant.score}}
                     </i>
@@ -37,7 +55,14 @@
                     <tr>
                         <th width="{{100/game.participants.length}}%" ng-repeat="participant in game.participants">
                             <div class="scoreboard-details__face-placeholder {{participant.guestColor}}">
-                                <img ng-if="participant.face" ng-src="{{participant.face}}">
+                                <!-- single player mode -->
+                                <img ng-if="!game.isTeamMode && participant.face" ng-src="{{participant.face}}">
+                                <!-- team mode -->
+                                <div ng-if="game.isTeamMode && !participant.guestColor" class="team-avatar" data-count="{{participant.players.length}}">
+                                    <div ng-repeat="player in participant.players | orderBy: 'name'">
+                                      <img ng-if="player.face" ng-src="{{player.face}}">
+                                    </div>
+                                </div>
                             </div>
                         </th>
                     </tr>

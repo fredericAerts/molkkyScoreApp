@@ -87,10 +87,61 @@
             teams = [
                 {
                     id: 0,
-                    name: 'De Bosklappers',
+                    name: 'De Bosappers',
                     players: [
                        players[0],
                        players[1],
+                       players[3]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 1,
+                    name: 'De Muppets',
+                    players: [
+                       players[1],
+                       players[2],
+                       players[3]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 2,
+                    name: 'De ',
+                    players: [
+                       players[0],
+                       players[1],
+                       players[3],
+                       players[2]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 3,
+                    name: 'De Mupets',
+                    players: [
+                       players[1],
+                       players[2]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 4,
+                    name: 'De Boskl',
+                    players: [
+                       players[0],
+                       players[1],
+                       players[3]
+                    ],
+                    statistics: getDefaultStatistics()
+                },
+                {
+                    id: 5,
+                    name: 'De Mup',
+                    players: [
+                       players[1],
+                       players[2],
+                       players[0],
                        players[3]
                     ],
                     statistics: getDefaultStatistics()
@@ -115,19 +166,19 @@
             function getDefaultStatistics() {
                 return {
                     rawData: {
-                        throws: 148,
-                        throwsSinglePin: 126,
-                        throwsInGamesReachedMaxScore: 89,
-                        gamesPlayed: 64,
-                        gamesReachedMaxScore: 51,
-                        gamesWon: 41
+                        throws: 0,
+                        throwsSinglePin: 0,
+                        throwsInGamesReachedMaxScore: 0,
+                        gamesPlayed: 0,
+                        gamesReachedMaxScore: 0,
+                        gamesWon: 0
                     },
                     metrics: {
-                        totalWins: 41,
-                        versatility: 78,
-                        winningRatio: 86,
-                        accuracy: 58,
-                        efficiency: 74
+                        totalWins: 0,
+                        versatility: 0,
+                        winningRatio: 0,
+                        accuracy: 0,
+                        efficiency: 0
                     }
                 };
             }
@@ -571,14 +622,15 @@
 
         function updateRawData(player) {
             var rawData = player.statistics.rawData;
-            var updateRawData = 'UPDATE STATISTICS_PLAYER_RAW_DATA SET' +
-                                    ' THROWS=' + rawData.throws + ',' +
+            // start and end of query differ for team and single player
+            var queryHead = player.players ? 'UPDATE STATISTICS_TEAM_RAW_DATA SET' : 'UPDATE STATISTICS_PLAYER_RAW_DATA SET';
+            var queryTail = player.players ? ' WHERE TEAM_ID=' + player.id : ' WHERE PLAYER_ID=' + player.id;
+            var updateRawData = queryHead + ' THROWS=' + rawData.throws + ',' +
                                     ' THROWS_SINGLE_PIN=' + rawData.throwsSinglePin + ',' +
                                     ' THROWS_IN_GAMES_REACHED_MAX_SCORE=' + rawData.throwsInGamesReachedMaxScore + ',' +
                                     ' GAMES_PLAYED=' + rawData.gamesPlayed + ',' +
                                     ' GAMES_REACHED_MAX_SCORE=' + rawData.gamesReachedMaxScore + ',' +
-                                    ' GAMES_WON=' + rawData.gamesWon +
-                                    ' WHERE PLAYER_ID=' + player.id;
+                                    ' GAMES_WON=' + rawData.gamesWon + queryTail;
             $cordovaSQLite.execute(database, updateRawData).then(function(res) {
                 // raw data updated
             }, function (err) {
@@ -588,13 +640,13 @@
 
         function updateMetrics(player) {
             var metrics = player.statistics.metrics;
-            var updateMetrics = 'UPDATE STATISTICS_PLAYER_METRICS SET' +
-                                    ' TOTAL_WINS=' + metrics.totalWins + ',' +
+            var queryHead = player.players ? 'UPDATE STATISTICS_TEAM_METRICS SET' : 'UPDATE STATISTICS_PLAYER_METRICS SET';
+            var queryTail = player.players ? ' WHERE TEAM_ID=' + player.id : ' WHERE PLAYER_ID=' + player.id;
+            var updateMetrics = queryHead + ' TOTAL_WINS=' + metrics.totalWins + ',' +
                                     ' VERSATILITY=' + metrics.versatility + ',' +
                                     ' WINNING_RATIO=' + metrics.winningRatio + ',' +
                                     ' ACCURACY=' + metrics.accuracy + ',' +
-                                    ' EFFICIENCY=' + metrics.efficiency +
-                                    ' WHERE PLAYER_ID=' + player.id;
+                                    ' EFFICIENCY=' + metrics.efficiency + queryTail;
             $cordovaSQLite.execute(database, updateMetrics).then(function(res) {
                 // raw data updated
             }, function (err) {

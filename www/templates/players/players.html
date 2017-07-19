@@ -18,7 +18,7 @@
       </div>
     </div>
     <ion-list show-delete="players.removeVisible">
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players | orderBy: 'name'" type="item-text-wrap" href="#/tab/players/{{player.id}}">
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="player in players.players | orderBy: 'firstName'" type="item-text-wrap" href="#/tab/players/{{player.id}}">
         <ion-delete-button
           ng-class="{
             'ion-minus-circled': (players.deleteMode === 'delete'),
@@ -44,7 +44,7 @@
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="team in players.teams | orderBy: 'name'" type="item-text-wrap" href="#/tab/players/t/{{team.id}}">
         <ion-delete-button class="ion-minus-circled" ng-click="players.deleteTeam(team)"></ion-delete-button>
         <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
-            <div ng-repeat="player in team.players | orderBy: 'name'">
+            <div ng-repeat="player in team.players | orderBy: 'firstName'">
               <img ng-if="player.face" ng-src="{{player.face}}">
             </div>
         </div>

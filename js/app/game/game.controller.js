@@ -43,6 +43,7 @@
         var actionSheetActions = {};
         var toastMessages = toast.getMessages().game;
 
+        vm.isTeamMode = gameService.isTeamMode();
         vm.participants = [];
         vm.scoreboard = {};
         vm.activatedScore = {};
@@ -342,11 +343,22 @@
             if (vm.activePlayer.finishedGame || vm.activePlayer.disqualified) {
                 moveToNextPlayer();
             }
+
+            if (vm.isTeamMode && !vm.activePlayer.guestColor && vm.activePlayer.scoreHistory.length) {
+                var endOfLine = (vm.activePlayer.activeMemberIndex === vm.activePlayer.players.length - 1);
+                vm.activePlayer.activeMemberIndex = endOfLine ? 0 : vm.activePlayer.activeMemberIndex + 1;
+                vm.participants.forEach(function(participant) {
+                    delete participant.undoneOnce;
+                });
+            }
         }
 
         function moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex) {
             var activePlayerIndex = gameUtilities.getActivePlayerIndex(vm.activePlayer, vm.participants);
             var firstOfRound = activePlayerIndex === 0;
+            if (!vm.activePlayer.undoneOnce) {
+                vm.activePlayer.undoneOnce = true;
+            }
 
             if (firstOfRound) {
                 vm.activePlayer = vm.participants[vm.participants.length - 1];
@@ -366,6 +378,14 @@
             else {
                 if (currentThrowNumber !== vm.activePlayer.scoreHistory.length + 1) {
                     moveToPreviousPlayer(currentThrowNumber, throwingPlayerIndex);
+                }
+            }
+
+            if (vm.isTeamMode && !vm.activePlayer.guestColor) {
+                if (vm.activePlayer.undoneOnce) {
+                    var firstOfLine = (vm.activePlayer.activeMemberIndex === 0);
+                    var lastIndex = vm.activePlayer.players.length - 1;
+                    vm.activePlayer.activeMemberIndex = firstOfLine ? lastIndex : vm.activePlayer.activeMemberIndex - 1;
                 }
             }
         }
