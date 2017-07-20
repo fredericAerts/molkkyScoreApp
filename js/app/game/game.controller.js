@@ -312,13 +312,14 @@
             vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
             resetActivatedScore();
 
+            var participantName = vm.isTeamMode ? vm.activePlayer.name : vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName;
             if (vm.activePlayer.missesInARow > 2) {
                 gameUtilities.processThreeMisses(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.threeMisses);
+                toast.show(participantName + ' ' + toastMessages.threeMisses);
             }
             else if (vm.activePlayer.score > settings.winningScore) {
                 gameUtilities.processWinningScoreExceeded(vm.activePlayer, settings);
-                toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.maxScoreExceeded);
+                toast.show(participantName + ' ' + toastMessages.maxScoreExceeded);
             }
             else if (vm.activePlayer.score === settings.winningScore) { // player finished
                 vm.activePlayer.finishedGame = true;
@@ -327,7 +328,7 @@
 
                 if (vm.activePlayer.endPosition === 1) { // game has winner
                     vm.scoreDetailsModal.show();
-                    toast.show(vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName + ' ' + toastMessages.winner);
+                    toast.show(participantName + ' ' + toastMessages.winner);
                     statisticsService.updateStatistics('playerWonGame', vm.activePlayer, false);
                 }
             }

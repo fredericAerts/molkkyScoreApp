@@ -73,6 +73,9 @@
         },
         "GAME": {
             "VIEW-TITLE": "Let's play!",
+            "GUEST": {
+                "TAGLINE": "I'm a guest participant"
+            },
             "ACTIVE-PLAYER-CELL": {
                 "SCORE-HISTORY-PLACEHOLDER": "Score history..."
             },
