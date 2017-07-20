@@ -3,17 +3,7 @@
     "version": "1.0.1",
     "description": "Free (and ad free) application for keeping score on the game named 'mölkky'",
     "dependencies": {
-        "gulp": "^3.5.6",
-        "gulp-autoprefixer": "^3.1.0",
-        "gulp-concat": "^2.2.0",
-        "gulp-cssnano": "^2.1.2",
-        "gulp-jscs": "^4.0.0",
-        "gulp-jshint": "^2.0.1",
-        "gulp-rename": "^1.2.0",
-        "gulp-sass": "^2.0.4",
-        "gulp-uglify": "^1.5.4",
-        "jshint": "^2.9.2",
-        "jshint-stylish": "^2.2.0",
+        "cordova-ios": "^4.4.0",
         "cordova-plugin-camera": "~2.3.1",
         "cordova-plugin-console": "~1.0.5",
         "cordova-plugin-device": "~1.1.4",
@@ -23,7 +13,18 @@
         "cordova-plugin-whitelist": "~1.3.1",
         "cordova-plugin-x-toast": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
         "cordova-sqlite-storage": "~2.0.1",
-        "ionic-plugin-keyboard": "~2.2.1"
+        "gulp": "^3.5.6",
+        "gulp-autoprefixer": "^3.1.0",
+        "gulp-concat": "^2.2.0",
+        "gulp-cssnano": "^2.1.2",
+        "gulp-jscs": "^4.0.0",
+        "gulp-jshint": "^2.0.1",
+        "gulp-rename": "^1.2.0",
+        "gulp-sass": "^2.0.4",
+        "gulp-uglify": "^1.5.4",
+        "ionic-plugin-keyboard": "~2.2.1",
+        "jshint": "^2.9.2",
+        "jshint-stylish": "^2.2.0"
     },
     "devDependencies": {
         "@ionic/cli-plugin-ionic1": "2.0.1",
@@ -67,7 +68,9 @@
     ],
     "cordova": {
         "plugins": {
-            "cordova-plugin-camera": {},
+            "cordova-plugin-camera": {
+                "PHOTOLIBRARY_USAGE_DESCRIPTION": "Images will only be used within application"
+            },
             "cordova-plugin-console": {},
             "cordova-plugin-device": {},
             "cordova-plugin-inappbrowser": {},
@@ -77,6 +80,9 @@
             "cordova-plugin-x-toast": {},
             "cordova-sqlite-storage": {},
             "ionic-plugin-keyboard": {}
-        }
+        },
+        "platforms": [
+            "ios"
+        ]
     }
 }
