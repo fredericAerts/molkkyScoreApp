@@ -32,7 +32,9 @@
                 "PARTICIPANTS-LIST-HEADER": "Participants",
                 "PLAY-AS-TEAM": "Play in Teams",
                 "PLAY-INDIVIDUALLY": "Play Individually",
-                "NO-TEAMS": "No teams available. You can create teams on the <strong>Players</strong> screen"
+                "NO-TEAMS": "No teams available. You can create teams on the <strong>Players</strong> screen",
+                "NO-PLAYERS": "No players available. You can create players on the <strong>Players</strong> screen",
+                "EMPTY-DATABASE-BUTTON": "Players"
             },
             "TOASTS": {
                 "MAX-PARTICIPANTS": "Max participants reached"
@@ -159,7 +161,7 @@
                         "LABEL": "Custom game settings",
                         "POPUP": {
                             "TITLE": "Warning",
-                            "TEXT": "Player statistics are not recorded when custom game settings are enabled"
+                            "TEXT": "Statistics are not recorded when custom game settings are enabled"
                         }
                     },
                     "WINNING-SCORE": {
@@ -182,6 +184,9 @@
                     "TITLE": "App",
                     "LANGUAGE": {
                         "TITLE": "Language"
+                    },
+                    "TUTORIAL": {
+                        "LABEL": "Show tutorial on game startup"
                     }
                 }
             },
@@ -248,7 +253,7 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Since you have enabled custom game settings, no player/team statistics are currently being recorded"
+                "TEXT": "Since you have enabled custom game settings, no statistics are currently being recorded"
             },
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
@@ -315,6 +320,7 @@
             "DETAIL": {
                 "PROFILE": "Profile",
                 "TEAM-MEMBERS": "Members",
+                "MEMBER-OF": "Member of teams",
                 "STATISTICS": "Statistics",
                 "PROFILE-DATA-LABELS": {
                     "FIRST-NAME": "First name",

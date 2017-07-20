@@ -49,6 +49,20 @@
                 <ion-item ng-repeat="item in playerDetail.profileData.profile">
                     {{item.title}}: {{item.value}}
                 </ion-item>
+                <div ng-if="playerDetail.profileData.memberOfTeams.length" class="item item-divider">
+                    {{ 'HOME.PLAYERS.DETAIL.MEMBER-OF' | translate }}
+                </div>
+                <ion-item class="item-avatar" ng-repeat="team in playerDetail.profileData.memberOfTeams" type="item-text-wrap">
+                    <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
+                        <div ng-repeat="player in team.players | orderBy: 'firstName'">
+                          <img ng-if="player.face" ng-src="{{player.face}}">
+                        </div>
+                    </div>
+                    <h2>{{team.name}}</h2>
+                    <p>
+                      <span ng-repeat="player in team.players | orderBy: 'firstName'">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                    </p>
+                </ion-item>
                 <div class="item item-divider">
                     {{ 'HOME.PLAYERS.DETAIL.STATISTICS' | translate }}
                 </div>

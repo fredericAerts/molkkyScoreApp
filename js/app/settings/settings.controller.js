@@ -78,13 +78,14 @@
         }
 
         function updateParameters(newParameters, oldParameters) {
-            var updatedKey = '';
             var diffApp = _.omit(newParameters.app, isPropertySameIn(oldParameters.app));
             var diffGame = _.omit(newParameters.game, isPropertySameIn(oldParameters.game));
 
             if (!_.isEmpty(diffApp)) {
-                updatedKey = Object.keys(diffApp)[0];
-                settingsService.updateAppParameter(updatedKey, vm.parameters.app[updatedKey]);
+                var updatedKeys = Object.keys(diffApp);
+                updatedKeys.forEach(function(key) {
+                    settingsService.updateAppParameter(key, vm.parameters.app[key]);
+                });
             }
 
             if (!_.isEmpty(diffGame)) {

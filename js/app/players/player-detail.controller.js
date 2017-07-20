@@ -30,6 +30,7 @@
                                 toast) {
         /* jshint validthis: true */
         var vm = this;
+        var teams = playersService.allTeams();
         var editPlayerModalScope = $scope.$new(true);
         var toastMessages = toast.getMessages().players;
 
@@ -94,6 +95,7 @@
             ];
 
             vm.profileData.profile = profileItems;
+            vm.profileData.memberOfTeams = playersService.getTeamsFromPlayer(parseInt($stateParams.playerId, 10));
             vm.profileData.statistics = statisticsItems;
 
             return vm.profileData;
