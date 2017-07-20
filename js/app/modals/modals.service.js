@@ -8,6 +8,7 @@
     modalsService.$inject = ['TEMPLATES_ROOT',
                                 '$rootScope',
                                 '$ionicModal',
+                                '$translate',
                                 'gameService',
                                 'playersService',
                                 'toast',
@@ -16,6 +17,7 @@
     function modalsService(TEMPLATES_ROOT,
                             $rootScope,
                             $ionicModal,
+                            $translate,
                             gameService,
                             playersService,
                             toast,
@@ -137,14 +139,14 @@
                 if (modalScope.viewModel.isTeamMode) {
                     guestPlayer = {
                         name: 'Mr. ' + capitalizeFirstLetter(guestColor),
-                        tagline: 'I\'m a guest player',
+                        tagline: $translate.instant('HOME.GAME.GUEST.TAGLINE'),
                         guestColor: guestColor
                     }
                 } else {
                     guestPlayer = {
                         firstName: 'Mr.',
                         lastName: capitalizeFirstLetter(guestColor),
-                        tagline: 'I\'m a guest player',
+                        tagline: $translate.instant('HOME.GAME.GUEST.TAGLINE'),
                         guestColor: guestColor
                     }
                 }

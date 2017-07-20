@@ -6,7 +6,7 @@
                 "OK": "Ok",
                 "NO": "Non",
                 "YES": "Oui"
-            }
+            },
         },
         "SPLASH": {
             "SUBTITLE": "Nous apportons la qualité<br>de classe mondiale au jeu",
@@ -74,6 +74,9 @@
         },
         "GAME": {
             "VIEW-TITLE": "C'est parti!",
+            "GUEST": {
+                "TAGLINE": "Je suis un participant invité"
+            },
             "ACTIVE-PLAYER-CELL": {
                 "SCORE-HISTORY-PLACEHOLDER": "Historique de scores..."
             },
