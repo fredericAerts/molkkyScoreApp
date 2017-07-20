@@ -21,7 +21,7 @@
                     </div>
                     <div ng-if="!viewModel.isTeamMode && !viewModel.playersInDatabase.length" class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-PLAYERS'}}></div>
                     <div ng-if="viewModel.isTeamMode && !viewModel.teamsInDatabase.length"  class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-TEAMS'}}></div>
-                    <a ng-if="!viewModel.teamsInDatabase.length || !viewModel.playersInDatabase.length" class="button button-block button-small icon-left ion-ios-people-outline" href="#/tab/players" ng-click="viewModel.cancelAddPlayersToGame()">
+                    <a ng-if="(!viewModel.teamsInDatabase.length && viewModel.isTeamMode) || (!viewModel.playersInDatabase.length && !viewModel.isTeamMode)" class="button button-block button-small icon-left ion-ios-people-outline" href="#/tab/players" ng-click="viewModel.cancelAddPlayersToGame()">
                         {{ 'HOME.START.START-PLAYERS-MODAL.EMPTY-DATABASE-BUTTON' | translate }} &raquo;
                     </a>
                     <!-- player list -->

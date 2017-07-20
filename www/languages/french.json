@@ -270,7 +270,7 @@
                 }
             },
             "LISTING": {
-                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici",
+                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties (jeux d'équipe non inclus) avec les paramètres de jeu par défaut sont listés ici",
                 "FILTER-TEAM": "Seuls les équipes qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici",
                 "PLAYERS": "Joueurs",
                 "TEAMS": "Equipes"
