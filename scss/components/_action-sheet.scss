@@ -1,5 +1,25 @@
-.action-sheet {
+.platform-android {
 
+  .action-sheet {
+
+    .action-sheet-title {
+      border-bottom: 1px solid #b2b2b2;
+
+      text-align: center;
+    }
+
+    .action-sheet-option {
+      text-align: center;
+
+      &:not(:nth-child(2)) {
+        border-top: 1px solid lighten(#b2b2b2, 15%);
+      }
+
+      & + .disabled {
+        border-top: 1px solid darken(#b2b2b2, 8%);
+      }
+    }
+  }
 }
 
 .action-sheet-option {
