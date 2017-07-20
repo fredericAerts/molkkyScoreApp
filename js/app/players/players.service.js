@@ -18,7 +18,8 @@
             updatePlayer: updatePlayer,
             allTeams:allTeams,
             getTeam: getTeam,
-            removeTeam: removeTeam
+            removeTeam: removeTeam,
+            getTeamsFromPlayer: getTeamsFromPlayer
         };
         return service;
 
@@ -67,6 +68,12 @@
 
         function removeTeam(team) {
             teams.splice(teams.indexOf(team), 1);
+        }
+
+        function getTeamsFromPlayer(playerId) {
+            return teams.filter(function(team) {
+                return _.contains(_.pluck(team.players, 'id'), playerId);
+            });
         }
 
         /*  Helper functions

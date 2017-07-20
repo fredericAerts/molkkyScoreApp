@@ -51,6 +51,9 @@
                     {{ option.value }}
                 </ion-radio>
             </div>
+            <ion-toggle ng-model="settings.parameters.app.showTutorialInvite">
+                <span>{{ 'HOME.SETTINGS.TABS.APP.TUTORIAL.LABEL' | translate }}</span>
+            </ion-toggle>
         </div>
     </ion-content>
 </ion-view>

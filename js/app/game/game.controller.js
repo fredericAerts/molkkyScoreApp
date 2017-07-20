@@ -475,6 +475,7 @@
                 if (vm.tutorialNeverAskAgain) {
                     gameService.getTutorial().showInvite = false;
                     gameService.updateTutorial();
+                    settingsService.updateAppParameterTutorialInvite(false)
                 }
             });
         }

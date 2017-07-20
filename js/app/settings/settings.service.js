@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .factory('settingsService', settingsService);
 
-    settingsService.$inject = ['$translate', 'dataService'];
+    settingsService.$inject = ['$translate', 'dataService', 'gameService'];
 
-    function settingsService($translate, dataService) {
+    function settingsService($translate, dataService, gameService) {
         var parameters = {};
 
         var service = {
@@ -15,6 +15,7 @@
             getParameters: getParameters,
             updateGameParameter: updateGameParameter,
             updateAppParameter: updateAppParameter,
+            updateAppParameterTutorialInvite: updateAppParameterTutorialInvite,
             assignDefaultGameParameters: assignDefaultGameParameters
         };
         return service;
@@ -46,6 +47,7 @@
         function getParameters() {
             if (_.isEmpty(parameters)) {
                 parameters.app = dataService.getAppSettings();
+                parameters.app.showTutorialInvite =  dataService.getGameTutorial().showInvite;
                 parameters.game = dataService.getGameSettings();
             }
 
@@ -57,9 +59,16 @@
 
             switch (key) {
                 case 'language': $translate.use(value); break;
+                case 'showTutorialInvite': updateTutorialInvite(value); break;
             }
 
-            dataService.updateAppSettings();
+            if (key !== 'showTutorialInvite') {
+                dataService.updateAppSettings();
+            }
+        }
+
+        function updateAppParameterTutorialInvite(showInvite) {
+            parameters.app.showTutorialInvite = showInvite;
         }
 
         function updateGameParameter() {
@@ -68,6 +77,13 @@
 
         function assignDefaultGameParameters(settings) {
             _.extendOwn(settings, dataService.getDefaultGameSettings());
+        }
+
+        /*  Helper Functions
+            ====================================================================== */
+        function updateTutorialInvite(showInvite) {
+            gameService.getTutorial().showInvite = showInvite;
+            gameService.updateTutorial();
         }
     }
 })();

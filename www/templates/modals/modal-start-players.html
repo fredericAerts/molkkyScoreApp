@@ -19,7 +19,11 @@
                         <span ng-if="!viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER-PLAYERS' | translate }}</span>
                         <span ng-if="viewModel.isTeamMode">{{ 'HOME.START.START-PLAYERS-MODAL.DATABASE-LIST-HEADER-TEAMS' | translate }}</span>
                     </div>
-                    <div ng-if="viewModel.isTeamMode && !viewModel.teamsInDatabase.length" class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-TEAMS'}}></div>
+                    <div ng-if="!viewModel.isTeamMode && !viewModel.playersInDatabase.length" class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-PLAYERS'}}></div>
+                    <div ng-if="viewModel.isTeamMode && !viewModel.teamsInDatabase.length"  class="info-block info-block--no-margin" translate={{'HOME.START.START-PLAYERS-MODAL.NO-TEAMS'}}></div>
+                    <a ng-if="!viewModel.teamsInDatabase.length || !viewModel.playersInDatabase.length" class="button button-block button-small icon-left ion-ios-people-outline" href="#/tab/players" ng-click="viewModel.cancelAddPlayersToGame()">
+                        {{ 'HOME.START.START-PLAYERS-MODAL.EMPTY-DATABASE-BUTTON' | translate }} &raquo;
+                    </a>
                     <!-- player list -->
                     <ion-item ng-if="!viewModel.isTeamMode" class="item-avatar item-avatar--small" ng-click="viewModel.addPlayerToParticipants(player)" ng-repeat="player in viewModel.playersInDatabase | orderBy: 'firstName'">
                         <div ng-if="player.face" class="item-avatar__avatar">

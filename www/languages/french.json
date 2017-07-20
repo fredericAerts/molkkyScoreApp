@@ -33,7 +33,9 @@
                 "PARTICIPANTS-LIST-HEADER": "Participants",
                 "PLAY-AS-TEAM": "Jouer en équipe",
                 "PLAY-INDIVIDUALLY": "Jouer individuellement",
-                "NO-TEAMS": "Aucune équipe disponible. Vous pouvez créer des équipes sur l'écran <strong>Joueurs</strong>"
+                "NO-TEAMS": "Aucune équipe disponible. Vous pouvez créer des équipes sur l'écran <strong>Joueurs</strong>",
+                "NO-PLAYERS": "Aucune joeur disponible. Vous pouvez créer des jouers sur l'écran <strong>Joueurs</strong>",
+                "EMPTY-DATABASE-BUTTON": "Joueurs"
             },
             "TOASTS": {
                 "MAX-PARTICIPANTS": "Max. de participants atteint"
@@ -160,7 +162,7 @@
                         "LABEL": "Paramètres personnalisés",
                         "POPUP": {
                             "TITLE": "Avertissement",
-                            "TEXT": "Les statistiques des joueurs ne sont pas enregistrées si les paramètres personnalisés sont activés"
+                            "TEXT": "Les statistiques ne sont pas enregistrées si les paramètres personnalisés sont activés"
                         }
                     },
                     "WINNING-SCORE": {
@@ -183,6 +185,9 @@
                     "TITLE": "Application",
                     "LANGUAGE": {
                         "TITLE": "Langue"
+                    },
+                    "TUTORIAL": {
+                        "LABEL": "Faire un tour sur le démarrage du jeu"
                     }
                 }
             },
@@ -249,7 +254,7 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques des joueurs/équipes ne sont pas enregistrées"
+                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques ne sont pas enregistrées"
             },
             "INFO-MODAL": {
                 "TITLE": "Infos des statistiques",
@@ -316,6 +321,7 @@
             "DETAIL": {
                 "PROFILE": "Profil",
                 "TEAM-MEMBERS": "Membres",
+                "MEMBER-OF": "Membres d'équipes",
                 "STATISTICS": "Statistiques",
                 "PROFILE-DATA-LABELS": {
                     "FIRST-NAME": "Prénom",
