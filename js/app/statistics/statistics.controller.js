@@ -8,11 +8,12 @@
     StatisticsCtrl.$inject = ['$scope',
                                 'statisticsService',
                                 'settingsService',
+                                'playersService',
                                 'TEMPLATES_ROOT',
                                 '$ionicPopover',
                                 '$ionicModal'];
 
-    function StatisticsCtrl($scope, statisticsService, settingsService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
+    function StatisticsCtrl($scope, statisticsService, settingsService, playersService, TEMPLATES_ROOT, $ionicPopover, $ionicModal) {
         /* jshint validthis: true */
         var vm = this;
         var statisticsInfoModalScope = $scope.$new(true);
@@ -24,6 +25,7 @@
         vm.statisticsInfoModal = {};
         vm.statsItemsInfoPopover = {};
         vm.showItemInfo = showItemInfo;
+        vm.teams = playersService.allTeams();
 
         activate();
 

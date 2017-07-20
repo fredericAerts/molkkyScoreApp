@@ -1,20 +1,53 @@
 <ion-view view-title="{{ 'HOME.STATISTICS.METRICS.' + listing.metric.translationId + '.VIEW-TITLE' | translate }}">
-  <ion-content class="padding">
-    <span ng-if="listing.metric.unit" class="info-block">
-        {{ 'HOME.STATISTICS.LISTING.FILTER' | translate }}
-    </span>
-    <ion-list class="list--numbered-avatar">
-        <ion-item class="item-avatar item-icon-right numbered" ng-repeat="player in listing.players | filter: listing.minGamesFilter | orderBy: ['-statistics.metrics.' + listing.metric.keyName, 'firstName']">
-            <div ng-if="player.face" class="item-avatar__avatar">
-                <img ng-src="{{player.face}}">
-            </div>
-            <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
-            <h2>{{player.firstName}} {{player.lastName}}</h2>
-            <p>{{player.tagline}}</p>
-            <i class="icon note">
-                {{player.statistics.metrics[listing.metric.keyName] + listing.metric.unit}}
-            </i>
-        </ion-item>
-    </ion-list>
-  </ion-content>
+    <div ng-if="listing.teams.length" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
+        <div class="tabs">
+            <span class="tab-item active" ng-click="listing.activeTabIndex = 0" ng-class="{'active': listing.activeTabIndex === 0}">
+                {{ 'HOME.STATISTICS.LISTING.PLAYERS' | translate }}
+            </span>
+            <span class="tab-item" ng-click="listing.activeTabIndex = 1" ng-class="{'active': listing.activeTabIndex === 1}">
+                {{ 'HOME.STATISTICS.LISTING.TEAMS' | translate }}
+            </span>
+        </div>
+    </div>
+    <ion-content class="padding" ng-class="{'has-tabs-top': listing.teams.length}">
+        <div ng-show="listing.activeTabIndex === 0">
+            <span ng-if="listing.metric.unit" class="info-block">
+                {{ 'HOME.STATISTICS.LISTING.FILTER' | translate }}
+            </span>
+            <ion-list class="list--numbered-avatar">
+                <ion-item class="item-avatar item-icon-right numbered" ng-repeat="player in listing.players | filter: listing.minGamesFilter | orderBy: ['-statistics.metrics.' + listing.metric.keyName, 'firstName']">
+                    <div ng-if="player.face" class="item-avatar__avatar">
+                        <img ng-src="{{player.face}}">
+                    </div>
+                    <div ng-if="!player.face" class="item-avatar__face-placeholder {{player.guestColor}}"></div>
+                    <h2>{{player.firstName}} {{player.lastName}}</h2>
+                    <p>{{player.tagline}}</p>
+                    <i class="icon note">
+                        {{player.statistics.metrics[listing.metric.keyName] + listing.metric.unit}}
+                    </i>
+                </ion-item>
+            </ion-list>
+        </div>
+        <div ng-show="listing.activeTabIndex === 1">
+            <span ng-if="listing.metric.unit" class="info-block">
+                {{ 'HOME.STATISTICS.LISTING.FILTER-TEAM' | translate }}
+            </span>
+            <ion-list class="list--numbered-avatar">
+                <ion-item class="item-avatar item-icon-right numbered" ng-repeat="team in listing.teams | filter: listing.minGamesFilter | orderBy: ['-statistics.metrics.' + listing.metric.keyName, 'name']">
+                    <div class="item-avatar__team-avatar" data-count="{{team.players.length}}">
+                        <div ng-repeat="player in team.players | orderBy: 'firstName'">
+                          <img ng-if="player.face" ng-src="{{player.face}}">
+                        </div>
+                    </div>
+                    <h2>{{team.name}}</h2>
+                    <p>
+                      <span ng-repeat="player in team.players | orderBy: 'firstName'">{{ $index > 0 ? ' / ' : '' }}{{player.firstName}}</span>
+                    </p>
+                    <i class="icon note">
+                        {{team.statistics.metrics[listing.metric.keyName] + listing.metric.unit}}
+                    </i>
+                </ion-item>
+            </ion-list>
+        </div>
+    </ion-content>
 </ion-view>

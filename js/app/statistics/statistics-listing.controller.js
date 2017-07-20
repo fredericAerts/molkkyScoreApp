@@ -11,8 +11,10 @@
         /* jshint validthis: true */
         var vm = this;
 
+        vm.activeTabIndex = 0;
         vm.metric = statisticsService.getMetric(parseInt($stateParams.metricId, 10));
         vm.players = playersService.all();
+        vm.teams = playersService.allTeams();
         vm.minGamesFilter = minGamesFilter;
 
         activate();
