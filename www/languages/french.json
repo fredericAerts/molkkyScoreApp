@@ -211,6 +211,7 @@
                 },
                 "PLAYERS": {
                     "TITLE": "Joueurs",
+                    "TITLE-TEAMS": "Equipes",
                     "TOTAL-WINS": {
                         "VIEW-TITLE": "Total de victoires",
                         "INFO": {
@@ -254,7 +255,8 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques ne sont pas enregistrées"
+                "TEXT": "Puisque vous avez activé les paramètres personnalisés, les statistiques ne sont pas enregistrées",
+                "PLAYERS-TEXT": "Notez qu'aucune statistique n'est enregistrée pour les joueurs individuels lorsqu'ils jouent un jeu en équipe"
             },
             "INFO-MODAL": {
                 "TITLE": "Infos des statistiques",
@@ -268,7 +270,10 @@
                 }
             },
             "LISTING": {
-                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici"
+                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici",
+                "FILTER-TEAM": "Seuls les équipes qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici",
+                "PLAYERS": "Joueurs",
+                "TEAMS": "Equipes"
             }
         },
         "PLAYERS": {

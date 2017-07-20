@@ -210,6 +210,7 @@
                 },
                 "PLAYERS": {
                     "TITLE": "Players",
+                    "TITLE-TEAMS": "Teams",
                     "TOTAL-WINS": {
                         "VIEW-TITLE": "Total wins",
                         "INFO": {
@@ -253,7 +254,8 @@
                 }
             },
             "INFO-BLOCK": {
-                "TEXT": "Since you have enabled custom game settings, no statistics are currently being recorded"
+                "TEXT": "Since you have enabled custom game settings, no statistics are currently being recorded",
+                "PLAYERS-TEXT": "Please note that no statistics are recorded for individual players while playing a team game"
             },
             "INFO-MODAL": {
                 "TITLE": "Statistics Info",
@@ -267,7 +269,10 @@
                 }
             },
             "LISTING": {
-                "FILTER": "Only players who have played at least five games with default game settings are listed here"
+                "FILTER": "Only players who have played at least five games (team games not included) with default game settings are listed here",
+                "FILTER-TEAM": "Only teams who have played at least five games with default game settings are listed here",
+                "PLAYERS": "Players",
+                "TEAMS": "Teams"
             }
         },
         "PLAYERS": {
