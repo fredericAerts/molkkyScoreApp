@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="world.molkky.app" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Molkky World App</name>
+<widget id="world.molkky.app" version="1.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Molkky World</name>
     <description>
       Molkky World is a free (and ad free) application that makes keeping score on the game named 'mölkky' as easy as pie.
     </description>
