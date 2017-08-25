@@ -165,8 +165,11 @@
                         "LABEL": "Paramètres personnalisés",
                         "POPUP": {
                             "TITLE": "Avertissement",
-                            "TEXT": "Les statistiques ne sont pas enregistrées si les paramètres personnalisés sont activés"
+                            "TEXT": "Par défaut, les statistiques ne sont pas enregistrées si les paramètres personnalisés sont activés. Si vous souhaitez conserver les statistiques d'enregistrement en mode personnalisé, vous devrez l'activer explicitement."
                         }
+                    },
+                    "STATISTICS-TOGGLE": {
+                        "LABEL": "Activer les statistiques"
                     },
                     "WINNING-SCORE": {
                         "TITLE": "Le score gagnant est ..."
@@ -252,7 +255,7 @@
                         "INFO": {
                             "SUMMARY": "La capacité du joueur à minimiser le nombre de jets pour finir une partie",
                             "RECORDED": "Quand le joueur atteint le score maximum",
-                            "CALCULATION": "a = total de jets dans les parties où le joueur à atteint le score maximum<br>b = nombre de parties où le joueur à atteint le score maximum<br><i>Efficacité</i> = (4 / (a / b)) * 100"
+                            "CALCULATION": "a = nombre minimum de jets requis pour atteindre le score maximum<br>b = total de jets dans les parties où le joueur à atteint le score maximum<br>c = nombre de parties où le joueur à atteint le score maximum<br><i>Efficacité</i> = ((a - 1) / (b / c)) * 100"
                         }
                     }
                 }

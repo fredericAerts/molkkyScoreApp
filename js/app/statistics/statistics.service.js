@@ -110,7 +110,7 @@
         }
 
         function updateStatistics(event, activePlayer, undo) {
-            if (!settingsService.getParameters().game.isCustom) {
+            if (!settingsService.getParameters().game.isCustom || settingsService.getParameters().game.enableCustomStatistics) {
                 statisticsProcessor.update(event, activePlayer, undo);
             }
         }

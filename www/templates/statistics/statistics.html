@@ -4,7 +4,7 @@
     </ion-nav-buttons> -->
     <ion-content>
         <ion-list class="statistics-title-listing">
-            <span ng-if="statistics.gameSettings.isCustom" class="info-block">
+            <span ng-if="statistics.gameSettings.isCustom && !statistics.gameSettings.enableCustomStatistics" class="info-block">
                 {{ 'HOME.STATISTICS.INFO-BLOCK.TEXT' | translate }}
             </span>
             <div class="item item-divider">

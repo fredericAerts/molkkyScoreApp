@@ -77,7 +77,10 @@
                     dataService.initAppSettings().then(function(appSettings) {
                         $translate.use(appSettings.language);
                     });
+
+                    // requested features that were added after initial launch
                     dataService.initGameTutorial();
+                    dataService.initGameSettingsEnableCustomStatistics();
 
                 }, function(err) {
                     console.log(err.message);

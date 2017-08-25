@@ -43,7 +43,7 @@
                 return vm.parameters.game.isCustom;
             },
             function handleCustomSettingChange(newValue, oldValue) {
-                if (newValue !== oldValue && newValue) {
+                if (newValue !== oldValue && newValue && !vm.parameters.game.enableCustomStatistics) {
                     showAlert();
                 }
             }

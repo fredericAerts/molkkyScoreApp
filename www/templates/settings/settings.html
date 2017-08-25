@@ -11,9 +11,13 @@
     </div>
     <ion-content class="has-tabs-top">
         <div ng-show="settings.activeTabIndex === 0">
-            <ion-toggle ng-model="settings.parameters.game.isCustom">
-                <span>{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.LABEL' | translate }}</span>
-            </ion-toggle>
+            <div class="padding-bottom">
+                <ion-toggle ng-model="settings.parameters.game.isCustom">
+                    <span>{{ 'HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.LABEL' | translate }}</span>
+                </ion-toggle>
+            </div>
+            <!-- toggle statistics recordings when custom -->
+            <ion-checkbox ng-disabled="!settings.parameters.game.isCustom" ng-class="{'disabled': !settings.parameters.game.isCustom}" ng-model="settings.parameters.game.enableCustomStatistics">{{ 'HOME.SETTINGS.TABS.GAME.STATISTICS-TOGGLE.LABEL' | translate }}</ion-checkbox>
             <!-- winning score question -->
             <div class="list card" ng-class="{'disabled': !settings.parameters.game.isCustom}">
                 <div class="item item-divider">

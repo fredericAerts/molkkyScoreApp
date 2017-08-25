@@ -27,6 +27,7 @@
             initGameSettings: initGameSettings,
             initAppSettings: initAppSettings,
             initGameTutorial: initGameTutorial,
+            initGameSettingsEnableCustomStatistics: initGameSettingsEnableCustomStatistics,
             getAllPlayers: getAllPlayers,
             getAllTeams: getAllTeams,
             getOverallStatistics: getOverallStatistics,
@@ -101,6 +102,7 @@
             };
             gameSettings = {
                 isCustom: false,
+                enableCustomStatistics: false,
                 winningScore: 50,
                 winningScoreExceeded: 'half of winning score',
                 threeMisses: 'disqualified'
@@ -270,6 +272,7 @@
         }
 
         function initGameSettings() {
+            // see also 'initGameSettingsEnableCustomStatistics'
             var selectGameSettingsQuery = 'SELECT * FROM GAME_SETTINGS' + ' LIMIT 1';
             return $cordovaSQLite.execute(database, selectGameSettingsQuery).then(function(res) {
                 if (res.rows.length) {
@@ -310,7 +313,22 @@
                     return gameTutorial;
                 }
                 else {
-                    return;
+                    return introGameTutorial().then(initGameTutorial);
+                }
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function initGameSettingsEnableCustomStatistics() {
+            var selectGameSettingsEnableCustomStatistics = 'SELECT * FROM CUSTOM_STATISTICS' + ' LIMIT 1';
+            return $cordovaSQLite.execute(database, selectGameSettingsEnableCustomStatistics).then(function(res) {
+                if (res.rows.length) {
+                    gameSettings.enableCustomStatistics = res.rows.item(0).ENABLE_STATS === 1 ? true : false;
+                    return gameSettings;
+                }
+                else {
+                    return introGameSettingsEnableCustomStatistics().then(initGameSettingsEnableCustomStatistics);
                 }
             }, function (err) {
                 console.error(err.message);
@@ -389,6 +407,23 @@
                                         ' THREE_MISSES="' + threeMisses + '"';
             $cordovaSQLite.execute(database, updateGameSettings).then(function(res) {
                 // overall statistics updated
+            }, function (err) {
+                console.error(err.message);
+            });
+
+            updateGameSettingsEnableCustomStatistics();
+        }
+
+        function updateGameSettingsEnableCustomStatistics() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var enableStats = gameSettings.enableCustomStatistics ? 1 : 0;
+            var updateCustomStatistics = 'UPDATE CUSTOM_STATISTICS SET' +
+                                        ' ENABLE_STATS="' + enableStats + '"';
+            $cordovaSQLite.execute(database, updateCustomStatistics).then(function(res) {
+                // game settings updated
             }, function (err) {
                 console.error(err.message);
             });
@@ -541,6 +576,8 @@
                 ' (LANGUAGE text)';
             var addGameTutorialTable = 'CREATE TABLE IF NOT EXISTS GAME_TUTORIAL' +
                 ' (SHOW_INVITE tinyint(1))';
+            var addGameSettingsCustomStatisticsTable = 'CREATE TABLE IF NOT EXISTS CUSTOM_STATISTICS' +
+                ' (ENABLE_STATS tinyint(1))';
 
             // Init players & their statistics
             return $q.all([
@@ -562,7 +599,8 @@
                             introOverallStatistics(),
                             introGameSettings(),
                             introAppSettings(),
-                            introGameTutorial()
+                            introGameTutorial(),
+                            introGameSettingsEnableCustomStatistics()
                         ]);
                     }
                 });
@@ -682,6 +720,13 @@
             var insertGameTutorial = 'INSERT INTO GAME_TUTORIAL (SHOW_INVITE) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertGameTutorial, values);
+        }
+
+        function introGameSettingsEnableCustomStatistics() {
+            var values = [1];
+            var insertEnableCustomStatistics = 'INSERT INTO CUSTOM_STATISTICS (ENABLE_STATS) VALUES (?)';
+
+            return $cordovaSQLite.execute(database, insertEnableCustomStatistics, values);
         }
 
         function fetchAllPlayersFromDB() {
