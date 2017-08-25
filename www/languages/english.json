@@ -164,8 +164,11 @@
                         "LABEL": "Custom game settings",
                         "POPUP": {
                             "TITLE": "Warning",
-                            "TEXT": "Statistics are not recorded when custom game settings are enabled"
+                            "TEXT": "By default, statistics are not recorded when custom game settings are enabled. If you want to keep recording statistics in custom mode, you'll have to explicitly enable it."
                         }
+                    },
+                    "STATISTICS-TOGGLE": {
+                        "LABEL": "Enable custom game statistics"
                     },
                     "WINNING-SCORE": {
                         "TITLE": "Winning score is ..."
@@ -251,7 +254,7 @@
                         "INFO": {
                             "SUMMARY": "The player’s ability to minimize the number of throws to finish a game",
                             "RECORDED": "When player reaches maximum score",
-                            "CALCULATION": "a = total throws in games in which player reached maximum score<br>b = number of games in which player reached maximum score<br><i>Efficiency</i> = (4 / (a / b)) * 100"
+                            "CALCULATION": "a = minimun throws required to reach maximum score<br>b = total throws in games in which player reached maximum score<br>c = number of games in which player reached maximum score<br><i>Efficiency</i> = ((a - 1) / (b / c)) * 100"
                         }
                     }
                 }
