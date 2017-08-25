@@ -590,7 +590,8 @@
                 $cordovaSQLite.execute(database, addStatisticsOverallMetricsTable),
                 $cordovaSQLite.execute(database, addGameSettingsTable),
                 $cordovaSQLite.execute(database, addAppSettingsTable),
-                $cordovaSQLite.execute(database, addGameTutorialTable)
+                $cordovaSQLite.execute(database, addGameTutorialTable),
+                $cordovaSQLite.execute(database, addGameSettingsCustomStatisticsTable)
             ]).then(function(results) {
                 return initOverallStatistics().then(function(overallStatistics) {
                     if (!overallStatistics) { // first time user
@@ -723,7 +724,7 @@
         }
 
         function introGameSettingsEnableCustomStatistics() {
-            var values = [1];
+            var values = [0];
             var insertEnableCustomStatistics = 'INSERT INTO CUSTOM_STATISTICS (ENABLE_STATS) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertEnableCustomStatistics, values);
