@@ -10,7 +10,7 @@
         },
         "SPLASH": {
             "SUBTITLE": "Nous apportons la qualité<br>de classe mondiale au jeu",
-            "CTA": "Visitez notre site web"
+            "CTA": "Visitez Mölkky World"
         },
         "LOADING": {
             "STARTING-GAME": "démarrage",
@@ -185,6 +185,10 @@
                         "OPTION-1": "le score est mis à zéro",
                         "OPTION-2": "le score est divisé par deux",
                         "OPTION-3": "le joueur est eliminé"
+                    },
+                    "ZAP-TOGGLE": {
+                        "LABEL": "Activer le ZAP",
+                        "INFO": "Hello there"
                     }
                 },
                 "APP": {
@@ -276,8 +280,8 @@
                 }
             },
             "LISTING": {
-                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties (jeux d'équipe non inclus) avec les paramètres de jeu par défaut sont listés ici",
-                "FILTER-TEAM": "Seuls les équipes qui ont joué au moins cinq parties avec les paramètres de jeu par défaut sont listés ici",
+                "FILTER": "Seuls les joueurs qui ont joué au moins cinq parties (jeux d'équipe non inclus) avec les statistiques enregistrées sont listés ici",
+                "FILTER-TEAM": "Seuls les équipes qui ont joué au moins cinq parties avec les statistiques enregistrées sont listés ici",
                 "PLAYERS": "Joueurs",
                 "TEAMS": "Equipes"
             }

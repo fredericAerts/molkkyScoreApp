@@ -10,7 +10,7 @@
         },
         "SPLASH": {
             "SUBTITLE": "Bringing world class quality<br>to the game",
-            "CTA": "Visit our website"
+            "CTA": "Visit Mölkky World"
         },
         "LOADING": {
             "STARTING-GAME": "starting game",
@@ -184,6 +184,10 @@
                         "OPTION-1": "score is set to zero",
                         "OPTION-2": "score is halved",
                         "OPTION-3": "player is disqualified"
+                    },
+                    "ZAP-TOGGLE": {
+                        "LABEL": "Enable ZAP",
+                        "INFO": "Hello there"
                     }
                 },
                 "APP": {
@@ -275,8 +279,8 @@
                 }
             },
             "LISTING": {
-                "FILTER": "Only players who have played at least five games (team games not included) with default game settings are listed here",
-                "FILTER-TEAM": "Only teams who have played at least five games with default game settings are listed here",
+                "FILTER": "Only players who have played at least five games (team games not included) with recorded statistics are listed here",
+                "FILTER-TEAM": "Only teams who have played at least five games with with recorded statistics are listed here",
                 "PLAYERS": "Players",
                 "TEAMS": "Teams"
             }
