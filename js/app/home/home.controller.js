@@ -6,9 +6,9 @@
         .module('molkkyscore')
         .controller('HomeCtrl', HomeCtrl);
 
-    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', 'modalsService'];
+    HomeCtrl.$inject = ['$rootScope', '$scope', '$state', '$translate', 'modalsService'];
 
-    function HomeCtrl($rootScope, $scope, $state, modalsService) {
+    function HomeCtrl($rootScope, $scope, $state, $translate, modalsService) {
         /* jshint validthis: true */
         var vm = this;
 
@@ -52,7 +52,13 @@
         }
 
         function visitWebsite() {
-            window.open('http://www.molkky.world', '_system', 'location=yes');
+            switch ($translate.use()) {
+                case 'english': window.open('http://www.molkky.world', '_system', 'location=yes');
+                    break;
+                case 'french': window.open('http://www.molkkyworld.fr', '_system', 'location=yes');
+                    break;
+                default: window.open('http://www.molkky.world', '_system', 'location=yes');
+            }
         }
     }
 })();

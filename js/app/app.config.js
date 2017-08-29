@@ -81,6 +81,7 @@
                     // requested features that were added after initial launch
                     dataService.initGameTutorial();
                     dataService.initGameSettingsEnableCustomStatistics();
+                    dataService.initGameSettingsEnableZap();
 
                 }, function(err) {
                     console.log(err.message);

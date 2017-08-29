@@ -28,6 +28,7 @@
             initAppSettings: initAppSettings,
             initGameTutorial: initGameTutorial,
             initGameSettingsEnableCustomStatistics: initGameSettingsEnableCustomStatistics,
+            initGameSettingsEnableZap: initGameSettingsEnableZap,
             getAllPlayers: getAllPlayers,
             getAllTeams: getAllTeams,
             getOverallStatistics: getOverallStatistics,
@@ -105,7 +106,8 @@
                 enableCustomStatistics: false,
                 winningScore: 50,
                 winningScoreExceeded: 'half of winning score',
-                threeMisses: 'disqualified'
+                threeMisses: 'disqualified',
+                enableZap: false
             };
             appSettings = {
                 language: 'english'
@@ -335,6 +337,21 @@
             });
         }
 
+        function initGameSettingsEnableZap() {
+            var selectGameSettingsEnableZap = 'SELECT * FROM ZAP' + ' LIMIT 1';
+            return $cordovaSQLite.execute(database, selectGameSettingsEnableZap).then(function(res) {
+                if (res.rows.length) {
+                    gameSettings.enableZap = res.rows.item(0).ENABLED === 1 ? true : false;
+                    return gameSettings;
+                }
+                else {
+                    return introGameSettingsEnableZap().then(initGameSettingsEnableZap);
+                }
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
         function getAllPlayers() {
             return players;
         }
@@ -412,6 +429,7 @@
             });
 
             updateGameSettingsEnableCustomStatistics();
+            updateGameSettingsEnableZap();
         }
 
         function updateGameSettingsEnableCustomStatistics() {
@@ -423,6 +441,21 @@
             var updateCustomStatistics = 'UPDATE CUSTOM_STATISTICS SET' +
                                         ' ENABLE_STATS="' + enableStats + '"';
             $cordovaSQLite.execute(database, updateCustomStatistics).then(function(res) {
+                // game settings updated
+            }, function (err) {
+                console.error(err.message);
+            });
+        }
+
+        function updateGameSettingsEnableZap() {
+            if (!window.cordova) {
+                return;
+            }
+
+            var enableZap = gameSettings.enableZap ? 1 : 0;
+            var updateEnableZap = 'UPDATE ZAP SET' +
+                                        ' ENABLED="' + enableZap + '"';
+            $cordovaSQLite.execute(database, updateEnableZap).then(function(res) {
                 // game settings updated
             }, function (err) {
                 console.error(err.message);
@@ -578,6 +611,8 @@
                 ' (SHOW_INVITE tinyint(1))';
             var addGameSettingsCustomStatisticsTable = 'CREATE TABLE IF NOT EXISTS CUSTOM_STATISTICS' +
                 ' (ENABLE_STATS tinyint(1))';
+            var addGameSettingsEnableZapTable = 'CREATE TABLE IF NOT EXISTS ZAP' +
+                ' (ENABLED tinyint(1))';
 
             // Init players & their statistics
             return $q.all([
@@ -591,7 +626,8 @@
                 $cordovaSQLite.execute(database, addGameSettingsTable),
                 $cordovaSQLite.execute(database, addAppSettingsTable),
                 $cordovaSQLite.execute(database, addGameTutorialTable),
-                $cordovaSQLite.execute(database, addGameSettingsCustomStatisticsTable)
+                $cordovaSQLite.execute(database, addGameSettingsCustomStatisticsTable),
+                $cordovaSQLite.execute(database, addGameSettingsEnableZapTable)
             ]).then(function(results) {
                 return initOverallStatistics().then(function(overallStatistics) {
                     if (!overallStatistics) { // first time user
@@ -601,7 +637,8 @@
                             introGameSettings(),
                             introAppSettings(),
                             introGameTutorial(),
-                            introGameSettingsEnableCustomStatistics()
+                            introGameSettingsEnableCustomStatistics(),
+                            introGameSettingsEnableZap()
                         ]);
                     }
                 });
@@ -728,6 +765,13 @@
             var insertEnableCustomStatistics = 'INSERT INTO CUSTOM_STATISTICS (ENABLE_STATS) VALUES (?)';
 
             return $cordovaSQLite.execute(database, insertEnableCustomStatistics, values);
+        }
+
+        function introGameSettingsEnableZap() {
+            var values = [0];
+            var insertEnableZap = 'INSERT INTO ZAP (ENABLED) VALUES (?)';
+
+            return $cordovaSQLite.execute(database, insertEnableZap, values);
         }
 
         function fetchAllPlayersFromDB() {

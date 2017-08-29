@@ -7,19 +7,24 @@
 
     SettingsCtrl.$inject = ['$scope',
                             '$rootScope',
+                            'TEMPLATES_ROOT',
                             '$ionicPopup',
+                            '$ionicPopover',
                             '$translate',
                             'settingsService',
                             'toast'];
 
     function SettingsCtrl($scope,
                             $rootScope,
+                            TEMPLATES_ROOT,
                             $ionicPopup,
+                            $ionicPopover,
                             $translate,
                             settingsService,
                             toast) {
         /* jshint validthis: true */
         var vm = this;
+        var zapInfoPopoverScope = $scope.$new(true);
 
         var toastMessages = toast.getMessages().settings;
 
@@ -27,6 +32,8 @@
 
         vm.options = settingsService.getOptions();
         vm.parameters = settingsService.getParameters();
+        vm.showZapInfo = showZapInfo;
+        vm.zapInfoPopover = {};
 
         activate();
 
@@ -62,10 +69,36 @@
         );
 
         function activate() {
+            initZapInfoPopover();
+        }
+
+        function showZapInfo($event) {
+            vm.zapInfoPopover.show($event);
+
+            $event.stopPropagation();
+            $event.preventDefault();
         }
 
         /*  Helper functions
             ======================================================================== */
+        function initZapInfoPopover() {
+            zapInfoPopoverScope.$on('popover.hidden', function() {
+                angular.element(document).find('body').removeClass('popover-open');
+            });
+
+            $ionicPopover.fromTemplateUrl(TEMPLATES_ROOT + '/settings/popover-zap-info.html', {
+                scope: zapInfoPopoverScope
+            }).then(function(popover) {
+                vm.zapInfoPopover = popover;
+            });
+
+            /*  ==================================================================
+                - popover template should reference 'viewModel' as its scope
+                - viewModel data is initialized (reset) each time popover is shown
+                ================================================================== */
+            zapInfoPopoverScope.viewModel = {};
+        }
+
         function showAlert() {
             var alertPopup = $ionicPopup.alert({
                 title: $translate.instant('HOME.SETTINGS.TABS.GAME.CUSTOM-TOGGLE.POPUP.TITLE'),
