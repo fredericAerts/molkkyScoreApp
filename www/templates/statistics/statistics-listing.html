@@ -1,10 +1,10 @@
 <ion-view view-title="{{ 'HOME.STATISTICS.METRICS.' + listing.metric.translationId + '.VIEW-TITLE' | translate }}">
     <div ng-if="listing.teams.length" class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
         <div class="tabs">
-            <span class="tab-item active" ng-click="listing.activeTabIndex = 0" ng-class="{'active': listing.activeTabIndex === 0}">
+            <span class="tab-item active" ng-click="listing.setTabIndex(0)" ng-class="{'active': listing.activeTabIndex === 0}">
                 {{ 'HOME.STATISTICS.LISTING.PLAYERS' | translate }}
             </span>
-            <span class="tab-item" ng-click="listing.activeTabIndex = 1" ng-class="{'active': listing.activeTabIndex === 1}">
+            <span class="tab-item" ng-click="listing.setTabIndex(1)" ng-class="{'active': listing.activeTabIndex === 1}">
                 {{ 'HOME.STATISTICS.LISTING.TEAMS' | translate }}
             </span>
         </div>

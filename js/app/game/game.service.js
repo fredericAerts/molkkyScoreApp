@@ -45,6 +45,7 @@
 
         function initParticipants() {
             participants.forEach(function(participant) {
+                delete participant.zapIndexes;
                 participant.score = 0;
                 participant.scoreHistory = [];
                 participant.accumulatedScoreHistory = [];

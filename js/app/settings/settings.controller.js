@@ -76,6 +76,10 @@
         }
 
         function showZapInfo($event) {
+            if (!vm.parameters.game.isCustom) {
+                return;
+            }
+
             vm.zapInfoPopover.show($event);
 
             $event.stopPropagation();
