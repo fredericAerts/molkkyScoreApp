@@ -310,6 +310,11 @@
             statisticsService.updateStatistics('playerThrow', vm.activePlayer, false);
             vm.activePlayer.score += vm.activatedScore.value;
             vm.activePlayer.missesInARow = vm.activatedScore.value ? 0 : vm.activePlayer.missesInARow + 1;
+
+            if (settings.enableZap) {
+                zapParticipants();
+            }
+
             resetActivatedScore();
 
             var participantName = vm.isTeamMode ? vm.activePlayer.name : vm.activePlayer.firstName + ' ' + vm.activePlayer.lastName;
@@ -334,6 +339,26 @@
             }
 
             vm.activePlayer.accumulatedScoreHistory.push(vm.activePlayer.disqualified ? 'X' : vm.activePlayer.score);
+        }
+
+        function zapParticipants() {
+            if (vm.activatedScore.value > 0 && vm.activePlayer.score < settings.winningScore) {
+                vm.participants.forEach(function(participant) {
+                    var hasEqualScore = (vm.activePlayer.score === participant.score);
+                    var isActivePlayer = (participant === vm.activePlayer);
+                    if (hasEqualScore && !isActivePlayer) {
+                        participant.zapIndexes = participant.zapIndexes || [];
+                        var participantName = vm.isTeamMode ? participant.name : participant.firstName + ' ' + participant.lastName;
+                        var exceededHalfOfMaxScore = (participant.score > settings.winningScore / 2);
+
+                        participant.score = exceededHalfOfMaxScore ? settings.winningScore / 2 : 0;
+                        participant.zapIndexes.push(participant.accumulatedScoreHistory.length - 1);
+
+                        console.log('ZAP: ' + participantName);
+                        toast.show('ZAP: ' + participantName);
+                    }
+                });
+            }
         }
 
         function moveToNextPlayer() {
@@ -395,6 +420,7 @@
             undoLastStatistics(player);
             var isFirstThrow = player.accumulatedScoreHistory.length < 2;
             resetActivatedScore();
+
             player.scoreHistory.shift();
             player.accumulatedScoreHistory.pop();
             player.score = isFirstThrow ? 0 : player.accumulatedScoreHistory[player.accumulatedScoreHistory.length - 1];

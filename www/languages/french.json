@@ -188,7 +188,7 @@
                     },
                     "ZAP-TOGGLE": {
                         "LABEL": "Activer le ZAP",
-                        "INFO": "Hello there"
+                        "INFO": "Lorsqu'un joueur A égale le score d'un joueur B, le joueur B est zappé. Cela signifie que le score du joueur B sera réduit à zéro si son score actuel est inférieur à la moitié du score maximum (gain de jeu) et réduit à la moitié du score maximal lorsque son score est supérieur à la moitié du score maximal."
                     }
                 },
                 "APP": {

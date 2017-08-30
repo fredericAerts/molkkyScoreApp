@@ -5,9 +5,9 @@
         .module('molkkyscore')
         .factory('gameActionSheetService', gameActionSheetService);
 
-    gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup'];
+    gameActionSheetService.$inject = ['$ionicActionSheet', '$translate', '$ionicPopup', 'settingsService'];
 
-    function gameActionSheetService($ionicActionSheet, $translate, $ionicPopup) {
+    function gameActionSheetService($ionicActionSheet, $translate, $ionicPopup, settingsService) {
         var actionSheetData = translateActionSheetData();
 
         var service = {
@@ -37,7 +37,7 @@
                     },
                     {
                         text: $translate.instant('HOME.GAME.ACTION-SHEET.UNDO.BUTTON'),
-                        className: isGameStarted ? '' : 'disabled'
+                        className: isGameStarted && !settingsService.getParameters().game.enableZap ? '' : 'disabled'
                     },
                     {
                         text: $translate.instant('HOME.GAME.ACTION-SHEET.EXIT.BUTTON')
