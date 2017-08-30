@@ -12,7 +12,8 @@
                             '$ionicPopover',
                             '$translate',
                             'settingsService',
-                            'toast'];
+                            'toast',
+                            '$ionicScrollDelegate'];
 
     function SettingsCtrl($scope,
                             $rootScope,
@@ -21,7 +22,8 @@
                             $ionicPopover,
                             $translate,
                             settingsService,
-                            toast) {
+                            toast,
+                            $ionicScrollDelegate) {
         /* jshint validthis: true */
         var vm = this;
         var zapInfoPopoverScope = $scope.$new(true);
@@ -29,6 +31,7 @@
         var toastMessages = toast.getMessages().settings;
 
         vm.activeTabIndex = 0;
+        vm.setTabIndex = setTabIndex;
 
         vm.options = settingsService.getOptions();
         vm.parameters = settingsService.getParameters();
@@ -77,6 +80,11 @@
 
             $event.stopPropagation();
             $event.preventDefault();
+        }
+
+        function setTabIndex(index) {
+            vm.activeTabIndex = index;
+            $ionicScrollDelegate.scrollTop();
         }
 
         /*  Helper functions

@@ -187,7 +187,7 @@
                     },
                     "ZAP-TOGGLE": {
                         "LABEL": "Enable ZAP",
-                        "INFO": "Hello there"
+                        "INFO": "When a player A evens an other player B’s score, player B is zapped. This means that player B’s score will be reduced to zero if his current score is below half the maximum (game winning) score, and reduced to half the maximum score when his score is above half the maximum score."
                     }
                 },
                 "APP": {

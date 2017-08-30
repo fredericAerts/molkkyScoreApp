@@ -67,7 +67,7 @@
                         </th>
                     </tr>
                     <tr ng-repeat="i in game.getScoreboardDetailsRowIterator() track by $index">
-                        <td ng-repeat="participant in game.participants">
+                        <td ng-repeat="participant in game.participants" ng-class="{'zapped': participant.zapIndexes && (participant.zapIndexes.indexOf($parent.$index) > -1)}">
                             {{participant.accumulatedScoreHistory[$parent.$index]}}
                         </td>
                     </tr>

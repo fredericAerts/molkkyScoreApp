@@ -1,10 +1,10 @@
 <ion-view view-title="{{ 'HOME.SETTINGS.VIEW-TITLE' | translate }}">
     <div class="tabs-striped tabs-top tabs-background-positive tabs-color-light">
         <div class="tabs">
-            <span class="tab-item active" ng-click="settings.activeTabIndex = 0" ng-class="{'active': settings.activeTabIndex === 0}">
+            <span class="tab-item active" ng-click="settings.setTabIndex(0)" ng-class="{'active': settings.activeTabIndex === 0}">
                 {{ 'HOME.SETTINGS.TABS.GAME.TITLE' | translate }}
             </span>
-            <span class="tab-item" ng-click="settings.activeTabIndex = 1" ng-class="{'active': settings.activeTabIndex === 1}">
+            <span class="tab-item" ng-click="settings.setTabIndex(1)" ng-class="{'active': settings.activeTabIndex === 1}">
                 {{ 'HOME.SETTINGS.TABS.APP.TITLE' | translate }}
             </span>
         </div>
@@ -48,7 +48,7 @@
             <ion-list>
                 <ion-item class="item-icon-left">
                     <i class="icon ion-ios-information-outline" ng-click="settings.showZapInfo($event)"></i>
-                    <ion-toggle ng-disabled="!settings.parameters.game.isCustom" ng-model="settings.parameters.game.zapEnabled" ng-class="{'disabled': !settings.parameters.game.isCustom}">
+                    <ion-toggle ng-disabled="!settings.parameters.game.isCustom" ng-model="settings.parameters.game.enableZap" ng-class="{'disabled': !settings.parameters.game.isCustom}">
                         <span>{{ 'HOME.SETTINGS.TABS.GAME.ZAP-TOGGLE.LABEL' | translate }}</span>
                     </ion-toggle>
                 </ion-item>
