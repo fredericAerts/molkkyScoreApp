@@ -354,7 +354,6 @@
                         participant.score = exceededHalfOfMaxScore ? settings.winningScore / 2 : 0;
                         participant.zapIndexes.push(participant.accumulatedScoreHistory.length - 1);
 
-                        console.log('ZAP: ' + participantName);
                         toast.show('ZAP: ' + participantName);
                     }
                 });

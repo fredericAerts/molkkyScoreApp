@@ -187,7 +187,8 @@
                     },
                     "ZAP-TOGGLE": {
                         "LABEL": "Enable ZAP",
-                        "INFO": "When a player A evens an other player B’s score, player B is zapped. This means that player B’s score will be reduced to zero if his current score is below half the maximum (game winning) score, and reduced to half the maximum score when his score is above half the maximum score."
+                        "INFO": "When a player A evens an other player B’s score, player B is zapped. This means that player B’s score will be reduced to zero if his current score is below half the maximum (game winning) score, and reduced to half the maximum score when his score is above half the maximum score.",
+                        "REMARK": "The \"Undo Last Throw\" functionality is disabled while playing in ZAP mode."
                     }
                 },
                 "APP": {

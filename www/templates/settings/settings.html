@@ -46,9 +46,9 @@
                 </ion-radio>
             </div>
             <ion-list>
-                <ion-item class="item-icon-left">
+                <ion-item class="item-icon-left" ng-class="{'disabled': !settings.parameters.game.isCustom}">
                     <i class="icon ion-ios-information-outline" ng-click="settings.showZapInfo($event)"></i>
-                    <ion-toggle ng-disabled="!settings.parameters.game.isCustom" ng-model="settings.parameters.game.enableZap" ng-class="{'disabled': !settings.parameters.game.isCustom}">
+                    <ion-toggle ng-disabled="!settings.parameters.game.isCustom" ng-model="settings.parameters.game.enableZap">
                         <span>{{ 'HOME.SETTINGS.TABS.GAME.ZAP-TOGGLE.LABEL' | translate }}</span>
                     </ion-toggle>
                 </ion-item>
