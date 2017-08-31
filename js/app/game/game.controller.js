@@ -349,9 +349,9 @@
                     if (hasEqualScore && !isActivePlayer) {
                         participant.zapIndexes = participant.zapIndexes || [];
                         var participantName = vm.isTeamMode ? participant.name : participant.firstName + ' ' + participant.lastName;
-                        var exceededHalfOfMaxScore = (participant.score > settings.winningScore / 2);
+                        var exceededHalfOfMaxScore = (participant.score > Math.floor(settings.winningScore / 2));
 
-                        participant.score = exceededHalfOfMaxScore ? settings.winningScore / 2 : 0;
+                        participant.score = exceededHalfOfMaxScore ? Math.floor(settings.winningScore / 2) : 0;
                         participant.zapIndexes.push(participant.accumulatedScoreHistory.length - 1);
 
                         toast.show('ZAP: ' + participantName);
